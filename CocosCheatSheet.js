@@ -14,13 +14,19 @@ this.addChild(sprite, 0);
 ///////////////////////////
 
 ////////Moving Shit///////
-//Creating move event
+//Creating move event: Where we are -> x/y position given.
 var sprite_action = cc.MoveTo.create(2, cc.p(50, 100));
+//Creation move event: Where we are -> x+newX/y+newY
+var sprite_action = cc.MoveBy.create(2, cc.p(50, 100));
+//Creation move event: Where we are -> end position by jumping x height y times.
+var sprite_action = cc.JumpTo.create(2, cc.p(100, 200), x, y);
+//Creation move event: Where we are -> x+newX / y+newY as end destination.
+var sprite_action = cc.JumpBy.create(2, cc.p(100, 200), x, y);
 //Make an object(sprite) execute an event
 sprite.runAction(sprite_action);
 //////////////////////////
 
 ///////Misc Things///////
 //Get the screen width and height
-cc.winSize.width && cc.windSize.height
+cc.winSize.width && cc.winSize.height
 /////////////////////////
