@@ -11,7 +11,10 @@ var GameLayer = cc.Layer.extend({
 		sprite.setAnchorPoint(cc.p(0.5, 0.5));
 		sprite.setPosition(cc.p(size.width/2, size.height/2));
 		this.addChild(sprite, 0);
-
+		
+		var sprite_action = cc.MoveTo.create(2, cc.p(50, 100));
+		sprite.runAction(sprite_action);
+		
 		return true;
 	}
 });

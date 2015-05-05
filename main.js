@@ -51,7 +51,7 @@ cc.game.onStart = function(){
     if(!cc.sys.isNative && document.getElementById("cocosLoading")) //If referenced loading.js, please remove it
         document.body.removeChild(document.getElementById("cocosLoading"));
 
-    var isLandscape = true;
+    var isLandscape = false;
     if (cc.sys.isNative) {
     	var searchPaths = jsb.fileUtils.getSearchPaths();
     	
@@ -108,7 +108,7 @@ cc.game.onStart = function(){
 
     //load resources
     cc.LoaderScene.preload(g_resources, function () {
-        cc.director.runScene(new HelloWorldScene());
+        cc.director.runScene(new GameScene());
     }, this);
 };
 cc.game.run();
