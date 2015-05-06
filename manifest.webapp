@@ -1,7 +1,7 @@
 {
   "version": "1.0",
-  "name": "CocosJSGame",
-  "description": "CocosJSGame",
+  "name": "HelloJavascript",
+  "description": "HelloJavascript",
   "launch_path": "/index.html",
   "icons": {
     "128": "/res/icon.png"

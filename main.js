@@ -106,9 +106,9 @@ cc.game.onStart = function(){
     cc.view.adjustViewPort(true);
     // Setup the resolution policy and design resolution size
 
-    //load resources
+    //load resources    
     cc.LoaderScene.preload(g_resources, function () {
-        cc.director.runScene(new GameScene());
+        cc.director.runScene(new Runner());
     }, this);
 };
 cc.game.run();

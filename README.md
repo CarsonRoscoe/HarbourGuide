@@ -1,3 +1,5 @@
-Harbour Guide
+# HarbourGuide
 
-Harbour Guide is a project for COMP2900 created by students at BCIT. It is a puzzle game that is currently in development.
+New branch for HarbourGuide.
+
+Date: May 4th, 2015
