@@ -2,8 +2,8 @@
 var GameScene = cc.Layer.extend({
 	ctor:function() {
 		this._super();
-	this.addChild(new GameBoard());
-	return true;
+		this.addChild(new GameBoard());
+		return true;
 	}
 });
 
