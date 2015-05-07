@@ -9,9 +9,10 @@ var GameBoard = cc.Layer.extend({
 	boardGlobY: null,
 	interaction: null,
 	drawObject: null,
+	unitBoats: null,
 
-// Function which create our grid given the amount of rows
-// and columns
+	// Function which create our grid given the amount of rows
+	// and columns
 	createGrid: function() {
 		var grid = [];
 		for (i = 0; i < cellsColumn; i++) {
@@ -36,7 +37,7 @@ var GameBoard = cc.Layer.extend({
 		ship.length = Math.abs((front.x - back.x) + (front.y - back.y));
 		ship.orientation = orient;
 		ship.frontPoint = front;
-		ship.backPoint = back;
+		ship.backPoint = back;	
 		if (this.validateShip(ship)) {
 			obstacleBoats[obstacleBoats.length] = ship;
 		} else {
@@ -62,7 +63,33 @@ var GameBoard = cc.Layer.extend({
 		}
 		
 		
+		obstacleBoats[obstacleBoats.length] = ship;
+		
 	},
+	
+	moveUnit: function() {
+		var i = 0;
+		for (i = 0; i < unitBoats.length; i++) {
+			switch(unitBoats[i].oriengatation) {
+			case "Up": 
+				unitBoats[i].point = cc.p(unitBoats[i].point.x, unitBoats[i].point.y);
+				break;
+			}
+		}
+	},
+	
+	createUnit: function(startPoint) {
+		var unit = new ShipUnit();
+		unit.length = 1;
+		unit.orientation = "Up";
+		unit.point = startPoint;
+		
+		grid[startPoint.y][startPoint.x].isEmpty = false;
+		grid[startPoint.y][startPoint.x].shipID = unitBoats.length - 1;
+
+		unitBoats[unitBoats.length] = unit;
+	},
+	
 	
 	validateShip: function(ship) {
 		if (ship.frontPoint.x >= 0 && ship.frontPoint.x <= cellsRow
@@ -82,24 +109,60 @@ var GameBoard = cc.Layer.extend({
 	ctor:function () {
 		// Super init first
 		this._super();
-
+		
+		clicking = false;
+		
+		cc.eventManager.addListener({
+			event: cc.EventListener.MOUSE,
+			clicking: false,
+			
+			onMouseDown: function(event) {
+				if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
+					clicking = true;
+				}
+			},
+		
+			onMouseUp: function(event) {
+				if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
+					clicking = false;
+				}
+			},
+				
+			onMouseMove: function(event) {
+				if (clicking)
+					cc.log(event.getLocation().x);
+			}
+		}, this);
+		
+		//origin/master
 		cellsRow = 7;
 		cellsColumn = 9;
 		cellSize = cc.winSize.width / cellsRow;
+		alert(cellSize);
 		gridCells = cellsRow * cellsColumn;
 		grid = this.createGrid();
 		obstacleBoats = [];
+		unitBoats = [];
 		boardGlobX = 0;
 		boardGlobY = (cc.winSize.height - cellsColumn * cellSize) / 2;
 		interaction = null;
-		
-
-
 
 		this.createBoat(cc.p(0,0), cc.p(2,0), 0);
 		this.createBoat(cc.p(4,3), cc.p(4,4), 1);
 		this.createBoat(cc.p(3,6), cc.p(4,6), 0);
+		this.createUnit(cc.p(3,0));
 
+		var temp = setInterval(function(){
+			var i = 0;
+			for (i = 0; i < unitBoats.length; i++) {
+				switch(unitBoats[i].orientation) {
+				case "Up": 
+					unitBoats[i].point = cc.p(unitBoats[i].point.x, unitBoats[i].point.y);
+					break;
+				}
+			}
+		}, 1000);
+		
 		// Set draw to be our surface to draw to
 		drawObject = new cc.DrawNode();
 
@@ -269,6 +332,13 @@ var ShipObstacle = function() {
 	orientation: null;
 	frontPoint: null;
 	backPoint: null;
+	origin: null;
+}
+
+var ShipUnit = function() {
+	length: null;
+	oriengation: null;
+	point: null;
 	origin: null;
 }
 

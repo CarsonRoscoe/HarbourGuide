@@ -96,6 +96,11 @@ cc.eventManager.addListener{
 			}
 		}
 }
+///////
+onMouseDown means click
+onMouseUp means release
+onMouseMove means mouses x and/or y position has moved
+event.getLocationX() and event.getLocation().x get x value
 ////////////////////////////
 
 
