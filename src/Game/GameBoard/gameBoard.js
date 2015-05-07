@@ -5,11 +5,11 @@ var GameBoard = cc.Layer.extend({
 	gridCells: null,
 	grid: null,
 	obstacleBoats: null,
+	unitBoats: null,
 	boardGlobX: null,
 	boardGlobY: null,
 	interaction: null,
 	drawObject: null,
-	unitBoats: null,
 
 	// Function which create our grid given the amount of rows
 	// and columns
@@ -67,27 +67,43 @@ var GameBoard = cc.Layer.extend({
 		
 	},
 	
-	moveUnit: function() {
-		var i = 0;
-		for (i = 0; i < unitBoats.length; i++) {
-			switch(unitBoats[i].oriengatation) {
-			case "Up": 
-				unitBoats[i].point = cc.p(unitBoats[i].point.x, unitBoats[i].point.y);
-				break;
+	updateUnits: function() {
+		for (var i = 0; i < unitBoats.length; i++) {
+			var tempDir = unitBoats[i].direction;
+			if (tempDir == 0 && unitBoats[i].point.y < cellsColumn - 1 && grid[unitBoats[i].point.y + 1][unitBoats[i].point.x].isEmpty == true) {
+				grid[unitBoats[i].point.y][unitBoats[i].point.x].isEmpty = true;
+				grid[unitBoats[i].point.y + 1][unitBoats[i].point.x].isEmpty = false;
+				unitBoats[i].point.y += 1;
+			} else if (tempDir == 1 && unitBoats[i].point.x < cellsRow - 1 && grid[unitBoats[i].point.y][unitBoats[i].point.x + 1].isEmpty == true) {
+				grid[unitBoats[i].point.y][unitBoats[i].point.x].isEmpty = true;
+				grid[unitBoats[i].point.y][unitBoats[i].point.x + 1].isEmpty = false;
+				unitBoats[i].point.x += 1;
+			} else if (tempDir == 2 && unitBoats[i].point.y > 0 && grid[unitBoats[i].point.y - 1][unitBoats[i].point.x].isEmpty == true) {
+				grid[unitBoats[i].point.y][unitBoats[i].point.x].isEmpty = true;
+				grid[unitBoats[i].point.y - 1][unitBoats[i].point.x].isEmpty = false;
+				unitBoats[i].point.y -= 1;
+			} else if (tempDir == 3 && unitBoats[i].point.x > 0 && grid[unitBoats[i].point.y][unitBoats[i].point.x - 1].isEmpty == true) {
+				grid[unitBoats[i].point.y][unitBoats[i].point.x].isEmpty = true;
+				grid[unitBoats[i].point.y][unitBoats[i].point.x - 1].isEmpty = false;
+				unitBoats[i].point.x -= 1;
 			}
 		}
 	},
 	
-	createUnit: function(startPoint) {
+	createUnit: function(startPoint, direction) {
+		if (grid[startPoint.y][startPoint.x].isEmpty == false) {
+			return false;
+		}
 		var unit = new ShipUnit();
-		unit.length = 1;
-		unit.orientation = "Up";
+		unit.direction = direction;
 		unit.point = startPoint;
 		
-		grid[startPoint.y][startPoint.x].isEmpty = false;
-		grid[startPoint.y][startPoint.x].shipID = unitBoats.length - 1;
-
 		unitBoats[unitBoats.length] = unit;
+		
+		grid[startPoint.y][startPoint.x].isEmpty = false;
+		grid[startPoint.y][startPoint.x].unitID = unitBoats.length - 1;
+		
+		
 	},
 	
 	
@@ -110,35 +126,10 @@ var GameBoard = cc.Layer.extend({
 		// Super init first
 		this._super();
 		
-		clicking = false;
-		
-		cc.eventManager.addListener({
-			event: cc.EventListener.MOUSE,
-			clicking: false,
-			
-			onMouseDown: function(event) {
-				if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
-					clicking = true;
-				}
-			},
-		
-			onMouseUp: function(event) {
-				if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
-					clicking = false;
-				}
-			},
-				
-			onMouseMove: function(event) {
-				if (clicking)
-					cc.log(event.getLocation().x);
-			}
-		}, this);
-		
 		//origin/master
 		cellsRow = 7;
 		cellsColumn = 9;
 		cellSize = cc.winSize.width / cellsRow;
-		alert(cellSize);
 		gridCells = cellsRow * cellsColumn;
 		grid = this.createGrid();
 		obstacleBoats = [];
@@ -146,21 +137,58 @@ var GameBoard = cc.Layer.extend({
 		boardGlobX = 0;
 		boardGlobY = (cc.winSize.height - cellsColumn * cellSize) / 2;
 		interaction = null;
-
+		
 		this.createBoat(cc.p(0,0), cc.p(2,0), 0);
 		this.createBoat(cc.p(4,3), cc.p(4,4), 1);
 		this.createBoat(cc.p(3,6), cc.p(4,6), 0);
-		this.createUnit(cc.p(3,0));
+		
+		this.createUnit(cc.p(3,0), 0);
+		this.createUnit(cc.p(3,4), 3);
 
 		var temp = setInterval(function(){
-			var i = 0;
-			for (i = 0; i < unitBoats.length; i++) {
-				switch(unitBoats[i].orientation) {
-				case "Up": 
-					unitBoats[i].point = cc.p(unitBoats[i].point.x, unitBoats[i].point.y);
-					break;
+			for (var i = 0; i < unitBoats.length; i++) {
+				var tempDir = unitBoats[i].direction;
+				if (tempDir == 0 && unitBoats[i].point.y < cellsColumn - 1 && grid[unitBoats[i].point.y + 1][unitBoats[i].point.x].isEmpty == true) {
+					grid[unitBoats[i].point.y][unitBoats[i].point.x].isEmpty = true;
+					grid[unitBoats[i].point.y][unitBoats[i].point.x].unitID = null;
+					grid[unitBoats[i].point.y + 1][unitBoats[i].point.x].isEmpty = false;
+					grid[unitBoats[i].point.y + 1][unitBoats[i].point.x].unitID = i;
+					unitBoats[i].point.y += 1;
+				} else if (tempDir == 1 && unitBoats[i].point.x < cellsRow - 1 && grid[unitBoats[i].point.y][unitBoats[i].point.x + 1].isEmpty == true) {
+					grid[unitBoats[i].point.y][unitBoats[i].point.x].isEmpty = true;
+					grid[unitBoats[i].point.y][unitBoats[i].point.x].unitID = null;
+					grid[unitBoats[i].point.y][unitBoats[i].point.x + 1].isEmpty = false;
+					grid[unitBoats[i].point.y][unitBoats[i].point.x + 1].unitID = i;
+					unitBoats[i].point.x += 1;
+				} else if (tempDir == 2 && unitBoats[i].point.y > 0 && grid[unitBoats[i].point.y - 1][unitBoats[i].point.x].isEmpty == true) {
+					grid[unitBoats[i].point.y][unitBoats[i].point.x].isEmpty = true;
+					grid[unitBoats[i].point.y][unitBoats[i].point.x].unitID = null;
+					grid[unitBoats[i].point.y - 1][unitBoats[i].point.x].isEmpty = false;
+					grid[unitBoats[i].point.y - 1][unitBoats[i].point.x].unitID = i;
+					unitBoats[i].point.y -= 1;
+				} else if (tempDir == 3 && unitBoats[i].point.x > 0 && grid[unitBoats[i].point.y][unitBoats[i].point.x - 1].isEmpty == true) {
+					grid[unitBoats[i].point.y][unitBoats[i].point.x].isEmpty = true;
+					grid[unitBoats[i].point.y][unitBoats[i].point.x].unitID = null;
+					grid[unitBoats[i].point.y][unitBoats[i].point.x - 1].isEmpty = false;
+					grid[unitBoats[i].point.y][unitBoats[i].point.x - 1].unitID = i;
+					unitBoats[i].point.x -= 1;
 				}
 			}
+			drawObject.clear();
+			for (j = 0; j < cellsColumn; j++) {
+				for(i = 0; i < cellsRow; i++) {
+					drawObject.drawRect(cc.p(i * cellSize, j * cellSize), cc.p(i * cellSize + cellSize, j * cellSize + cellSize),cc.color(255,255,255), 
+							4, 
+							cc.color(0,0,0));
+					if (grid[j][i].isEmpty == true) {
+						drawObject.drawDot(cc.p(grid[j][i].xPos, grid[j][i].yPos), 25, cc.color(255,0,0))
+					} else {
+						drawObject.drawDot(cc.p(grid[j][i].xPos, grid[j][i].yPos), 25, cc.color(0,0,255))
+					}
+
+				}
+			}
+			
 		}, 1000);
 		
 		// Set draw to be our surface to draw to
@@ -193,6 +221,7 @@ var GameBoard = cc.Layer.extend({
 				mouseUp: null,
 				clickOffset: null,
 				shipSelected: null,
+				isUnitSelected: null,
 
 				onMouseDown: function(event) {
 					if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
@@ -205,6 +234,12 @@ var GameBoard = cc.Layer.extend({
 							interaction = new dragMovement();
 							interaction.pointClicked = mouseDown;
 							shipSelected = grid[Math.floor(interaction.pointClicked.y / cellSize)][Math.floor(interaction.pointClicked.x / cellSize)].shipID;
+							if (shipSelected == null) {
+								shipSelected = grid[Math.floor(interaction.pointClicked.y / cellSize)][Math.floor(interaction.pointClicked.x / cellSize)].unitID;
+								isUnitSelected = true;
+							} else {
+								isUnitSelected = false;
+							}
 						}
 					}
 				},
@@ -214,6 +249,7 @@ var GameBoard = cc.Layer.extend({
 						interaction = null;
 						clickOffset = null;
 						shipSelected = null;
+						isUnitSelected = null;
 					}
 				},
 				
@@ -223,7 +259,7 @@ var GameBoard = cc.Layer.extend({
 						mouseUp.y -= boardGlobY;
 						mouseUp.x -= boardGlobX;
 						interaction.pointCurrent = mouseUp;
-						if (shipSelected != null) {
+						if (shipSelected != null && isUnitSelected == false) {
 							var clickY = Math.floor(interaction.pointClicked.y / cellSize);
 							var clickX = Math.floor(interaction.pointClicked.x / cellSize);
 							var curY = Math.floor(interaction.pointCurrent.y / cellSize);
@@ -292,6 +328,25 @@ var GameBoard = cc.Layer.extend({
 								}
 							}
 							
+						} else if (shipSelected != null && isUnitSelected == true) {
+							cc.log("YES");
+							var clickY = interaction.pointClicked.y;
+							var clickX = interaction.pointClicked.x;
+							var curY = interaction.pointCurrent.y;
+							var curX = interaction.pointCurrent.x;
+							if (Math.abs(clickY - curY) > Math.abs(clickX - curX)) {
+								if (clickY - curY > 0) {
+									unitBoats[shipSelected].direction = 2;
+								} else {
+									unitBoats[shipSelected].direction = 0;
+								}
+							} else {
+								if (clickX - curX > 0) {
+									unitBoats[shipSelected].direction = 3;
+								} else {
+									unitBoats[shipSelected].direction = 1;
+								}
+							}
 						}
 					}
 					drawObject.clear();
@@ -321,10 +376,11 @@ var GameBoard = cc.Layer.extend({
 });
 
 var Cell = function() {
-		isEmpty: null;
-		xPos: null;
-		yPos: null;
-		shipID: null;
+	isEmpty: null;
+	xPos: null;
+	yPos: null;
+	shipID: null;
+	unitID: null;
 }
 
 var ShipObstacle = function() {
@@ -336,10 +392,10 @@ var ShipObstacle = function() {
 }
 
 var ShipUnit = function() {
-	length: null;
-	oriengation: null;
+	//direction of movement. 0 = up, 1 = right, 2 = down, 3 = left
+	direction: null;
 	point: null;
-	origin: null;
+	pointMoving: null;
 }
 
 var dragMovement = function() {
