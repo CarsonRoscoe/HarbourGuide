@@ -10,8 +10,8 @@ var GameBoard = cc.Layer.extend({
 	interaction: null,
 	drawObject: null,
 
-// Function which create our grid given the amount of rows
-// and columns
+	// Function which create our grid given the amount of rows
+	// and columns
 	createGrid: function() {
 		var grid = [];
 		for (i = 0; i < cellsColumn; i++) {
@@ -37,6 +37,7 @@ var GameBoard = cc.Layer.extend({
 		ship.orientation = orient;
 		ship.frontPoint = front;
 		ship.backPoint = back;
+<<<<<<< HEAD
 		if (this.validateShip(ship)) {
 			obstacleBoats[obstacleBoats.length] = ship;
 		} else {
@@ -60,6 +61,11 @@ var GameBoard = cc.Layer.extend({
 				grid[i][front.x].shipID = obstacleBoats.length - 1;
 			}
 		}
+=======
+		
+		
+		obstacleBoats[obstacleBoats.length] = ship;
+>>>>>>> origin/master
 		
 		
 	},
@@ -82,10 +88,39 @@ var GameBoard = cc.Layer.extend({
 	ctor:function () {
 		// Super init first
 		this._super();
+<<<<<<< HEAD
 
+=======
+		
+		clicking = false;
+		
+		cc.eventManager.addListener({
+			event: cc.EventListener.MOUSE,
+			clicking: false,
+			
+			onMouseDown: function(event) {
+				if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
+					clicking = true;
+				}
+			},
+		
+			onMouseUp: function(event) {
+				if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
+					clicking = false;
+				}
+			},
+				
+			onMouseMove: function(event) {
+				if (clicking)
+					cc.log(event.getLocation().x);
+			}
+		}, this);
+		
+>>>>>>> origin/master
 		cellsRow = 7;
 		cellsColumn = 9;
 		cellSize = cc.winSize.width / cellsRow;
+		alert(cellSize);
 		gridCells = cellsRow * cellsColumn;
 		grid = this.createGrid();
 		obstacleBoats = [];

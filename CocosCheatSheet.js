@@ -85,7 +85,18 @@ var action = cc.RepeatForever.create(/*different action like above*/);
 
 //Make an object(sprite) execute an event
 sprite.runAction(action);
-//////////////////////////
+////////////////////////////
+
+//////Setting Up Touch//////
+cc.eventManager.addListener{
+		event: cc.EventListener.MOUSE,
+		onMouseDown: function(event) {
+			if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
+				cc.log("Left mouse button pressed at " + event.getLocation());
+			}
+		}
+}
+////////////////////////////
 
 
 ///////Misc Things///////
@@ -95,6 +106,10 @@ cc.winSize.width && cc.winSize.height
 cc.p(xPos, yPos);
 //Set invisible(or set alpha channel, 0 is transparent, 255 is solid)
 spriteName.setOpacity(0);
+//Creating a node to draw with
+var thing = new cc.drawNode();
+//Adding JavaScript source files
+Done in the JSON file
 /////////////////////////
 
 /*Personal Notes
