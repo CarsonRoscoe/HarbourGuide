@@ -8,8 +8,8 @@ var GameBoard = cc.Layer.extend({
 	boardGlobX: null,
 	boardGlobY: null,
 
-// Function which create our grid given the amount of rows
-// and columns
+	// Function which create our grid given the amount of rows
+	// and columns
 	createGrid: function() {
 		var grid = [];
 		for (i = 0; i < cellsColumn; i++) {
@@ -36,7 +36,6 @@ var GameBoard = cc.Layer.extend({
 		ship.frontPoint = front;
 		ship.backPoint = back;
 		
-		if ()
 		
 		obstacleBoats[obstacleBoats.length] = ship;
 		
@@ -49,10 +48,34 @@ var GameBoard = cc.Layer.extend({
 		// Super init first
 		this._super();
 		
+		clicking = false;
+		
+		cc.eventManager.addListener({
+			event: cc.EventListener.MOUSE,
+			clicking: false,
+			
+			onMouseDown: function(event) {
+				if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
+					clicking = true;
+				}
+			},
+		
+			onMouseUp: function(event) {
+				if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
+					clicking = false;
+				}
+			},
+				
+			onMouseMove: function(event) {
+				if (clicking)
+					cc.log(event.getLocation().x);
+			}
+		}, this);
 		
 		cellsRow = 7;
 		cellsColumn = 9;
 		cellSize = cc.winSize.width / cellsRow;
+		alert(cellSize);
 		gridCells = cellsRow * cellsColumn;
 		grid = this.createGrid();
 		obstacleBoats = [];
