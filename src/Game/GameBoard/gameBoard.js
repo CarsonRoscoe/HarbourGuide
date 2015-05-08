@@ -6,10 +6,12 @@ var GameBoard = cc.Layer.extend({
 	grid: null,
 	obstacleBoats: null,
 	unitBoats: null,
+	gridGates: null,
 	boardGlobX: null,
 	boardGlobY: null,
 	interaction: null,
 	drawLayers: null,
+	score: null,
 
 	// Constructor for GameLayer
 	ctor:function () {
@@ -23,13 +25,20 @@ var GameBoard = cc.Layer.extend({
 		grid = createGrid();
 		obstacleBoats = [];
 		unitBoats = [];
+		gridGates = [];
 		boardGlobX = 0;
 		boardGlobY = (cc.winSize.height - cellsColumn * cellSize) / 2;
 		interaction = null;
 		drawLayers = [];
+		score = new scoreVars();
+		score.score = 0;
+		
+		createGates();
 
-		initUnitMovement();
-		createLevel(1);
+		initUnitMovement(this);
+		createLevel(1, this);
+		
+		createUnit(cc.p(4,0), 0, this);
 
 		initPaint(this);
 		initPaint(this);
@@ -68,6 +77,14 @@ var GameBoard = cc.Layer.extend({
 
 				onMouseUp: function(event) {
 					if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
+						
+						if (obstacleBoats[shipSelected].orientation == 0)
+							var action = cc.MoveTo.create(.5, cc.p((obstacleBoats[shipSelected].frontPoint.x + (obstacleBoats[shipSelected].length * .5)) * cellSize, (obstacleBoats[shipSelected].frontPoint.y + .5) * cellSize));
+						else
+							var action = cc.MoveTo.create(.5, cc.p((obstacleBoats[shipSelected].frontPoint.x + .5) * cellSize, (obstacleBoats[shipSelected].frontPoint.y + (obstacleBoats[shipSelected].length * .5)) * cellSize));
+							
+						obstacleBoats[shipSelected].sprite.runAction(action);
+						
 						interaction = null;
 						clickOffset = null;
 						shipSelected = null;
@@ -86,10 +103,14 @@ var GameBoard = cc.Layer.extend({
 							var clickX = Math.floor(interaction.pointClicked.x / cellSize);
 							var curY = Math.floor(interaction.pointCurrent.y / cellSize);
 							var curX = Math.floor(interaction.pointCurrent.x / cellSize);
+							
 							if (obstacleBoats[shipSelected].orientation == 0) {
 								if (clickOffset == null) {
 									clickOffset = obstacleBoats[shipSelected].backPoint.x - clickX;
 								}
+								var action = cc.Place.create(cc.p(interaction.pointCurrent.x, obstacleBoats[shipSelected].sprite.y));
+								obstacleBoats[shipSelected].sprite.runAction(action);
+								
 								if (clickX < curX && obstacleBoats[shipSelected].backPoint.x < cellsRow - 1
 										&& curX - (obstacleBoats[shipSelected].backPoint.x - clickOffset) > 0 
 										&& grid[obstacleBoats[shipSelected].backPoint.x + 1][clickY].isEmpty == true) {
@@ -123,6 +144,10 @@ var GameBoard = cc.Layer.extend({
 								if (clickOffset == null) {
 									clickOffset = obstacleBoats[shipSelected].backPoint.y - clickY;
 								}
+								
+								var action = cc.Place.create(cc.p(obstacleBoats[shipSelected].sprite.x, interaction.pointCurrent.y));
+								obstacleBoats[shipSelected].sprite.runAction(action);
+								
 								if (clickY < curY && obstacleBoats[shipSelected].backPoint.y < cellsColumn - 1
 										&& curY - (obstacleBoats[shipSelected].backPoint.y - clickOffset) > 0
 										&& grid[clickX][obstacleBoats[shipSelected].backPoint.y + 1].isEmpty == true) {
@@ -183,7 +208,42 @@ var GameBoard = cc.Layer.extend({
 	}
 });
 
+var createGates = function() {
+	//gridGates
+	for(var i = 0; i < 9; i++) {
+		gridGates[i] = new Gate();
+	}
+	gridGates[0].position = cc.p(0, 3);
+	gridGates[1].position = cc.p(0, 5);
+	gridGates[2].position = cc.p(0, 7);
+	gridGates[3].position = cc.p(1, cellsColumn - 1);
+	gridGates[4].position = cc.p(3, cellsColumn - 1);
+	gridGates[5].position = cc.p(5, cellsColumn - 1);
+	gridGates[6].position = cc.p(cellsRow - 1, 7);
+	gridGates[7].position = cc.p(cellsRow - 1, 5);
+	gridGates[8].position = cc.p(cellsRow - 1, 3);
+	
 
+	gridGates[0].direction = 3;
+	gridGates[1].direction = 3;
+	gridGates[2].direction = 3;
+	gridGates[3].direction = 0;
+	gridGates[4].direction = 0;
+	gridGates[5].direction = 0;
+	gridGates[6].direction = 1;
+	gridGates[7].direction = 1;
+	gridGates[8].direction = 1;
+	
+	grid[0][3].gateID = 0;
+	grid[0][5].gateID = 1;
+	grid[0][7].gateID = 2;
+	grid[1][cellsColumn - 1].gateID = 3;
+	grid[3][cellsColumn - 1].gateID = 4;
+	grid[5][cellsColumn - 1].gateID = 5;
+	grid[cellsRow - 1][7].gateID = 6;
+	grid[cellsRow - 1][5].gateID = 7;
+	grid[cellsRow - 1][3].gateID = 8;
+}
 
 // Function which create our grid given the amount of rows
 // and columns
@@ -206,16 +266,16 @@ var createGrid = function() {
  * the boat orient = (int)orientation. 0 = horizontal, 1 = vertical. size =
  * (int) the amount of spaces this boat will take up.
  */
-var createBoat = function(front, back, orient) {
+var createBoat = function(front, back, orient, ref) {
 	var ship = new ShipObstacle();
 	ship.length = Math.abs((front.x - back.x) + (front.y - back.y)) + 1;
 	ship.orientation = orient;
 	ship.frontPoint = front;
 	ship.backPoint = back;
-	
+
 	ship.frontReal = cc.p(front.x * cellSize, front.y * cellSize);
 	ship.backReal = cc.p(back.x * cellSize, back.y * cellSize);	
-	
+
 	if (validateShip(ship)) {
 		obstacleBoats[obstacleBoats.length] = ship;
 	} else {
@@ -233,20 +293,54 @@ var createBoat = function(front, back, orient) {
 			grid[front.x][i].shipID = obstacleBoats.length - 1;
 		}
 	}
+
+	//Set var sprite to get that sprite from the resources
+	switch(ship.length) {
+	case 2: 
+		ship.sprite = new cc.Sprite.create(res.ObstacleSmall_png);
+		break;
+	case 3:
+		ship.sprite = new cc.Sprite.create(res.ObstacleMedium_png);
+		break;
+	case 4:
+		ship.sprite = new cc.Sprite.create(res.obstacleLarge_png);
+		break;
+	}
+
+	ship.sprite.setAnchorPoint(cc.p(0.5, 0.5));
+	if (ship.orientation == 0) {
+		ship.sprite.setRotation(90);
+		ship.sprite.setPosition(cc.p((ship.frontPoint.x + (ship.length * .5)) * cellSize, (ship.frontPoint.y + .5) * cellSize));
+	} else {
+		ship.sprite.setPosition(cc.p((ship.frontPoint.x + .5) * cellSize, (ship.frontPoint.y + (ship.length * .5)) * cellSize));
+	}
+
+	ref.addChild(ship.sprite, 100);
+
 	obstacleBoats[obstacleBoats.length] = ship;
 	return true;
 };
 
-
-
-var createUnit = function(startPoint, direction) {
+var createUnit = function(startPoint, direction, ref) {
 	if (grid[startPoint.x][startPoint.y].isEmpty == false) {
 		return false;
 	}
 	var unit = new ShipUnit();
+	colour = Math.round(Math.random()*3);
 	unit.direction = direction;
 	unit.point = startPoint;
-
+	unit.sprite = new cc.Sprite.create(res.UnitSprite_png);
+	unit.sprite.setAnchorPoint(.5, .5);
+	cc.log(startPoint.x * cellSize + ", " + startPoint.y * cellSize);
+	unit.sprite.setPosition(cc.p((startPoint.x + .5) * cellSize, (startPoint.y + .5) * cellSize));
+	switch(colour) {
+		case 0:
+		colour = 1;
+		unit.sprite.color = cc.color(255, 0, 0);
+		break;
+	}
+	
+	ref.addChild(unit.sprite, 100);
 	unitBoats[unitBoats.length] = unit;
 
 	grid[startPoint.x][startPoint.y].isEmpty = false;
@@ -281,7 +375,7 @@ var validateShip = function(ship) {
 	}
 };
 
-var createLevel = function(difficulty) {
+var createLevel = function(difficulty, ref) {
 	var lengths = [];
 	lengths[0] = 100 - (difficulty / 2);
 	lengths[1] = 100 - lengths[0];
@@ -302,7 +396,7 @@ var createLevel = function(difficulty) {
 					break;
 				}
 			}
-			if (createBoat(cc.p(xx, yy), cc.p(xx + length, yy), 0)) {
+			if (createBoat(cc.p(xx, yy), cc.p(xx + length, yy), 0, ref)) {
 				spawns--;
 			}
 		} else if (orientation == 1) {
@@ -315,7 +409,7 @@ var createLevel = function(difficulty) {
 					break;
 				}
 			}
-			if (createBoat(cc.p(xx, yy), cc.p(xx ,yy + length), 1)) {
+			if (createBoat(cc.p(xx, yy), cc.p(xx ,yy + length), 1, ref)) {
 				spawns--;
 			}
 		}
@@ -352,7 +446,11 @@ var repaint = function(depth) {
 		for(i = 0; i < cellsRow; i++) {
 			for (j = 0; j < cellsColumn; j++) {
 				if (grid[i][j].isEmpty == true) {
-					drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 25, cc.color(255,0,0))
+					if (grid[i][j].gateID == null) {
+						drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 25, cc.color(255,0,0));
+					} else {
+						drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 25, cc.color(255,255,0));
+					}
 				} else {
 					if (grid[i][j].unitID != null) {
 						drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 25, cc.color(0,0,255));
@@ -385,44 +483,86 @@ var repaintLoop = function() {
 	, 16);
 }
 
-var initUnitMovement = function(){
+var initUnitMovement = function(ref){
 	var temp = setInterval(function() {
-			updateUnits();
+			updateUnits(ref);
 			repaint(1);
 		}
-	, 100);
+	, 1000);
 };
 
-var updateUnits = function() {
+var updateUnits = function(ref) {
+	var action = null;
+	var action2 = null;
 	for (var i = 0; i < unitBoats.length; i++) {
 		var tempDir = unitBoats[i].direction;
-		if (tempDir == 0 && unitBoats[i].point.y < cellsColumn - 1 && grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].isEmpty == true) {
+		if (grid[unitBoats[i].point.x][unitBoats[i].point.y].gateID != null && gridGates[grid[unitBoats[i].point.x][unitBoats[i].point.y].gateID].direction == tempDir) {
 			grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
 			grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
-			grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].isEmpty = false;
-			grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].unitID = i;
-			unitBoats[i].point.y += 1;
-		} else if (tempDir == 1 && unitBoats[i].point.x < cellsRow - 1 && grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].isEmpty == true) {
-			grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
-			grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
-			grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].isEmpty = false;
-			grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].unitID = i;
-			unitBoats[i].point.x += 1;
-		} else if (tempDir == 2 && unitBoats[i].point.y > 0 && grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].isEmpty == true) {
-			grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
-			grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
-			grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].isEmpty = false;
-			grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].unitID = i;
-			unitBoats[i].point.y -= 1;
-		} else if (tempDir == 3 && unitBoats[i].point.x > 0 && grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].isEmpty == true) {
-			grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
-			grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
-			grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].isEmpty = false;
-			grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].unitID = i;
-			unitBoats[i].point.x -= 1;
+			cc.log(++score.score);
+			deleteUnit(unitBoats[i], ref);
+		} else {
+			if (tempDir == 0 && unitBoats[i].point.y < cellsColumn - 1 && grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].isEmpty == true) {
+				grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
+				grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
+				grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].isEmpty = false;
+				grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].unitID = i;
+				unitBoats[i].point.y += 1;
+				action = cc.MoveBy.create(1, cc.p(0, cellSize));
+				action2 = cc.RotateTo.create(.25, 0);
+			} else if (tempDir == 1 && unitBoats[i].point.x < cellsRow - 1 && grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].isEmpty == true) {
+				grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
+				grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
+				grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].isEmpty = false;
+				grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].unitID = i;
+				unitBoats[i].point.x += 1;
+				action = cc.MoveBy.create(1, cc.p(cellSize, 0));
+				action2 = cc.RotateTo.create(.25, 90);
+			} else if (tempDir == 2 && unitBoats[i].point.y > 0 && grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].isEmpty == true) {
+				grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
+				grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
+				grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].isEmpty = false;
+				grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].unitID = i;
+				unitBoats[i].point.y -= 1;
+				action = cc.MoveBy.create(1, cc.p(0, -cellSize));
+				action2 = cc.RotateTo.create(.25, 180);
+			} else if (tempDir == 3 && unitBoats[i].point.x > 0 && grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].isEmpty == true) {
+				grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
+				grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
+				grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].isEmpty = false;
+				grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].unitID = i;
+				unitBoats[i].point.x -= 1;
+				action = cc.MoveBy.create(1, cc.p(-cellSize, 0));
+				action2 = cc.RotateTo.create(.25, -90);
+			}
+			if (action != null && action2 != null) {
+				unitBoats[i].sprite.runAction(action);
+				unitBoats[i].sprite.runAction(action2);
+				action = null;
+				action2 = null;
+			}
 		}
 	}
 };
+
+var deleteUnit = function(unitID, ref) {
+	var index = 0;
+	for (var i = 0; i < unitBoats.length; i++) {
+		if (unitBoats[i] == unitID) {
+			index = i;
+			ref.removeChild(unitBoats[i].sprite);
+			break;
+		}
+	}
+	for (var i = index; i < unitBoats.length - 1; i++) {
+		unitBoats[i + 1] = unitBoats[i];
+	}
+	unitBoats.splice(unitBoats.length - 1, 1);
+	interaction = null;
+	clickOffset = null;
+	shipSelected = null;
+	isUnitSelected = null;
+}
 
 var Cell = function() {
 	isEmpty: null;
@@ -430,6 +570,14 @@ var Cell = function() {
 	yPos: null;
 	shipID: null;
 	unitID: null;
+	gateID: null;
+}
+
+var Gate = function() {
+	position: null;
+	direction: null;
+	color: null;
+	weight: null;
 }
 
 var ShipObstacle = function() {
@@ -438,6 +586,7 @@ var ShipObstacle = function() {
 	frontPoint: null;
 	backPoint: null;
 	origin: null;
+	sprite: null;
 }
 
 var ShipUnit = function() {
@@ -446,9 +595,16 @@ var ShipUnit = function() {
 	point: null;
 	pointMoving: null;
 	origin: null;
+	sprite: null;
+	colour: null;
+	weight: null;
 }
 
 var dragMovement = function() {
 	pointClicked: null;
 	pointCurrent: null;
+}
+
+var scoreVars = function() {
+	score: 0;
 }
