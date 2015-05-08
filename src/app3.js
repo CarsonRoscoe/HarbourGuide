@@ -26,8 +26,8 @@ var PreGameLayer = cc.Layer.extend({
 var start = function() {
 	INITIALIZED3 = false;
 	var scene = new Runner();
-	cc.audioEngine.playEffect(res.button);
-	cc.audioEngine.stopMusic(); //stops the music so that the game music can be played.
+	//cc.audioEngine.playEffect(res.button);
+	//cc.audioEngine.stopMusic(); //stops the music so that the game music can be played.
 	
 	cc.director.pushScene(scene);
 }
@@ -41,7 +41,7 @@ var back = function() {
 var settings = function() {
 	INITIALIZED3 = false;
 	var scene = new SettingsScene();
-	cc.audioEngine.playEffect(res.button);
+	//cc.audioEngine.playEffect(res.button);
 	cc.director.runScene(scene); //push
 }
 //PreGameScene

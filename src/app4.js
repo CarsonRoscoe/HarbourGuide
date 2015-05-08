@@ -25,7 +25,7 @@ var SettingsLayer = cc.Layer.extend({
 var back = function() {
 	INITIALIZED4 = false;
 	var scene = new MenuScene();
-	cc.audioEngine.playEffect(res.button);
+	//cc.audioEngine.playEffect(res.button);
 	cc.director.runScene(scene);
 }
 //SettingsScene

@@ -36,12 +36,12 @@ var GameBoard = cc.Layer.extend({
 		gameVars.unitSpeed = 1000;
 		gameVars.frameRate = 16;
 		gameVars.spawnCount = 0;
-		gameVars.spawnRate = 4;
+		gameVars.spawnRate = 12;
 		
 		createGates();
 
 		initUnitMovement(this);
-		createLevel(40, this);
+		createLevel(20, this);
 		
 		createUnit(cc.p(4,0), 0, this);
 
@@ -106,8 +106,6 @@ var GameBoard = cc.Layer.extend({
 						clickOffset = null;
 						shipSelected = null;
 						isUnitSelected = null;
-						relativeX = null;
-						relativeY = null;
 					}
 				},
 				
@@ -360,7 +358,7 @@ var createUnit = function(startPoint, direction, ref) {
 		return false;
 	}
 	var unit = new ShipUnit();
-	unit.color = Math.round(Math.random()*3);
+	unit.color = Math.floor(Math.random()*3);
 	unit.direction = direction;
 	unit.point = startPoint;
 	unit.pointLast = cc.p(startPoint.x, startPoint.y);
@@ -377,6 +375,10 @@ var createUnit = function(startPoint, direction, ref) {
 		case 2:
 		unit.sprite.color = cc.color(0, 0, 255);
 		break;
+		default:
+		unit.sprite.color = cc.colour(255, 0, 255);
+		unit.color = 0;
+		cc.log("Error: White boat");
 	}
 	
 	ref.addChild(unit.sprite, 100);

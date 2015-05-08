@@ -27,21 +27,21 @@ var MenuLayer = cc.Layer.extend({
 var play = function() {
 	INITIALIZED2 = false;
 	var scene = new PreGameScene();
-	cc.audioEngine.playEffect(res.button, false); //button sound doesn't loop
+	//cc.audioEngine.playEffect(res.button, false); //button sound doesn't loop
 	cc.director.runScene(scene);
 }
 
 var scores = function() {
 	INITIALIZED2 = false;
 	var scene = new ScoresScene();
-	cc.audioEngine.playEffect(res.button, false); //button sound doesn't loop
+	//cc.audioEngine.playEffect(res.button, false); //button sound doesn't loop
 	cc.director.runScene(scene); //push
 }
 
 var settings = function() {
 	INITIALIZED2 = false;
 	var scene = new SettingsScene();
-	cc.audioEngine.playEffect(res.button, false); //button sound doesn't loop
+	//cc.audioEngine.playEffect(res.button, false); //button sound doesn't loop
 	cc.director.runScene(scene); //push
 }
 //MenuScene
@@ -56,7 +56,7 @@ var MenuScene = cc.Scene.extend({
 			
 			var layer = new MenuLayer();
 			this.addChild(layer);
-			cc.audioEngine.playMusic(res.background_mp3, true); //starts audio NOTE: browsers don't support loop, seperate loop needs to be made
+			//cc.audioEngine.playMusic(res.background_mp3, true); //starts audio NOTE: browsers don't support loop, seperate loop needs to be made
 		}
 	}
 });
