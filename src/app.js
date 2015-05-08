@@ -11,7 +11,9 @@ var GameScene = cc.Layer.extend({
 var Runner = cc.Scene.extend({
 	onEnter:function () {
 		this._super();
+		localStorage.clear();
 		var layer = new GameScene();
 		this.addChild(layer);
 	}
 });
+
