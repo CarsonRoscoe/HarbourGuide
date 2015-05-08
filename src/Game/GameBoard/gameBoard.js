@@ -578,7 +578,6 @@ var updateUnits = function(ref) {
 		} else {
 			if (tempDir == 0 && unitBoats[i].point.y < cellsColumn - 1 && (grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].isEmpty == true
 					|| grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].unitID == i)) {
-				cc.log("HERE2");
 				if (unitBoats[i].pointLast.x != unitBoats[i].point.x || unitBoats[i].pointLast.y != unitBoats[i].point.y) {
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
@@ -590,7 +589,6 @@ var updateUnits = function(ref) {
 				unitAnimate(unitBoats[i].sprite, tempDir);
 			} else if (tempDir == 1 && unitBoats[i].point.x < cellsRow - 1 && (grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].isEmpty == true
 					|| grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].unitID == i)) {
-				cc.log("HERE2");
 				if (unitBoats[i].pointLast.x != unitBoats[i].point.x || unitBoats[i].pointLast.y != unitBoats[i].point.y) {
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
@@ -602,7 +600,6 @@ var updateUnits = function(ref) {
 				unitAnimate(unitBoats[i].sprite, tempDir);
 			} else if (tempDir == 2 && unitBoats[i].point.y > 0 && (grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].isEmpty == true
 					|| grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].unitID == i)) {
-				cc.log("HERE2");
 				if (unitBoats[i].pointLast.x != unitBoats[i].point.x || unitBoats[i].pointLast.y != unitBoats[i].point.y) {
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
@@ -614,7 +611,6 @@ var updateUnits = function(ref) {
 				unitAnimate(unitBoats[i].sprite, tempDir);
 			} else if (tempDir == 3 && unitBoats[i].point.x > 0 && (grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].isEmpty == true
 					|| grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].unitID == i)) {
-				cc.log("HERE2");
 				if (unitBoats[i].pointLast.x != unitBoats[i].point.x || unitBoats[i].pointLast.y != unitBoats[i].point.y) {
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
