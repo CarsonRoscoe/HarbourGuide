@@ -11,7 +11,7 @@ var GameBoard = cc.Layer.extend({
 	boardGlobY: null,
 	interaction: null,
 	drawLayers: null,
-	score: null,
+	gameVars: null,
 
 	// Constructor for GameLayer
 	ctor:function () {
@@ -30,13 +30,15 @@ var GameBoard = cc.Layer.extend({
 		boardGlobY = (cc.winSize.height - cellsColumn * cellSize) / 2;
 		interaction = null;
 		drawLayers = [];
-		score = new scoreVars();
-		score.score = 0;
+		gameVars = new gameVars();
+		gameVars.score = 0;
+		gameVars.unitSpeed = 1000;
+		gameVars.frameRate = 16;
 		
 		createGates();
 
 		initUnitMovement(this);
-		createLevel(1, this);
+		createLevel(70, this);
 		
 		createUnit(cc.p(4,0), 0, this);
 
@@ -77,13 +79,14 @@ var GameBoard = cc.Layer.extend({
 
 				onMouseUp: function(event) {
 					if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
-						
-						if (obstacleBoats[shipSelected].orientation == 0)
-							var action = cc.MoveTo.create(.5, cc.p((obstacleBoats[shipSelected].frontPoint.x + (obstacleBoats[shipSelected].length * .5)) * cellSize, (obstacleBoats[shipSelected].frontPoint.y + .5) * cellSize));
-						else
-							var action = cc.MoveTo.create(.5, cc.p((obstacleBoats[shipSelected].frontPoint.x + .5) * cellSize, (obstacleBoats[shipSelected].frontPoint.y + (obstacleBoats[shipSelected].length * .5)) * cellSize));
-							
-						obstacleBoats[shipSelected].sprite.runAction(action);
+						if (shipSelected != null) {
+							if (obstacleBoats[shipSelected].orientation == 0)
+								var action = cc.MoveTo.create(.5, cc.p((obstacleBoats[shipSelected].frontPoint.x + (obstacleBoats[shipSelected].length * .5)) * cellSize, (obstacleBoats[shipSelected].frontPoint.y + .5) * cellSize));
+							else
+								var action = cc.MoveTo.create(.5, cc.p((obstacleBoats[shipSelected].frontPoint.x + .5) * cellSize, (obstacleBoats[shipSelected].frontPoint.y + (obstacleBoats[shipSelected].length * .5)) * cellSize));
+								
+							obstacleBoats[shipSelected].sprite.runAction(action);
+						}
 						
 						interaction = null;
 						clickOffset = null;
@@ -329,6 +332,7 @@ var createUnit = function(startPoint, direction, ref) {
 	colour = Math.round(Math.random()*3);
 	unit.direction = direction;
 	unit.point = startPoint;
+	unit.pointLast = cc.p(startPoint.x, startPoint.y);
 	unit.sprite = new cc.Sprite.create(res.UnitSprite_png);
 	unit.sprite.setAnchorPoint(.5, .5);
 	cc.log(startPoint.x * cellSize + ", " + startPoint.y * cellSize);
@@ -480,7 +484,7 @@ var repaintLoop = function() {
 	var temp = setInterval(function() {
 		repaint(1);
 	}
-	, 16);
+	, gameVars.frameRate);
 }
 
 var initUnitMovement = function(ref){
@@ -488,69 +492,109 @@ var initUnitMovement = function(ref){
 			updateUnits(ref);
 			repaint(1);
 		}
-	, 1000);
+	, gameVars.unitSpeed);
 };
 
 var updateUnits = function(ref) {
-	var action = null;
-	var action2 = null;
 	for (var i = 0; i < unitBoats.length; i++) {
 		var tempDir = unitBoats[i].direction;
 		if (grid[unitBoats[i].point.x][unitBoats[i].point.y].gateID != null && gridGates[grid[unitBoats[i].point.x][unitBoats[i].point.y].gateID].direction == tempDir) {
+			grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
+			grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
 			grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
 			grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
-			cc.log(++score.score);
+			cc.log(++gameVars.score);
+			unitAnimate(unitBoats[i].sprite, tempDir);
 			deleteUnit(unitBoats[i], ref);
 		} else {
-			if (tempDir == 0 && unitBoats[i].point.y < cellsColumn - 1 && grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].isEmpty == true) {
-				grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
-				grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
+			if (tempDir == 0 && unitBoats[i].point.y < cellsColumn - 1 && (grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].isEmpty == true
+					|| grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].unitID == i)) {
+				if (unitBoats[i].pointLast.x != unitBoats[i].point.x || unitBoats[i].pointLast.y != unitBoats[i].point.y) {
+					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
+					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
+				}
+				unitBoats[i].pointLast = cc.p(unitBoats[i].point.x,unitBoats[i].point.y);
 				grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].isEmpty = false;
 				grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].unitID = i;
 				unitBoats[i].point.y += 1;
-				action = cc.MoveBy.create(1, cc.p(0, cellSize));
-				action2 = cc.RotateTo.create(.25, 0);
-			} else if (tempDir == 1 && unitBoats[i].point.x < cellsRow - 1 && grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].isEmpty == true) {
-				grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
-				grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
+				unitAnimate(unitBoats[i].sprite, tempDir);
+			} else if (tempDir == 1 && unitBoats[i].point.x < cellsRow - 1 && (grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].isEmpty == true
+					|| grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].unitID == i)) {
+				if (unitBoats[i].pointLast.x != unitBoats[i].point.x || unitBoats[i].pointLast.y != unitBoats[i].point.y) {
+					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
+					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
+				}
+				unitBoats[i].pointLast = cc.p(unitBoats[i].point.x,unitBoats[i].point.y);
 				grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].isEmpty = false;
 				grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].unitID = i;
 				unitBoats[i].point.x += 1;
-				action = cc.MoveBy.create(1, cc.p(cellSize, 0));
-				action2 = cc.RotateTo.create(.25, 90);
-			} else if (tempDir == 2 && unitBoats[i].point.y > 0 && grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].isEmpty == true) {
-				grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
-				grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
+				unitAnimate(unitBoats[i].sprite, tempDir);
+			} else if (tempDir == 2 && unitBoats[i].point.y > 0 && (grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].isEmpty == true
+					|| grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].unitID == i)) {
+				if (unitBoats[i].pointLast.x != unitBoats[i].point.x || unitBoats[i].pointLast.y != unitBoats[i].point.y) {
+					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
+					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
+				}
+				unitBoats[i].pointLast = cc.p(unitBoats[i].point.x,unitBoats[i].point.y);
 				grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].isEmpty = false;
 				grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].unitID = i;
 				unitBoats[i].point.y -= 1;
-				action = cc.MoveBy.create(1, cc.p(0, -cellSize));
-				action2 = cc.RotateTo.create(.25, 180);
-			} else if (tempDir == 3 && unitBoats[i].point.x > 0 && grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].isEmpty == true) {
-				grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
-				grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
+				unitAnimate(unitBoats[i].sprite, tempDir);
+			} else if (tempDir == 3 && unitBoats[i].point.x > 0 && (grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].isEmpty == true
+					|| grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].unitID == i)) {
+				if (unitBoats[i].pointLast.x != unitBoats[i].point.x || unitBoats[i].pointLast.y != unitBoats[i].point.y) {
+					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
+					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
+				}
+				unitBoats[i].pointLast = cc.p(unitBoats[i].point.x,unitBoats[i].point.y);
 				grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].isEmpty = false;
 				grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].unitID = i;
 				unitBoats[i].point.x -= 1;
-				action = cc.MoveBy.create(1, cc.p(-cellSize, 0));
-				action2 = cc.RotateTo.create(.25, -90);
-			}
-			if (action != null && action2 != null) {
-				unitBoats[i].sprite.runAction(action);
-				unitBoats[i].sprite.runAction(action2);
-				action = null;
-				action2 = null;
+				unitAnimate(unitBoats[i].sprite, tempDir);
+			} else {
+				grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
+				grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
 			}
 		}
 	}
 };
+
+var unitAnimate = function(unit, direction) {
+	var action = null;
+	var action2 = null;
+	switch(direction) {
+	case 0:
+		action = cc.MoveBy.create(1, cc.p(0, cellSize));
+		action2 = cc.RotateTo.create(.25, 0);
+		break;
+	case 1:
+		action = cc.MoveBy.create(1, cc.p(cellSize, 0));
+		action2 = cc.RotateTo.create(.25, 90);
+		break;
+	case 2:
+		action = cc.MoveBy.create(1, cc.p(0, -cellSize));
+		action2 = cc.RotateTo.create(.25, 180);
+		break;
+	case 3:
+		action = cc.MoveBy.create(1, cc.p(-cellSize, 0));
+		action2 = cc.RotateTo.create(.25, -90);
+		break;
+	default:
+		break;
+	}
+	if (action != null)
+		unit.runAction(action);
+	if (action2 != null)
+		unit.runAction(action2);
+	
+}
 
 var deleteUnit = function(unitID, ref) {
 	var index = 0;
 	for (var i = 0; i < unitBoats.length; i++) {
 		if (unitBoats[i] == unitID) {
 			index = i;
-			ref.removeChild(unitBoats[i].sprite);
+			removeUnitSprite(unitBoats[i].sprite, ref);
 			break;
 		}
 	}
@@ -562,6 +606,12 @@ var deleteUnit = function(unitID, ref) {
 	clickOffset = null;
 	shipSelected = null;
 	isUnitSelected = null;
+}
+
+var removeUnitSprite = function(unitSprite, ref) {
+	setTimeout(function(){
+		ref.removeChild(unitSprite);
+	}, gameVars.unitSpeed);
 }
 
 var Cell = function() {
@@ -593,7 +643,7 @@ var ShipUnit = function() {
 	// direction of movement. 0 = up, 1 = right, 2 = down, 3 = left
 	direction: null;
 	point: null;
-	pointMoving: null;
+	pointLast: null;
 	origin: null;
 	sprite: null;
 	colour: null;
@@ -605,6 +655,8 @@ var dragMovement = function() {
 	pointCurrent: null;
 }
 
-var scoreVars = function() {
-	score: 0;
+var gameVars = function() {
+	score: null;
+	unitSpeed: null;
+	frameRate: null;
 }
