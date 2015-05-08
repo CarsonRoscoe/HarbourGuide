@@ -1,3 +1,4 @@
+//The layer which holds the core gameplay.
 var GameBoard = cc.Layer.extend({
 	cellsRow: null,
 	cellsColumn: null,
@@ -34,11 +35,13 @@ var GameBoard = cc.Layer.extend({
 		gameVars.score = 0;
 		gameVars.unitSpeed = 1000;
 		gameVars.frameRate = 16;
+		gameVars.spawnCount = 0;
+		gameVars.spawnRate = 4;
 		
 		createGates();
 
 		initUnitMovement(this);
-		createLevel(70, this);
+		createLevel(40, this);
 		
 		createUnit(cc.p(4,0), 0, this);
 
@@ -55,7 +58,10 @@ var GameBoard = cc.Layer.extend({
 				clickOffset: null,
 				shipSelected: null,
 				isUnitSelected: null,
+				relativeX: null,
+				relativeY: null,
 
+				//When the mouse(or touch screen) is clicked/tapped.
 				onMouseDown: function(event) {
 					if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
 						clickOffset = null;
@@ -71,12 +77,20 @@ var GameBoard = cc.Layer.extend({
 								shipSelected = grid[Math.floor(interaction.pointClicked.x / cellSize)][Math.floor(interaction.pointClicked.y / cellSize)].unitID;
 								isUnitSelected = true;
 							} else {
+								if (obstacleBoats[shipSelected].orientation == 0) {
+									relativeX = interaction.pointClicked.x - (obstacleBoats[shipSelected].frontPoint.x + (obstacleBoats[shipSelected].length * .5)) * cellSize;
+									relativeY = interaction.pointClicked.y - (obstacleBoats[shipSelected].frontPoint.y + .5) * cellSize;
+								} else {
+									relativeX = interaction.pointClicked.x - (obstacleBoats[shipSelected].frontPoint.x + .5) * cellSize;
+									relativeY = interaction.pointClicked.y - (obstacleBoats[shipSelected].frontPoint.y + (obstacleBoats[shipSelected].length * .5)) * cellSize;
+								}
 								isUnitSelected = false;
 							}
 						}
 					}
 				},
 
+				//When the mouse(or touch screen) is released.
 				onMouseUp: function(event) {
 					if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
 						if (shipSelected != null) {
@@ -92,9 +106,12 @@ var GameBoard = cc.Layer.extend({
 						clickOffset = null;
 						shipSelected = null;
 						isUnitSelected = null;
+						relativeX = null;
+						relativeY = null;
 					}
 				},
 				
+				//When the mouse(or touch screen) is moving/dragging.
 				onMouseMove: function(event) {
 					if (interaction != null) {
 						mouseUp = event.getLocation();
@@ -111,7 +128,8 @@ var GameBoard = cc.Layer.extend({
 								if (clickOffset == null) {
 									clickOffset = obstacleBoats[shipSelected].backPoint.x - clickX;
 								}
-								var action = cc.Place.create(cc.p(interaction.pointCurrent.x, obstacleBoats[shipSelected].sprite.y));
+								
+								var action = cc.Place.create(cc.p(interaction.pointCurrent.x - relativeX, obstacleBoats[shipSelected].sprite.y));
 								obstacleBoats[shipSelected].sprite.runAction(action);
 								
 								if (clickX < curX && obstacleBoats[shipSelected].backPoint.x < cellsRow - 1
@@ -148,7 +166,7 @@ var GameBoard = cc.Layer.extend({
 									clickOffset = obstacleBoats[shipSelected].backPoint.y - clickY;
 								}
 								
-								var action = cc.Place.create(cc.p(obstacleBoats[shipSelected].sprite.x, interaction.pointCurrent.y));
+								var action = cc.Place.create(cc.p(obstacleBoats[shipSelected].sprite.x, interaction.pointCurrent.y - relativeY));
 								obstacleBoats[shipSelected].sprite.runAction(action);
 								
 								if (clickY < curY && obstacleBoats[shipSelected].backPoint.y < cellsColumn - 1
@@ -211,6 +229,8 @@ var GameBoard = cc.Layer.extend({
 	}
 });
 
+//Creation function of the games which check if the user is sending boats
+//to the appropriate places.
 var createGates = function() {
 	//gridGates
 	for(var i = 0; i < 9; i++) {
@@ -236,6 +256,16 @@ var createGates = function() {
 	gridGates[6].direction = 1;
 	gridGates[7].direction = 1;
 	gridGates[8].direction = 1;
+	
+	gridGates[0].color = 0;
+	gridGates[1].color = 0;
+	gridGates[2].color = 0;
+	gridGates[3].color = 1;
+	gridGates[4].color = 1;
+	gridGates[5].color = 1;
+	gridGates[6].color = 2;
+	gridGates[7].color = 2;
+	gridGates[8].color = 2;
 	
 	grid[0][3].gateID = 0;
 	grid[0][5].gateID = 1;
@@ -306,7 +336,7 @@ var createBoat = function(front, back, orient, ref) {
 		ship.sprite = new cc.Sprite.create(res.ObstacleMedium_png);
 		break;
 	case 4:
-		ship.sprite = new cc.Sprite.create(res.obstacleLarge_png);
+		ship.sprite = new cc.Sprite.create(res.ObstacleLarge_png);
 		break;
 	}
 
@@ -324,23 +354,28 @@ var createBoat = function(front, back, orient, ref) {
 	return true;
 };
 
+//Function called when creating a unit to send to the gates.
 var createUnit = function(startPoint, direction, ref) {
 	if (grid[startPoint.x][startPoint.y].isEmpty == false) {
 		return false;
 	}
 	var unit = new ShipUnit();
-	colour = Math.round(Math.random()*3);
+	unit.color = Math.round(Math.random()*3);
 	unit.direction = direction;
 	unit.point = startPoint;
 	unit.pointLast = cc.p(startPoint.x, startPoint.y);
 	unit.sprite = new cc.Sprite.create(res.UnitSprite_png);
 	unit.sprite.setAnchorPoint(.5, .5);
-	cc.log(startPoint.x * cellSize + ", " + startPoint.y * cellSize);
 	unit.sprite.setPosition(cc.p((startPoint.x + .5) * cellSize, (startPoint.y + .5) * cellSize));
-	switch(colour) {
+	switch(unit.color) {
 		case 0:
-		colour = 1;
 		unit.sprite.color = cc.color(255, 0, 0);
+		break;
+		case 1:
+		unit.sprite.color = cc.color(0, 255, 0);
+		break;
+		case 2:
+		unit.sprite.color = cc.color(0, 0, 255);
 		break;
 	}
 	
@@ -353,6 +388,7 @@ var createUnit = function(startPoint, direction, ref) {
 
 };
 
+//Checks that the ship being created is in a valid position on the grid.
 var validateShip = function(ship) {
 	if (ship.frontPoint.x >= 0 && ship.frontPoint.x < cellsRow
 			&& ship.frontPoint.y >= 2 && ship.frontPoint.y < cellsColumn
@@ -379,6 +415,7 @@ var validateShip = function(ship) {
 	}
 };
 
+//Generates the obstacles on the grid given a set difficulty.
 var createLevel = function(difficulty, ref) {
 	var lengths = [];
 	lengths[0] = 100 - (difficulty / 2);
@@ -420,6 +457,7 @@ var createLevel = function(difficulty, ref) {
 	}
 };
 
+//Initial paint function which sets up everything for repainting.
 var initPaint = function(ref) {
 	// Set draw to be our surface to draw to
 	drawLayers[drawLayers.length] = new cc.DrawNode();
@@ -429,6 +467,8 @@ var initPaint = function(ref) {
 	repaint(drawLayers.length - 1);
 };
 
+//Repaints the screen. There are 3 depths to seperate what is being repainted,
+//as to not waste power repainting stuff that should not need to be repainted.
 var repaint = function(depth) {
 	if(this.drawLayers[depth] == null) 
 		return;
@@ -480,6 +520,7 @@ var repaint = function(depth) {
 	}
 };
 
+//Loops the repainting method at the given framefrate.
 var repaintLoop = function() {
 	var temp = setInterval(function() {
 		repaint(1);
@@ -487,14 +528,26 @@ var repaintLoop = function() {
 	, gameVars.frameRate);
 }
 
+//Checks if enough turns have passed to spawn a unit, and if it has, spawns it.
+var spawnUnit = function(ref) {
+	if (++gameVars.spawnCount == gameVars.spawnRate) {
+		createUnit(cc.p(4,0), 0, ref);
+		gameVars.spawnCount = 0;
+	}
+}
+
+//Controls when we update units movements, repaint units and call the spawn
+//methods.
 var initUnitMovement = function(ref){
 	var temp = setInterval(function() {
 			updateUnits(ref);
+			spawnUnit(ref);
 			repaint(1);
 		}
 	, gameVars.unitSpeed);
 };
 
+//Updates the units position on the grid.
 var updateUnits = function(ref) {
 	for (var i = 0; i < unitBoats.length; i++) {
 		var tempDir = unitBoats[i].direction;
@@ -503,7 +556,8 @@ var updateUnits = function(ref) {
 			grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
 			grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
 			grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
-			cc.log(++gameVars.score);
+			if (gridGates[grid[unitBoats[i].point.x][unitBoats[i].point.y].gateID].color == unitBoats[i].color)
+				cc.log(++gameVars.score);
 			unitAnimate(unitBoats[i].sprite, tempDir);
 			deleteUnit(unitBoats[i], ref);
 		} else {
@@ -559,6 +613,7 @@ var updateUnits = function(ref) {
 	}
 };
 
+//Controls the visual animations of the units on the grid.
 var unitAnimate = function(unit, direction) {
 	var action = null;
 	var action2 = null;
@@ -589,6 +644,7 @@ var unitAnimate = function(unit, direction) {
 	
 }
 
+//Deletes the unit once it has gone off the scree.
 var deleteUnit = function(unitID, ref) {
 	var index = 0;
 	for (var i = 0; i < unitBoats.length; i++) {
@@ -598,22 +654,28 @@ var deleteUnit = function(unitID, ref) {
 			break;
 		}
 	}
-	for (var i = index; i < unitBoats.length - 1; i++) {
-		unitBoats[i + 1] = unitBoats[i];
+	//for (var i = index; i < unitBoats.length - 1; i++) {
+	//	unitBoats[i + 1] = unitBoats[i];
+	//}
+	//unitBoats.splice(unitBoats.length - 1, 1);
+	for (var i = 0; i < unitBoats.length - 1; i++) {
+		if (unitBoats[i] == null)
+			unitBoats.splice(i, 1);
 	}
-	unitBoats.splice(unitBoats.length - 1, 1);
 	interaction = null;
 	clickOffset = null;
 	shipSelected = null;
 	isUnitSelected = null;
 }
 
+//Removes the sprite of units once the unit is destroyed.
 var removeUnitSprite = function(unitSprite, ref) {
 	setTimeout(function(){
 		ref.removeChild(unitSprite);
 	}, gameVars.unitSpeed);
 }
 
+//Holds the data for each cell on the grid.
 var Cell = function() {
 	isEmpty: null;
 	xPos: null;
@@ -623,6 +685,7 @@ var Cell = function() {
 	gateID: null;
 }
 
+//Holds the data for each gate on the grid.
 var Gate = function() {
 	position: null;
 	direction: null;
@@ -630,6 +693,7 @@ var Gate = function() {
 	weight: null;
 }
 
+//Holds the data for each obstacle on the grid.
 var ShipObstacle = function() {
 	length: null;
 	orientation: null;
@@ -639,6 +703,7 @@ var ShipObstacle = function() {
 	sprite: null;
 }
 
+//Holds the data for each ship unit on the grid.
 var ShipUnit = function() {
 	// direction of movement. 0 = up, 1 = right, 2 = down, 3 = left
 	direction: null;
@@ -646,17 +711,22 @@ var ShipUnit = function() {
 	pointLast: null;
 	origin: null;
 	sprite: null;
-	colour: null;
+	color: null;
 	weight: null;
 }
 
+//Allows us to easily keep track of which points have been clicked and are
+//currently being clicked for user input.
 var dragMovement = function() {
 	pointClicked: null;
 	pointCurrent: null;
 }
 
+//Controls the pseudo-global variables of our game.
 var gameVars = function() {
 	score: null;
 	unitSpeed: null;
 	frameRate: null;
+	spawnCount: null;
+	spawnRate: null;
 }
