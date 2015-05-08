@@ -41,7 +41,7 @@ var GameBoard = cc.Layer.extend({
 		createGates();
 
 		initUnitMovement(this);
-		createLevel(20, this);
+		createLevel(50, this);
 		
 		createUnit(cc.p(4,0), 0, this);
 
@@ -93,15 +93,6 @@ var GameBoard = cc.Layer.extend({
 				//When the mouse(or touch screen) is released.
 				onMouseUp: function(event) {
 					if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
-						if (shipSelected != null) {
-							if (obstacleBoats[shipSelected].orientation == 0)
-								var action = cc.MoveTo.create(.5, cc.p((obstacleBoats[shipSelected].frontPoint.x + (obstacleBoats[shipSelected].length * .5)) * cellSize, (obstacleBoats[shipSelected].frontPoint.y + .5) * cellSize));
-							else
-								var action = cc.MoveTo.create(.5, cc.p((obstacleBoats[shipSelected].frontPoint.x + .5) * cellSize, (obstacleBoats[shipSelected].frontPoint.y + (obstacleBoats[shipSelected].length * .5)) * cellSize));
-								
-							obstacleBoats[shipSelected].sprite.runAction(action);
-						}
-						
 						interaction = null;
 						clickOffset = null;
 						shipSelected = null;
@@ -112,6 +103,7 @@ var GameBoard = cc.Layer.extend({
 				//When the mouse(or touch screen) is moving/dragging.
 				onMouseMove: function(event) {
 					if (interaction != null) {
+						var action = null;
 						mouseUp = event.getLocation();
 						mouseUp.y -= boardGlobY;
 						mouseUp.x -= boardGlobX;
@@ -127,8 +119,8 @@ var GameBoard = cc.Layer.extend({
 									clickOffset = obstacleBoats[shipSelected].backPoint.x - clickX;
 								}
 								
-								var action = cc.Place.create(cc.p(interaction.pointCurrent.x - relativeX, obstacleBoats[shipSelected].sprite.y));
-								obstacleBoats[shipSelected].sprite.runAction(action);
+//								var action = cc.Place.create(cc.p(interaction.pointCurrent.x - relativeX, obstacleBoats[shipSelected].sprite.y));
+//								obstacleBoats[shipSelected].sprite.runAction(action);
 								
 								if (clickX < curX && obstacleBoats[shipSelected].backPoint.x < cellsRow - 1
 										&& curX - (obstacleBoats[shipSelected].backPoint.x - clickOffset) > 0 
@@ -142,6 +134,8 @@ var GameBoard = cc.Layer.extend({
 									grid[obstacleBoats[shipSelected].backPoint.x + 1][clickY].shipID = shipSelected;
 									obstacleBoats[shipSelected].frontPoint.x += 1;
 									obstacleBoats[shipSelected].backPoint.x += 1;
+									action = cc.Place.create(cc.p((obstacleBoats[shipSelected].frontPoint.x + (obstacleBoats[shipSelected].length * .5)) * cellSize, (obstacleBoats[shipSelected].frontPoint.y + .5) * cellSize));
+									obstacleBoats[shipSelected].sprite.runAction(action);
 									repaint(2);
 									
 								} else if (clickX > curX && obstacleBoats[shipSelected].frontPoint.x > 0
@@ -156,6 +150,8 @@ var GameBoard = cc.Layer.extend({
 									grid[obstacleBoats[shipSelected].frontPoint.x - 1][clickY].shipID = shipSelected;
 									obstacleBoats[shipSelected].frontPoint.x -= 1;
 									obstacleBoats[shipSelected].backPoint.x -= 1;
+									action = cc.Place.create(cc.p((obstacleBoats[shipSelected].frontPoint.x + (obstacleBoats[shipSelected].length * .5)) * cellSize, (obstacleBoats[shipSelected].frontPoint.y + .5) * cellSize));
+									obstacleBoats[shipSelected].sprite.runAction(action);
 									repaint(2);
 
 								}
@@ -164,8 +160,8 @@ var GameBoard = cc.Layer.extend({
 									clickOffset = obstacleBoats[shipSelected].backPoint.y - clickY;
 								}
 								
-								var action = cc.Place.create(cc.p(obstacleBoats[shipSelected].sprite.x, interaction.pointCurrent.y - relativeY));
-								obstacleBoats[shipSelected].sprite.runAction(action);
+//								var action = cc.Place.create(cc.p(obstacleBoats[shipSelected].sprite.x, interaction.pointCurrent.y));
+//								obstacleBoats[shipSelected].sprite.runAction(action);
 								
 								if (clickY < curY && obstacleBoats[shipSelected].backPoint.y < cellsColumn - 1
 										&& curY - (obstacleBoats[shipSelected].backPoint.y - clickOffset) > 0
@@ -179,6 +175,8 @@ var GameBoard = cc.Layer.extend({
 									grid[clickX][obstacleBoats[shipSelected].backPoint.y + 1].shipID = shipSelected;
 									obstacleBoats[shipSelected].frontPoint.y += 1;
 									obstacleBoats[shipSelected].backPoint.y += 1;
+									action = cc.Place.create(cc.p((obstacleBoats[shipSelected].frontPoint.x + .5) * cellSize, (obstacleBoats[shipSelected].frontPoint.y + (obstacleBoats[shipSelected].length * .5)) * cellSize));
+									obstacleBoats[shipSelected].sprite.runAction(action);
 									repaint(2);
 
 								} else if (clickY > curY && obstacleBoats[shipSelected].frontPoint.y > 0
@@ -193,6 +191,8 @@ var GameBoard = cc.Layer.extend({
 									grid[clickX][obstacleBoats[shipSelected].frontPoint.y - 1].shipID = shipSelected;
 									obstacleBoats[shipSelected].frontPoint.y -= 1;
 									obstacleBoats[shipSelected].backPoint.y -= 1;
+									action = cc.Place.create(cc.p((obstacleBoats[shipSelected].frontPoint.x + .5) * cellSize, (obstacleBoats[shipSelected].frontPoint.y + (obstacleBoats[shipSelected].length * .5)) * cellSize));
+									obstacleBoats[shipSelected].sprite.runAction(action);
 									repaint(2);
 								}
 							}
@@ -275,6 +275,19 @@ var createGates = function() {
 	grid[cellsRow - 1][5].gateID = 7;
 	grid[cellsRow - 1][3].gateID = 8;
 }
+
+
+var realignBoats = function() {	
+	
+	for (var i = 0; i < obstacleBoats.length; i++) {
+		if (obstacleBoats[i].orientation == 0) {
+			var action = cc.Place.create(.5, cc.p((obstacleBoats[i].frontPoint.x + (obstacleBoats[i].length * .5)) * cellSize, (obstacleBoats[i].frontPoint.y + .5) * cellSize));
+		} else {
+			var action = cc.Place.create(.5, cc.p((obstacleBoats[i].frontPoint.x + .5) * cellSize, (obstacleBoats[i].frontPoint.y + (obstacleBoats[i].length * .5)) * cellSize));
+		}
+		obstacleBoats[i].sprite.runAction(action);
+	}
+};
 
 // Function which create our grid given the amount of rows
 // and columns
@@ -493,15 +506,15 @@ var repaint = function(depth) {
 			for (j = 0; j < cellsColumn; j++) {
 				if (grid[i][j].isEmpty == true) {
 					if (grid[i][j].gateID == null) {
-						drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 25, cc.color(255,0,0));
+						drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 45, cc.color(255,0,0));
 					} else {
-						drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 25, cc.color(255,255,0));
+						drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 45, cc.color(255,255,0));
 					}
 				} else {
 					if (grid[i][j].unitID != null) {
-						drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 25, cc.color(0,0,255));
+						drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 45, cc.color(0,0,255));
 					} else if (grid[i][j].shipID != null) {
-						drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 25, cc.color(0,255,0));
+						drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 45, cc.color(0,255,0));
 					}
 				}
 			}
@@ -608,8 +621,11 @@ var updateUnits = function(ref) {
 				unitBoats[i].point.x -= 1;
 				unitAnimate(unitBoats[i].sprite, tempDir);
 			} else {
-				grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
-				grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
+				if (unitBoats[i].pointLast.x != unitBoats[i].point.x || unitBoats[i].pointLast.y != unitBoats[i].point.y) {
+					cc.log("HERE");
+					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
+					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
+				}
 			}
 		}
 	}

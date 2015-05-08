@@ -20,7 +20,7 @@ var Runner = cc.Scene.extend({
 			
 			var layer = new GameScene();
 			this.addChild(layer);
-			//cc.audioEngine.playMusic(res.GameBackground_mp3, true); //starts audio NOTE: browsers don't support looping, own looping method needs to be made.
+			cc.audioEngine.playMusic(res.GameBackground_mp3, true); //starts audio NOTE: browsers don't support looping, own looping method needs to be made.
 		}
 	}
 });

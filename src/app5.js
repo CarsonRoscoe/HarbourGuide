@@ -25,7 +25,7 @@ var ScoresLayer = cc.Layer.extend({
 var back = function() {
 	INITIALIZED5 = false;
 	var scene = new MenuScene();
-	//cc.audioEngine.playEffect(res.button);
+	cc.audioEngine.playEffect(res.button);
 	cc.director.runScene(scene);
 }
 //ScoresScene
