@@ -1,4 +1,7 @@
-//The layer which holds the core gameplay.
+/**
+ * The layer which contains all the gameplay. When a new level is created this scene is
+ * referenced.
+ */
 var GameBoard = cc.Layer.extend({
 	cellsRow: null,
 	cellsColumn: null,
@@ -14,7 +17,10 @@ var GameBoard = cc.Layer.extend({
 	drawLayers: null,
 	gameVars: null,
 
-	// Constructor for GameLayer
+	/**
+	 * Constructor that builds the game grid.
+	 * @returns {Boolean} = was successful?
+	 */
 	ctor:function () {
 		// Super init first
 		this._super();
@@ -45,12 +51,14 @@ var GameBoard = cc.Layer.extend({
 		
 		createUnit(cc.p(4,0), 0, this);
 
-		initPaint(this);
-		initPaint(this);
-		initPaint(this);
+		initPaint(0, this);
+		initPaint(1, this);
+		initPaint(2, this);
 		repaintLoop();
 		
-			
+			/**
+			 * Handles all the touch and swipe movements on the grid.
+			 */
 			cc.eventManager.addListener({
 				event: cc.EventListener.MOUSE,
 				mouseDown: null,
@@ -61,7 +69,10 @@ var GameBoard = cc.Layer.extend({
 				relativeX: null,
 				relativeY: null,
 
-				//When the mouse(or touch screen) is clicked/tapped.
+				/**
+				 * Sets up the movement variables and detects if the user clicked on a boat.
+				 * WHEN MOUSE CLICKED/TAPPED.
+				 */
 				onMouseDown: function(event) {
 					if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
 						clickOffset = null;
@@ -90,7 +101,10 @@ var GameBoard = cc.Layer.extend({
 					}
 				},
 
-				//When the mouse(or touch screen) is released.
+				/**
+				 * Refreshes the grid movement object.
+				 * WHEN MOUSE CLICK/TAP RELEASED.
+				 */
 				onMouseUp: function(event) {
 					if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
 						interaction = null;
@@ -99,8 +113,13 @@ var GameBoard = cc.Layer.extend({
 						isUnitSelected = null;
 					}
 				},
-				
-				//When the mouse(or touch screen) is moving/dragging.
+
+
+				/**
+				 * Moves the boats and units based on the grid based off of user swiping.
+				 * Updates obstacle movement immediatly, changes variables for unit movement.
+				 * WHEN MOUSE CLICK/TAP IS MOVED.
+				 */
 				onMouseMove: function(event) {
 					if (interaction != null) {
 						var action = null;
@@ -227,8 +246,10 @@ var GameBoard = cc.Layer.extend({
 	}
 });
 
-//Creation function of the games which check if the user is sending boats
-//to the appropriate places.
+/**
+ * Creates the gates of where the boats should be sent. Initializes the correct
+ * variables for accepting boats.
+ */
 var createGates = function() {
 	//gridGates
 	for(var i = 0; i < 9; i++) {
@@ -276,21 +297,10 @@ var createGates = function() {
 	grid[cellsRow - 1][3].gateID = 8;
 }
 
-
-var realignBoats = function() {	
-	
-	for (var i = 0; i < obstacleBoats.length; i++) {
-		if (obstacleBoats[i].orientation == 0) {
-			var action = cc.Place.create(.5, cc.p((obstacleBoats[i].frontPoint.x + (obstacleBoats[i].length * .5)) * cellSize, (obstacleBoats[i].frontPoint.y + .5) * cellSize));
-		} else {
-			var action = cc.Place.create(.5, cc.p((obstacleBoats[i].frontPoint.x + .5) * cellSize, (obstacleBoats[i].frontPoint.y + (obstacleBoats[i].length * .5)) * cellSize));
-		}
-		obstacleBoats[i].sprite.runAction(action);
-	}
-};
-
-// Function which create our grid given the amount of rows
-// and columns
+/**
+ * Creates the grid based off of size variables. The grid creates cells in 
+ * the positions and assigns empty and their coordinates.
+ */
 var createGrid = function() {
 	var grid = [];
 	for (i = 0; i < cellsRow; i++) {
@@ -305,10 +315,12 @@ var createGrid = function() {
 	return grid;
 };
 
-/*
- * front = (cc.p) the front point of the boat back = (cc.p) the back point of
- * the boat orient = (int)orientation. 0 = horizontal, 1 = vertical. size =
- * (int) the amount of spaces this boat will take up.
+/**
+ * Creates an obstacle boat on the grid.
+ * front = (cc.p) the front point of the boat 
+ * back = (cc.p) the back point of the boat 
+ * orient = (int)orientation. 0 = horizontal, 1 = vertical. 
+ * size = (int) the amount of spaces this boat will take up.
  */
 var createBoat = function(front, back, orient, ref) {
 	var ship = new ShipObstacle();
@@ -365,7 +377,14 @@ var createBoat = function(front, back, orient, ref) {
 	return true;
 };
 
-//Function called when creating a unit to send to the gates.
+
+/**
+ * Creates a unit for the player to control, on the grid. 
+ * startPoint = (cc.p) The point on the grid to create the unit.
+ * direction = (int) The direction the boat will move when it's created.
+ * 				0 = up, 1 = right, 2 = down, 3 = left
+ * ref = The surface to create the boat and it's sprite on.
+ */
 var createUnit = function(startPoint, direction, ref) {
 	if (grid[startPoint.x][startPoint.y].isEmpty == false) {
 		return false;
@@ -403,7 +422,10 @@ var createUnit = function(startPoint, direction, ref) {
 
 };
 
-//Checks that the ship being created is in a valid position on the grid.
+/**
+ * Checks to ensure a new obstacle object is being created in an appropriate
+ * place on the grid (not overlapping or partally off the grid).
+ */
 var validateShip = function(ship) {
 	if (ship.frontPoint.x >= 0 && ship.frontPoint.x < cellsRow
 			&& ship.frontPoint.y >= 2 && ship.frontPoint.y < cellsColumn
@@ -430,7 +452,11 @@ var validateShip = function(ship) {
 	}
 };
 
-//Generates the obstacles on the grid given a set difficulty.
+/**
+ * Generates the obstacles on the level based off of a difficulty number.
+ * difficulty = (int 1 - 100) The difficulty of the level.
+ * ref = The surface to create the obstacles on.
+ */
 var createLevel = function(difficulty, ref) {
 	var lengths = [];
 	lengths[0] = 100 - (difficulty / 2);
@@ -472,18 +498,26 @@ var createLevel = function(difficulty, ref) {
 	}
 };
 
-//Initial paint function which sets up everything for repainting.
-var initPaint = function(ref) {
+/**
+ * Initializes a paint layer to a layer. The paint layers allow the game to be updated without
+ * the need to redraw the entire page, only what layer needs to be redrawn.
+ * layer = (int) The index of paint layer to create and draw.
+ * ref = The layer the draw will be drawn to.
+ */
+var initPaint = function(layer, ref) {
 	// Set draw to be our surface to draw to
-	drawLayers[drawLayers.length] = new cc.DrawNode();
+	drawLayers[layer] = new cc.DrawNode();
 
-	ref.addChild(drawLayers[drawLayers.length - 1]);
+	ref.addChild(drawLayers[layer]);
 
-	repaint(drawLayers.length - 1);
+	repaint(layer);
 };
 
-//Repaints the screen. There are 3 depths to seperate what is being repainted,
-//as to not waste power repainting stuff that should not need to be repainted.
+/**
+ * Redraws the layer's paint based off of the paint's layers. For example, repainting just the grid
+ * squares will involve redrawing over layer 0. 
+ * depth = (int) The layer index to redraw.
+ */
 var repaint = function(depth) {
 	if(this.drawLayers[depth] == null) 
 		return;
@@ -535,7 +569,9 @@ var repaint = function(depth) {
 	}
 };
 
-//Loops the repainting method at the given framefrate.
+/**
+ * Loops the repaint method at a set frameRate.
+ */
 var repaintLoop = function() {
 	var temp = setInterval(function() {
 		repaint(1);
@@ -543,7 +579,11 @@ var repaintLoop = function() {
 	, gameVars.frameRate);
 }
 
-//Checks if enough turns have passed to spawn a unit, and if it has, spawns it.
+/**
+ * Spawns a new unit (not 100% finished, only spawns in 1 spot). Spawns based off of time since
+ * last spawn and the level's spawn time.
+ * ref = The layer to spawn to.
+ */
 var spawnUnit = function(ref) {
 	if (++gameVars.spawnCount == gameVars.spawnRate) {
 		createUnit(cc.p(4,0), 0, ref);
@@ -551,8 +591,10 @@ var spawnUnit = function(ref) {
 	}
 }
 
-//Controls when we update units movements, repaint units and call the spawn
-//methods.
+/**
+ * Initializes the functions to create the units, the spawn loop, and the repaint method, in a loop.
+ * ref = The layer to spawn to.
+ */
 var initUnitMovement = function(ref){
 	var temp = setInterval(function() {
 			updateUnits(ref);
@@ -562,7 +604,10 @@ var initUnitMovement = function(ref){
 	, gameVars.unitSpeed);
 };
 
-//Updates the units position on the grid.
+/**
+ * Loops through all units on the grid and updates their move depending on the direction assigned to them.
+ * ref = The surface that is attempting to be updated. Needed for paint and sprite updating.
+ */
 var updateUnits = function(ref) {
 	for (var i = 0; i < unitBoats.length; i++) {
 		var tempDir = unitBoats[i].direction;
@@ -621,7 +666,6 @@ var updateUnits = function(ref) {
 				unitBoats[i].point.x -= 1;
 				unitAnimate(unitBoats[i].sprite, tempDir);
 			} else {
-				cc.log(unitBoats[i].point.x + ", " + unitBoats[i].point.y + " - " + unitBoats[i].pointLast.x + ", " + unitBoats[i].pointLast.y);
 				if (unitBoats[i].pointLast.x != unitBoats[i].point.x || unitBoats[i].pointLast.y != unitBoats[i].point.y) {
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
@@ -632,7 +676,12 @@ var updateUnits = function(ref) {
 	}
 };
 
-//Controls the visual animations of the units on the grid.
+/**
+ * Controls the visual animations of a unit, based on their direction. This is called by
+ * the updateUnits() function when a move space is registered.
+ * unit = The unit to reference.
+ * direction = The direction the unit is moving to, to calulate rotation and move direction.
+ */
 var unitAnimate = function(unit, direction) {
 	var action = null;
 	var action2 = null;
@@ -663,7 +712,12 @@ var unitAnimate = function(unit, direction) {
 	
 }
 
-//Deletes the unit once it has gone off the scree.
+/**
+ * Deletes and removes a unit from the grid, and removes the boat from the units on the 
+ * grid array.
+ * unitID = The unit id to remove.
+ * ref = The surface being referenced to remove the sprite.
+ */
 var deleteUnit = function(unitID, ref) {
 	var index = 0;
 	for (var i = 0; i < unitBoats.length; i++) {
@@ -687,14 +741,23 @@ var deleteUnit = function(unitID, ref) {
 	isUnitSelected = null;
 }
 
-//Removes the sprite of units once the unit is destroyed.
+/**
+ * Removes a unit's sprite from the game scene after one cycle of a movement. 
+ * This is here to delay the removal of a sprite so it appears that the unit
+ * moves off the grid.
+ * unitSprite = The unit's sprite to remove from the board.
+ * ref = The the surface being referenced so the sprite can be removed.
+ */
 var removeUnitSprite = function(unitSprite, ref) {
 	setTimeout(function(){
 		ref.removeChild(unitSprite);
 	}, gameVars.unitSpeed);
 }
 
-//Holds the data for each cell on the grid.
+/**
+ * A cell on the game board. Each cell holds data on what is on it's spot, and the cells
+ * location, and if the cell is empty, or is a gate.
+ */
 var Cell = function() {
 	isEmpty: null;
 	xPos: null;
@@ -704,7 +767,11 @@ var Cell = function() {
 	gateID: null;
 }
 
-//Holds the data for each gate on the grid.
+/**
+ * A gate object. The id of the gate created gets placed on a cell where a gate should be.
+ * The gate holds data on what type of boat and which direction the boat should enter it to
+ * be accepted.
+ */
 var Gate = function() {
 	position: null;
 	direction: null;
@@ -712,7 +779,11 @@ var Gate = function() {
 	weight: null;
 }
 
-//Holds the data for each obstacle on the grid.
+/**
+ * An object that holds the data of an obstacle ship on the grid. Holds the data
+ * of where the ship occupies, the orientation, the length, and the sprite of the
+ * obstacle.
+ */
 var ShipObstacle = function() {
 	length: null;
 	orientation: null;
@@ -722,7 +793,11 @@ var ShipObstacle = function() {
 	sprite: null;
 }
 
-//Holds the data for each ship unit on the grid.
+/**
+ * Holds the data of a unit ship. A unit ship is a 1x1 ship that the player must control
+ * to complete the game. The object holds data of the spot it is and was on, the direction,
+ * color, weight (for gate detection), and sprite of the unit.
+ */
 var ShipUnit = function() {
 	// direction of movement. 0 = up, 1 = right, 2 = down, 3 = left
 	direction: null;
@@ -734,14 +809,19 @@ var ShipUnit = function() {
 	weight: null;
 }
 
-//Allows us to easily keep track of which points have been clicked and are
-//currently being clicked for user input.
+/**
+ * An object that holds the data of a click and drag across the game board. Used to keep track
+ * of a swipe.
+ */
 var dragMovement = function() {
 	pointClicked: null;
 	pointCurrent: null;
 }
 
-//Controls the pseudo-global variables of our game.
+/**
+ * Holds necessary variables for the game, which would be used outside of the game. Such as score
+ * on the level, game speed, maximum frames, how many to spawn, and how quickly new boats spawn.
+ */
 var gameVars = function() {
 	score: null;
 	unitSpeed: null;
