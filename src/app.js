@@ -3,10 +3,15 @@ var INITIALIZED = false;
 var GameScene = cc.Layer.extend({
 	ctor:function() {
 		this._super();
-		this.addChild(new GameBoard());
+		var gameBoard = new GameBoard();
+		var hudLayer = new HUDLayer();
+		this.addChild(gameBoard);
+		this.addChild(hudLayer);
 		return true;
 	}
 });
+
+
 
 //GameScene objected created by main. Creates our GameLayer() ibject above.
 var Runner = cc.Scene.extend({
@@ -14,12 +19,12 @@ var Runner = cc.Scene.extend({
 		this._super();
 		if(INITIALIZED == false) {
 			
-			localStorage.clear();
+			//localStorage.clear();
 
 			INITIALIZED = true;
 			
-			var layer = new GameScene();
-			this.addChild(layer);
+			this.addChild(new GameScene());
+			
 			cc.audioEngine.playMusic(res.GameBackground_mp3, true); //starts audio NOTE: browsers don't support looping, own looping method needs to be made.
 		}
 	}
