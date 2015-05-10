@@ -13,6 +13,7 @@
         "src/resource.js",
         "src/app.js",
         "src/Game/GameBoard/gameBoard.js",
+        "src/hudLayer.js",
         "src/app2.js",
         "src/app3.js",
         "src/app4.js",
