@@ -3,8 +3,8 @@ var INITIALIZED = false;
 var GameScene = cc.Layer.extend({
 	ctor:function() {
 		this._super();
-		var gameBoard = new GameBoard();
 		var hudLayer = new HUDLayer();
+		var gameBoard = new GameBoard(hudLayer);
 		this.addChild(gameBoard);
 		this.addChild(hudLayer);
 		return true;

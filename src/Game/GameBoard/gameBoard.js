@@ -16,15 +16,17 @@ var GameBoard = cc.Layer.extend({
 	interaction: null,
 	drawLayers: null,
 	gameVars: null,
+	hud: null,
 
 	/**
 	 * Constructor that builds the game grid.
 	 * @returns {Boolean} = was successful?
 	 */
-	ctor:function () {
+	ctor:function (newHudLayer) {
 		// Super init first
 		this._super();
 		
+		hud = newHudLayer;
 		cellsRow = 7;
 		cellsColumn = 9;
 		cellSize = cc.winSize.width / cellsRow;
@@ -740,7 +742,7 @@ var deleteUnit = function(unitID, ref) {
 	shipSelected = null;
 	isUnitSelected = null;
 	//increment when deleted (will add checking later)
-	addScore();
+	hud.addScore();
 }
 
 /**
@@ -753,7 +755,6 @@ var deleteUnit = function(unitID, ref) {
 var removeUnitSprite = function(unitSprite, ref) {
 	setTimeout(function(){
 		ref.removeChild(unitSprite);
-		addScore();
 	}, gameVars.unitSpeed);
 }
 
