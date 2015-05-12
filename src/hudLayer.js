@@ -3,7 +3,6 @@ var INITALIZEDHUD = false;
 var HUDLayer = cc.Layer.extend({
 	scoreLabel: null,
 	boatsLeftLabel: null,
-	score: 0,
 
 	ctor:function() {
 		this._super();
@@ -41,8 +40,9 @@ var HUDLayer = cc.Layer.extend({
 	},
 
 	addScore:function(){
-		this.score++;
-		this.scoreLabel.setString("Score:" + score);
+		//score variable from gameBoard
+		gameVars.score++;
+		this.scoreLabel.setString("Score:" + gameVars.score);
 	}
 
 });
