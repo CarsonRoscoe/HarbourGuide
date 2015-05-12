@@ -588,9 +588,16 @@ var repaintLoop = function() {
  * ref = The layer to spawn to.
  */
 var spawnUnit = function(ref) {
+	var attempts = cellsRow * 2;
 	if (++gameVars.spawnCount >= gameVars.spawnRate) {
-		while (!createUnit(cc.p(Math.floor(Math.random() * (cellsRow - 0.00001)),0), 0, ref)) {}
+		while (!createUnit(cc.p(Math.floor(Math.random() * (cellsRow - 0.00001)),0), 0, ref) && attempts > 0) {
+			attempts--;
+		}
+		if (attempts <= 0) {
+			gameVars.spawnCount = gameVars.spawnRate;
+		}
 		gameVars.spawnCount = 0;
+		gameVars.unitsLeft--;
 	}
 }
 
@@ -622,8 +629,10 @@ var updateUnits = function(ref) {
 			}
 			grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
 			grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
-			if (gridGates[grid[unitBoats[i].point.x][unitBoats[i].point.y].gateID].color == unitBoats[i].color)
-				cc.log(++gameVars.score);
+			if (gridGates[grid[unitBoats[i].point.x][unitBoats[i].point.y].gateID].color == unitBoats[i].color) {
+				gameVars.unitsComplete++;
+				hud.addScore();
+			}
 			unitAnimate(unitBoats[i].sprite, tempDir);
 			deleteUnit(unitBoats[i].selfID, 1, ref);
 		} else {
@@ -726,6 +735,7 @@ var unitAnimate = function(unit, direction) {
  */
 var deleteUnit = function(unitID, stepsWait, ref) {
 	var index = 0;
+	
 	for (var i = 0; i < unitBoats.length; i++) {
 		if (unitBoats[i].selfID == unitID) {
 			index = i;
@@ -733,6 +743,7 @@ var deleteUnit = function(unitID, stepsWait, ref) {
 			break;
 		}
 	}
+	
 	for (var i = index; i < unitBoats.length - 1; i++) {
 		unitBoats[i] = unitBoats[i + 1];
 	}
@@ -745,8 +756,6 @@ var deleteUnit = function(unitID, stepsWait, ref) {
 	clickOffset = null;
 	shipSelected = null;
 	isUnitSelected = null;
-	//increment when deleted (will add checking later)
-	hud.addScore();
 }
 
 /**
@@ -833,6 +842,8 @@ var dragMovement = function() {
  */
 var gameVars = function() {
 	score: null;
+	unitsLeft: null;
+	unitsComplete: null;
 	unitSpeed: null;
 	frameRate: null;
 	spawnCount: null;
