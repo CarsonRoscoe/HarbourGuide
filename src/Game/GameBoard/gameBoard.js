@@ -739,8 +739,6 @@ var deleteUnit = function(unitID, ref) {
 	clickOffset = null;
 	shipSelected = null;
 	isUnitSelected = null;
-	//increment when deleted (will add checking later)
-	addScore();
 }
 
 /**
@@ -753,7 +751,6 @@ var deleteUnit = function(unitID, ref) {
 var removeUnitSprite = function(unitSprite, ref) {
 	setTimeout(function(){
 		ref.removeChild(unitSprite);
-		addScore();
 	}, gameVars.unitSpeed);
 }
 
