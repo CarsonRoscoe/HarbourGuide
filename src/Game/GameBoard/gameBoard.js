@@ -26,7 +26,6 @@ var GameBoard = cc.Layer.extend({
 		// Super init first
 		this._super();
 		
-		hud = newHudLayer;
 		cellsRow = 7;
 		cellsColumn = 9;
 		cellSize = cc.winSize.width / cellsRow;
@@ -45,13 +44,14 @@ var GameBoard = cc.Layer.extend({
 		gameVars.frameRate = 16;
 		gameVars.spawnCount = 0;
 		gameVars.spawnRate = 12;
+		hud = newHudLayer;
 		
 		createGates();
+		
 
 		initUnitMovement(this);
 		createLevel(50, this);
-		
-		createUnit(cc.p(4,0), 0, this);
+		gameVars.spawnCount = gameVars.spawnRate;
 
 		initPaint(0, this);
 		initPaint(1, this);
@@ -392,6 +392,7 @@ var createUnit = function(startPoint, direction, ref) {
 		return false;
 	}
 	var unit = new ShipUnit();
+	unit.selfID = unitBoats.length;
 	unit.color = Math.floor(Math.random()*3);
 	unit.direction = direction;
 	unit.point = startPoint;
@@ -407,12 +408,11 @@ var createUnit = function(startPoint, direction, ref) {
 		unit.sprite.color = cc.color(0, 255, 0);
 		break;
 		case 2:
+		case 3:
 		unit.sprite.color = cc.color(0, 0, 255);
 		break;
 		default:
-		unit.sprite.color = cc.colour(255, 0, 255);
-		unit.color = 0;
-		cc.log("Error: White boat");
+		break;
 	}
 	
 	ref.addChild(unit.sprite, 100);
@@ -420,6 +420,7 @@ var createUnit = function(startPoint, direction, ref) {
 
 	grid[startPoint.x][startPoint.y].isEmpty = false;
 	grid[startPoint.x][startPoint.y].unitID = unitBoats.length - 1;
+	return true;
 
 
 };
@@ -587,8 +588,8 @@ var repaintLoop = function() {
  * ref = The layer to spawn to.
  */
 var spawnUnit = function(ref) {
-	if (++gameVars.spawnCount == gameVars.spawnRate) {
-		createUnit(cc.p(4,0), 0, ref);
+	if (++gameVars.spawnCount >= gameVars.spawnRate) {
+		while (!createUnit(cc.p(Math.floor(Math.random() * (cellsRow - 0.00001)),0), 0, ref)) {}
 		gameVars.spawnCount = 0;
 	}
 }
@@ -611,60 +612,63 @@ var initUnitMovement = function(ref){
  * ref = The surface that is attempting to be updated. Needed for paint and sprite updating.
  */
 var updateUnits = function(ref) {
+	cc.log(unitBoats.length);
 	for (var i = 0; i < unitBoats.length; i++) {
 		var tempDir = unitBoats[i].direction;
 		if (grid[unitBoats[i].point.x][unitBoats[i].point.y].gateID != null && gridGates[grid[unitBoats[i].point.x][unitBoats[i].point.y].gateID].direction == tempDir) {
-			grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
-			grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
+			if (grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID == unitBoats[i].selfID) {
+				grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
+				grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
+			}
 			grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
 			grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
 			if (gridGates[grid[unitBoats[i].point.x][unitBoats[i].point.y].gateID].color == unitBoats[i].color)
 				cc.log(++gameVars.score);
 			unitAnimate(unitBoats[i].sprite, tempDir);
-			deleteUnit(unitBoats[i], ref);
+			deleteUnit(unitBoats[i].selfID, 1, ref);
 		} else {
 			if (tempDir == 0 && unitBoats[i].point.y < cellsColumn - 1 && (grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].isEmpty == true
-					|| grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].unitID == i)) {
+					|| grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].unitID == unitBoats[i].selfID)) {
 				if (unitBoats[i].pointLast.x != unitBoats[i].point.x || unitBoats[i].pointLast.y != unitBoats[i].point.y) {
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
 				}
 				unitBoats[i].pointLast = cc.p(unitBoats[i].point.x,unitBoats[i].point.y);
 				grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].isEmpty = false;
-				grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].unitID = i;
+				grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].unitID = unitBoats[i].selfID;
 				unitBoats[i].point.y += 1;
 				unitAnimate(unitBoats[i].sprite, tempDir);
 			} else if (tempDir == 1 && unitBoats[i].point.x < cellsRow - 1 && (grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].isEmpty == true
-					|| grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].unitID == i)) {
+					|| grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].unitID == unitBoats[i].selfID)) {
 				if (unitBoats[i].pointLast.x != unitBoats[i].point.x || unitBoats[i].pointLast.y != unitBoats[i].point.y) {
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
 				}
 				unitBoats[i].pointLast = cc.p(unitBoats[i].point.x,unitBoats[i].point.y);
 				grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].isEmpty = false;
-				grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].unitID = i;
+				grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].unitID = unitBoats[i].selfID;
 				unitBoats[i].point.x += 1;
 				unitAnimate(unitBoats[i].sprite, tempDir);
 			} else if (tempDir == 2 && unitBoats[i].point.y > 0 && (grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].isEmpty == true
-					|| grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].unitID == i)) {
+					|| grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].unitID == unitBoats[i].selfID)) {
 				if (unitBoats[i].pointLast.x != unitBoats[i].point.x || unitBoats[i].pointLast.y != unitBoats[i].point.y) {
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
 				}
 				unitBoats[i].pointLast = cc.p(unitBoats[i].point.x,unitBoats[i].point.y);
 				grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].isEmpty = false;
-				grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].unitID = i;
+				grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].unitID = unitBoats[i].selfID;
 				unitBoats[i].point.y -= 1;
 				unitAnimate(unitBoats[i].sprite, tempDir);
 			} else if (tempDir == 3 && unitBoats[i].point.x > 0 && (grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].isEmpty == true
-					|| grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].unitID == i)) {
+					|| grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].unitID == unitBoats[i].selfID)) {
 				if (unitBoats[i].pointLast.x != unitBoats[i].point.x || unitBoats[i].pointLast.y != unitBoats[i].point.y) {
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
 				}
 				unitBoats[i].pointLast = cc.p(unitBoats[i].point.x,unitBoats[i].point.y);
 				grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].isEmpty = false;
-				grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].unitID = i;
+				grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].unitID = unitBoats[i].selfID;
 				unitBoats[i].point.x -= 1;
 				unitAnimate(unitBoats[i].sprite, tempDir);
 			} else {
@@ -720,23 +724,23 @@ var unitAnimate = function(unit, direction) {
  * unitID = The unit id to remove.
  * ref = The surface being referenced to remove the sprite.
  */
-var deleteUnit = function(unitID, ref) {
+var deleteUnit = function(unitID, stepsWait, ref) {
 	var index = 0;
 	for (var i = 0; i < unitBoats.length; i++) {
-		if (unitBoats[i] == unitID) {
+		if (unitBoats[i].selfID == unitID) {
 			index = i;
-			removeUnitSprite(unitBoats[i].sprite, ref);
+			removeUnitSprite(unitBoats[i].sprite, stepsWait, ref);
 			break;
 		}
 	}
-	//for (var i = index; i < unitBoats.length - 1; i++) {
-	//	unitBoats[i + 1] = unitBoats[i];
-	//}
-	//unitBoats.splice(unitBoats.length - 1, 1);
-	for (var i = 0; i < unitBoats.length - 1; i++) {
-		if (unitBoats[i] == null)
-			unitBoats.splice(i, 1);
+	for (var i = index; i < unitBoats.length - 1; i++) {
+		unitBoats[i] = unitBoats[i + 1];
 	}
+	unitBoats.splice(unitBoats.length - 1, 1);
+//	for (var i = 0; i < unitBoats.length - 1; i++) {
+//		if (unitBoats[i] == null)
+//			unitBoats.splice(i, 1);
+//	}
 	interaction = null;
 	clickOffset = null;
 	shipSelected = null;
@@ -752,10 +756,10 @@ var deleteUnit = function(unitID, ref) {
  * unitSprite = The unit's sprite to remove from the board.
  * ref = The the surface being referenced so the sprite can be removed.
  */
-var removeUnitSprite = function(unitSprite, ref) {
+var removeUnitSprite = function(unitSprite, stepsWait, ref) {
 	setTimeout(function(){
 		ref.removeChild(unitSprite);
-	}, gameVars.unitSpeed);
+	}, gameVars.unitSpeed * stepsWait);
 }
 
 /**
@@ -804,6 +808,7 @@ var ShipObstacle = function() {
  */
 var ShipUnit = function() {
 	// direction of movement. 0 = up, 1 = right, 2 = down, 3 = left
+	selfID: null;
 	direction: null;
 	point: null;
 	pointLast: null;
