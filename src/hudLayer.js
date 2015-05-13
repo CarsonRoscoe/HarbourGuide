@@ -9,12 +9,12 @@ var HUDLayer = cc.Layer.extend({
 		this.init();
 	},
 
-	init:function(){
+	init:function(boatsLeft){
 		this._super();
 
 		var winsize = cc.director.getWinSize();
 		
-		this.scoreLabel = new cc.LabelTTF("Score:0", "Helvetica", 100);
+		this.scoreLabel = new cc.LabelTTF("Score: 0", "Helvetica", 100);
 		this.scoreLabel.setColor(cc.color(200,200,200));
 		this.scoreLabel.setPosition(cc.p(200, winsize.height - 100));
 		this.addChild(this.scoreLabel);
@@ -27,9 +27,8 @@ var HUDLayer = cc.Layer.extend({
 		menu.setPosition(cc.p(winsize.width - 100, winsize.height - 100));
 		this.addChild(menu);
 		
-		this.boatsLeftLabel = new cc.LabelTTF("Boats Left:0", "Helvetica", 100);
+		this.boatsLeftLabel = new cc.LabelTTF("Boats Left: ", "Helvetica", 100);
 		this.boatsLeftLabel.setColor(cc.color(200,200,200));
-		this.boatsLeftLabel.setPosition(cc.p(280, winsize.height - winsize.height + 100));
 		this.addChild(this.boatsLeftLabel);
 	},
 	
@@ -38,11 +37,20 @@ var HUDLayer = cc.Layer.extend({
 		cc.audioEngine.playEffect(res.button, false); //button sound doesn't loop
 		cc.director.runScene(scene); //push
 	},
+	
+	updateBoatsLeft:function(boats) {
+		this.boatsLeftLabel.setString("Boats Left: " + boats);
+	},
 
-	addScore:function(){
+	addScore:function(unitTime){
+		var winsize = cc.director.getWinSize();
 		//score variable from gameBoard
-		gameVars.score++;
-		this.scoreLabel.setString("Score:" + gameVars.score);
+		var score = Math.round(gameVars.difficulty - (gameVars.difficulty / 20) * unitTime);
+		if (score < 0)
+			score = 0;
+		gameVars.score += score
+		this.scoreLabel.setString("Score: " + gameVars.score);
+		this.boatsLeftLabel.setPosition(cc.p(280, winsize.height - winsize.height + 100));
 	}
 
 });
