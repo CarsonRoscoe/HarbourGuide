@@ -1,0 +1,8 @@
+C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\bin\Debug\HarbourGuideServerAndDB.exe.config
+C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\bin\Debug\HarbourGuideServerAndDB.exe
+C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\bin\Debug\HarbourGuideServerAndDB.pdb
+C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\bin\Debug\AWSSDK.dll
+C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\bin\Debug\AWSSDK.xml
+C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\obj\Debug\HarbourGuideServerAndDB.csprojResolveAssemblyReference.cache
+C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\obj\Debug\HarbourGuideServerAndDB.exe
+C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\obj\Debug\HarbourGuideServerAndDB.pdb
