@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Http.Cors;
 
 namespace HarbourGuideServerAndDB {
     public class Request {
@@ -13,7 +14,9 @@ namespace HarbourGuideServerAndDB {
 
         public static Boolean Valid;
 
-        private Request(String type, String url, String host) {
+        public static String Call;
+
+        public Request(String type, String url, String host) {
             Type = type;
             URL = url;
             Host = host;
@@ -23,18 +26,44 @@ namespace HarbourGuideServerAndDB {
             return Valid;
         }
 
+        public String getCall() {
+            return Call;
+        }
+
         public static Request GetRequest(String request) {
             if (String.IsNullOrEmpty(request))
                 return null;
 
             String[] dataTokens = null;
-            String[] tokens = request.Split(' ');
-            String type = tokens[0];
-            String url = tokens[1];
-            String host = tokens[4];
-            Console.WriteLine(url);
+            String[] tokens = request.Split(' '); 
+            String type = null;
+            String url = null;
+            String host = null;
+            try
+            {
+                type = tokens[0];
+                url = tokens[1];
+                host = tokens[4];
+                Console.WriteLine(url);
+            }
+            catch (System.Exception e)
+            {
+                Console.WriteLine("Error:" + e + "\n\n\n" + tokens[0] + "\n" + tokens[1] + "\n" + tokens[2]);
+            }
+
             if (url.Contains("DATA;")) {
                 dataTokens = url.Split(';');
+                Console.WriteLine("\nDotaString: " + dataTokens[0] + "," + dataTokens[1] + "," + dataTokens[2] + "," + dataTokens[3] + "," + dataTokens[4] + ",");
+                Call = "Data";
+            }
+            else if (url.Contains("GETSCORE;"))
+            {
+                HandleGetScore();
+                Call = "Getscore";
+            }
+            else
+            {
+                Call = "Invalid";
             }
 
             if (dataTokens != null)
@@ -45,6 +74,11 @@ namespace HarbourGuideServerAndDB {
             return new Request(type, url, host);
         }
 
+        private static void HandleGetScore()
+        {
+
+        }
+
         private static bool HandleData(String[] dataGiven) {
             String[] dataTokens = dataGiven;
 
@@ -52,9 +86,6 @@ namespace HarbourGuideServerAndDB {
             foreach (string s in dataTokens)
                 if (String.IsNullOrEmpty(s))
                     return false;
-
-            if (dataTokens.Length != 5)
-                return false;
 
             foreach(char c in dataTokens[1])
                 if (!Char.IsLetter(c))
@@ -76,24 +107,11 @@ namespace HarbourGuideServerAndDB {
                 Console.Write(s + ", ");
 
             //Moves all data one index lower, then makes the highest one carry a newline character.
-            for (int i = 0; i < dataTokens.Length - 2; i++) {
+            for (int i = 0; i < 3; i++) {
                 dataTokens[i] = dataTokens[i + 1];
             }
-
-            // Write the stream contents to a new file named "AllTxtFiles.txt".
-            /*using (StreamWriter savefile = new StreamWriter(Environment.CurrentDirectory + HTTPServer.WEB_DIR + @"\DataFile.txt")) {
-                for (int i = 0; i < dataTokens.Length - 1; i++) {
-                    String temp = dataTokens[i].ToString();
-                    if (i != dataTokens.Length - 2)
-                        //Data token + ;
-                        savefile.Write(temp + ";");
-                    else if (i == dataTokens.Length - 1)
-                        //New line since data reading is done
-                        savefile.Write(temp + "\n");
-                }
-            }*/
-            Database.SetScore(dataTokens, 2);
-            Database.GetScore(2, "Scoreboard");
+            Console.WriteLine("\nCounter Is: " + Program.counter);
+            Database.SetScore(dataTokens, ++Program.counter);
 
             return true;
         }

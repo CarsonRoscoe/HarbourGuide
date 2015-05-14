@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace HarbourGuideServerAndDB {
     public class HTTPServer {
@@ -24,6 +27,7 @@ namespace HarbourGuideServerAndDB {
 
         public HTTPServer(int port, Database db) {
             listener = new TcpListener(IPAddress.Any, port);
+            
             database = db;
         }
 
@@ -37,6 +41,7 @@ namespace HarbourGuideServerAndDB {
             listener.Start();
             while (running) {
                 Console.WriteLine("Waiting for connection...");
+                Register(new HttpConfiguration());
                 TcpClient client = listener.AcceptTcpClient();
                 Console.WriteLine("Client connected");
                 HandleClient(client);
@@ -61,5 +66,19 @@ namespace HarbourGuideServerAndDB {
             Response resp = Response.From(req);
             resp.Post(client.GetStream());
         }
+
+        public static void Register(HttpConfiguration config)
+        {
+            //var cors = new EnableCorsAttribute("*", "*", "*");
+            config.EnableCors();
+            // Web API routes 
+            //config.MapHttpAttributeRoutes();
+            config.Routes.MapHttpRoute(
+                name: "DefaultApi",
+                routeTemplate: "api/{controller}/{id}",
+                defaults: new { id = RouteParameter.Optional }
+            );
+        }
+
     }
 }

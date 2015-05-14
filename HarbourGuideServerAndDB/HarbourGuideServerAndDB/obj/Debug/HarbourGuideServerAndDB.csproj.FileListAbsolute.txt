@@ -2,7 +2,15 @@ C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\Ha
 C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\bin\Debug\HarbourGuideServerAndDB.exe
 C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\bin\Debug\HarbourGuideServerAndDB.pdb
 C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\bin\Debug\AWSSDK.dll
+C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\bin\Debug\System.Net.Http.Formatting.dll
+C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\bin\Debug\System.Web.Cors.dll
+C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\bin\Debug\System.Web.Http.Cors.dll
+C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\bin\Debug\System.Web.Http.dll
 C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\bin\Debug\AWSSDK.xml
-C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\obj\Debug\HarbourGuideServerAndDB.csprojResolveAssemblyReference.cache
+C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\bin\Debug\System.Net.Http.Formatting.xml
+C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\bin\Debug\System.Web.Http.xml
+C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\bin\Debug\System.Web.Http.Cors.xml
 C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\obj\Debug\HarbourGuideServerAndDB.exe
 C:\Users\Carson\Documents\Visual Studio 2013\Projects\HarbourGuideServerAndDB\HarbourGuideServerAndDB\obj\Debug\HarbourGuideServerAndDB.pdb

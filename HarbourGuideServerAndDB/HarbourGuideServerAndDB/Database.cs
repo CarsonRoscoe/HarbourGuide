@@ -24,41 +24,50 @@ namespace HarbourGuideServerAndDB
     public class Database
     {
         private static AmazonDynamoDBClient client = new AmazonDynamoDBClient();
+        private static String table = "Scoreboard";
 
 		public Database() {
-			/*
-            try
-            {
-                // Get  - Get a book item.
-                String[] newEntry = { "Carson", "14", "17", "12" };
-                SetScore(newEntry, 1);
-                GetScore(1, "Scoreboard");
-            }
-            catch (AmazonDynamoDBException e) { Console.WriteLine(e.Message); }
-            catch (AmazonServiceException e) { Console.WriteLine(e.Message); }
-            catch (Exception e) { Console.WriteLine(e.Message); }
-
-            
-
-            Console.Read();*/
 		}
 
+        public static int GetSize()
+        {
+            var tempInt = 1;
+            var request = new ScanRequest
+            {
+                TableName = table,
+            };
+
+            var response = client.Scan(request);
+            var result = response.ScanResult;
+
+            foreach (Dictionary<string, AttributeValue> item in response.ScanResult.Items)
+            {
+                tempInt++;
+            }
+
+            return tempInt;
+        }
+
         public static bool SetScore(String[] s, int id) {
+                String json = "{"
+                    + "\"ScoreID\" : " + id +" ,"
+                    + "\"Name\" : \"" + s[0] + "\" ,"
+                    + "\"Score\" : " + s[1] + " ,"
+                    + "\"Difficulty\" : " + s[2] + " ,"
+                    + "\"Time\" : " + s[3]
+                    + "}";
             try {
                 // Load data (using the .NET document API)
-                Table productCatalogTable = Table.LoadTable(client, "Scoreboard");
+                Table scoreboardTable = Table.LoadTable(client, table);
                 // ********** Add A Score *********************
                 var user = new Document();
                 user["ScoreID"] = id;
-                user["Name"] = s[0];
                 user["Score"] = s[1];
-                user["Difficulty"] = s[2];
-                user["Time"] = s[3];
+                user["document"] = json;
 
-                productCatalogTable.PutItem(user);
+                scoreboardTable.PutItem(user);
 
                 Console.WriteLine("Data loaded...");
-                Console.ReadLine();
             }
             catch (AmazonDynamoDBException e) { Console.WriteLine(e.Message); return false; }
             catch (AmazonServiceException e) { Console.WriteLine(e.Message); return false; }
@@ -67,41 +76,40 @@ namespace HarbourGuideServerAndDB
             return true;
         }
 
-        public static void GetScore(int id, string tableName)
+        public static String GetScore(int id)
         {
             var request = new GetItemRequest
             {
-                    TableName = tableName,
+                    TableName = table,
                     Key = new Dictionary<string, AttributeValue>()
-                {
-                { "ScoreID", new AttributeValue { N = id.ToString() } }
-                },
-                ReturnConsumedCapacity = "TOTAL"
+                    {
+                        { "ScoreID", new AttributeValue { N = id.ToString() } }
+                    }
             };
             var response = client.GetItem(request);
 
-            PrintItem(response.Item);
-
-            Console.WriteLine("To continue, press Enter");
-            Console.ReadLine();
+            return PrintItem(response.Item);
         }
 
-        private static void PrintItem(Dictionary<string, AttributeValue> attributeList)
+        private static String PrintItem(Dictionary<string, AttributeValue> attributeList)
             {
-            foreach (var kvp in attributeList)
-                {
-                string attributeName = kvp.Key;
-                AttributeValue value = kvp.Value;
+                String s = null;
+                foreach (var kvp in attributeList)
+                    {
+                    string attributeName = kvp.Key;
+                    AttributeValue value = kvp.Value;
 
-                Console.WriteLine(
-                  attributeName + " " +
-                  (value.S == null ? "" : value.S) +
-                  (value.N == null ? "" : value.N) +
-                  (value.SS == null ? "" : string.Join(",", value.SS.ToArray())) +
-                  (value.NS == null ? "" : string.Join(",", value.NS.ToArray()))
-                );
-                }
-            Console.WriteLine("************************************************");
+                    if (attributeName == "document")
+                        s = (
+                          (value.S == null ? "" : value.S) +
+                          (value.N == null ? "" : value.N) +
+                          (value.SS == null ? "" : string.Join(",", value.SS.ToArray())) +
+                          (value.NS == null ? "" : string.Join(",", value.NS.ToArray()))
+                        );
+                    }
+                return s;
+
+
             }
         }
 
