@@ -10,7 +10,10 @@
     "cocos2d"
   ],
   "jsList": [
+    "http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js",
     "src/resource.js",
+    "src/connection.js",
+	"src/cache.js",
     "src/app.js",
     "src/Game/GameBoard/gameBoard.js",
     "src/hudLayer.js",

@@ -52,7 +52,10 @@ var GameBoard = cc.Layer.extend({
 		
 		createGates();
 		
-
+		if (confirm("Try to send data?")) {
+			new test();
+		}
+		
 		initUnitMovement(this);
 		createLevel(gameVars.difficulty, this);
 		gameVars.spawnCount = gameVars.spawnRate;
