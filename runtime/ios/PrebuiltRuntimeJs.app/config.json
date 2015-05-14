@@ -2,9 +2,9 @@
   "init_cfg": {
     "isLandscape": false,
     "isWindowTop": false,
-    "name": "HarbourGuideLocal",
-    "width": 1920,
-    "height": 1080,
+    "name": "HarborGuideLocal",
+    "width": 960,
+    "height": 640,
     "entry": "main.js",
     "consolePort": 6050,
     "uploadPort": 6060,

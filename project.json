@@ -1,23 +1,22 @@
 {
-    "project_type":"javascript",
-    "debugMode":1,
-    "showFPS":true,
-    "frameRate":60,
-    "id":"gameCanvas",
-    "renderMode":0,
-    "engineDir":"frameworks/cocos2d-html5",
-    "modules":[
-        "cocos2d"
-    ],
-    "jsList":[
-        "src/resource.js",
-        "src/app.js",
-        "src/Game/GameBoard/gameBoard.js",
-        "src/hudLayer.js",
-        "src/app2.js",
-        "src/app3.js",
-        "src/app4.js",
-        "src/app5.js"
-        
-    ]
+  "project_type": "javascript",
+  "debugMode": 1,
+  "showFPS": true,
+  "frameRate": 60,
+  "id": "gameCanvas",
+  "renderMode": 0,
+  "engineDir": "frameworks/cocos2d-html5",
+  "modules": [
+    "cocos2d"
+  ],
+  "jsList": [
+    "src/resource.js",
+    "src/app.js",
+    "src/Game/GameBoard/gameBoard.js",
+    "src/hudLayer.js",
+    "src/MainMenuScene.js",
+    "src/PreGameScene.js",
+    "src/SettingsScene.js",
+    "src/ScoresScene.js"
+  ]
 }

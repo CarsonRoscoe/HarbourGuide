@@ -62,7 +62,7 @@ cc.game.onStart = function(){
     		} else {
     			cc.view.setDesignResolutionSize(1536, 2048, cc.ResolutionPolicy.SHOW_ALL);
     		}
-    		searchPaths.push("res/largeRes");
+    		searchPaths.push("res/mediumRes");
     		searchPaths.push("src");
     	} else if (cc.view.getFrameSize().width >= 640 && cc.view.getFrameSize().height >= 640) { //iphone hd and android high res
     		var size;
@@ -86,7 +86,7 @@ cc.game.onStart = function(){
     			cc.view.setDesignResolutionSize(320, 480, cc.ResolutionPolicy.SHOW_ALL);
     		}
 
-    		searchPaths.push("res/lowRes");
+    		searchPaths.push("res/mediumRes");
     		searchPaths.push("src");
     	}
     	jsb.fileUtils.setSearchPaths(searchPaths);
