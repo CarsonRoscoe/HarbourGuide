@@ -7,7 +7,7 @@ var MenuLayer = cc.Layer.extend({
 	ctor:function() {
 		this._super();
 		this.init(this);
-
+		
 	},
 	
 	init:function(Layer){
@@ -30,15 +30,15 @@ var MenuLayer = cc.Layer.extend({
 		//Adds menuItems to a Menu
 		var menu = new cc.Menu(menuItem1, menuItem2, menuItem3);
 		//Aligns the items vertically
-<<<<<<< HEAD
 		menu.alignItemsVerticallyWithPadding(130);
+		
+		var backgroundLogo = new cc.Sprite("res/mediumRes/main_logo.PNG");
+		backgroundLogo.setPosition(cc.p(winsize.width / 2, winsize.heigth / 2));
+		
 		//Adds menu to layer
-		Layer.removeAllChildren();
-=======
-		menu.alignItemsVerticallyWithPadding(550);
-		//Adds menu to layer
->>>>>>> origin/master
+		Layer.addChild(backgroundLogo);
 		Layer.addChild(menu);
+		
 	},
 	
 	//The following 3 functions are called when the buttons in the menu are pressed
@@ -66,6 +66,24 @@ var MenuLayer = cc.Layer.extend({
 	}
 });
 
+var BackgroundLayer = cc.Layer.extend({
+	backgroundImg: null,
+	
+	
+	ctor:function(){
+		this._super();
+		this.init(this);
+	},
+
+	init:function(Layer){
+		var winsize = cc.director.getWinSize();
+		
+		Layer.backgroundImg = new cc.Sprite("res/mediumRes/main_bg.png");
+		Layer.backgroundImg.setPosition(cc.p(winsize.width / 2, winsize.height /2));
+		Layer.addChild(Layer.backgroundImg);
+	}
+});
+
 //MenuScene
 //Adds a MenuLayer to itself if the scene has not already been initialized
 var MenuScene = cc.Scene.extend({
@@ -76,8 +94,12 @@ var MenuScene = cc.Scene.extend({
 			
 			INITIALIZED2 = true;
 			
+			var bgLayer = new BackgroundLayer();
 			var layer = new MenuLayer();
+			
+			this.addChild(bgLayer);
 			this.addChild(layer);
+			
 			cc.audioEngine.playMusic(res.background_mp3, true); //starts audio NOTE: browsers don't support loop, seperate loop needs to be made
 		}
 	}
