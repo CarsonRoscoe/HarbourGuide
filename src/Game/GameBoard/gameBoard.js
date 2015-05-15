@@ -17,6 +17,7 @@ var GameBoard = cc.Layer.extend({
 	drawLayers: null,
 	gameVars: null,
 	hud: null,
+	paintInterval: null,
 
 	/**
 	 * Constructor that builds the game grid.
@@ -38,15 +39,20 @@ var GameBoard = cc.Layer.extend({
 		boardGlobY = (cc.winSize.height - cellsColumn * cellSize) / 2;
 		interaction = null;
 		drawLayers = [];
-		gameVars = new gameVars();
+		gameVars = new gameVariables();
 		gameVars.score = 0;
-		gameVars.unitSpeed = 1000;
-		gameVars.unitsLeft = 20;
+		var readPlayer = loadPlayer(50);
+		gameVars.difficulty = readPlayer.difficulty;
+		gameVars.difficultyOffsetUp = readPlayer.difficultyUp;
+		gameVars.difficultyOffsetDown = readPlayer.difficultyDown;
+		gameVars.unitSpeed = 2000 - Math.round(gameVars.difficulty * 19);
+		gameVars.unitsStart = 5 + Math.round(gameVars.difficulty * .35);
+		gameVars.unitsLeft = gameVars.unitsStart;
 		gameVars.unitsComplete = 0;
 		gameVars.frameRate = 16;
-		gameVars.spawnCount = 0;
-		gameVars.spawnRate = 12;
-		gameVars.difficulty = loadPlayer(50).difficulty;
+		gameVars.spawnRate = 10000 - Math.round(gameVars.difficulty * 50); //how often this spawns * time
+		gameVars.spawnCount = gameVars.spawnRate;
+		gameVars.unitsOnBoard = 1 + Math.round(gameVars.difficulty / 20);
 		hud = newHudLayer;
 		hud.updateBoatsLeft(gameVars.unitsLeft);
 		
@@ -54,12 +60,11 @@ var GameBoard = cc.Layer.extend({
 		
 		initUnitMovement(this);
 		createLevel(gameVars.difficulty, this);
-		gameVars.spawnCount = gameVars.spawnRate;
 
 		initPaint(0, this);
 		initPaint(1, this);
 		initPaint(2, this);
-		repaintLoop();
+		repaintLoop(false);
 		
 			/**
 			 * Handles all the touch and swipe movements on the grid.
@@ -588,8 +593,12 @@ var repaint = function(depth) {
 /**
  * Loops the repaint method at a set frameRate.
  */
-var repaintLoop = function() {
-	var temp = setInterval(function() {
+var repaintLoop = function(kill) {	
+	if (kill) {
+		clearInterval(paintInterval);
+		return;
+	}
+	paintInterval = setInterval(function() {
 		repaint(1);
 	}
 	, gameVars.frameRate);
@@ -602,7 +611,8 @@ var repaintLoop = function() {
  */
 var spawnUnit = function(ref) {
 	var attempts = cellsRow * 2;
-	if (++gameVars.spawnCount >= gameVars.spawnRate && gameVars.unitsLeft > 0) {
+	gameVars.spawnCount += gameVars.unitSpeed;
+	if (gameVars.spawnCount >= gameVars.spawnRate && gameVars.unitsLeft > 0) {
 		while (!createUnit(cc.p(Math.floor(Math.random() * (cellsRow - 0.00001)),0), 0, ref) && attempts > 0) {
 			attempts--;
 		}
@@ -621,12 +631,53 @@ var spawnUnit = function(ref) {
  */
 var initUnitMovement = function(ref){
 	var temp = setInterval(function() {
+			if (checkGameFinished()) {
+				clearInterval(temp);
+				repaintLoop(true);
+				cc.director.popScene();
+			}
 			updateUnits(ref);
+			if (unitBoats.length < gameVars.unitsOnBoard)
 			spawnUnit(ref);
 			repaint(1);
 		}
 	, gameVars.unitSpeed);
 };
+
+
+var checkGameFinished = function() {
+	if (unitBoats.length < 1 && gameVars.unitsLeft < 1) {
+		adjustDifficulty();
+		return true;
+	}
+}
+
+var adjustDifficulty = function() {
+	var diff = gameVars.difficulty;
+	var up = gameVars.difficultyOffsetUp;
+	var down = gameVars.difficultyOffsetDown;
+	var score = gameVars.score;
+	var avgScore = gameVars.unitsStart * Math.round(diff / (10 + (diff / 20)));
+	alert("DIF" + gameVars.difficultyOffsetUp);
+	if (score >= avgScore) {
+		diff += up;
+		if (up < 10) {
+			up++;
+			down--;
+		}
+	} else {
+		diff -= down;		
+		if (down < 10) {
+			up--;
+			down++;
+		}
+	}
+	if (diff > 100)
+		diff = 100;
+	if (diff < 1)
+		diff = 1;
+	savePlayerData(new playerDataObj(diff, up, down));
+}
 
 /**
  * Loops through all units on the grid and updates their move depending on the direction assigned to them.
@@ -718,23 +769,23 @@ var unitAnimate = function(unit, direction, justRotate) {
 	switch(direction) {
 	case 0:
 		if (!justRotate)
-			action = cc.MoveBy.create(1, cc.p(0, cellSize));
-		action2 = cc.RotateTo.create(.25, 0);
+			action = cc.MoveBy.create(gameVars.unitSpeed/1000, cc.p(0, cellSize));
+		action2 = cc.RotateTo.create(gameVars.unitSpeed/4000, 0);
 		break;
 	case 1:
 		if (!justRotate)
-			action = cc.MoveBy.create(1, cc.p(cellSize, 0));
-		action2 = cc.RotateTo.create(.25, 90);
+			action = cc.MoveBy.create(gameVars.unitSpeed/1000, cc.p(cellSize, 0));
+		action2 = cc.RotateTo.create(gameVars.unitSpeed/4000, 90);
 		break;
 	case 2:
 		if (!justRotate)
-			action = cc.MoveBy.create(1, cc.p(0, -cellSize));
-		action2 = cc.RotateTo.create(.25, 180);
+			action = cc.MoveBy.create(gameVars.unitSpeed/1000, cc.p(0, -cellSize));
+		action2 = cc.RotateTo.create(gameVars.unitSpeed/4000, 180);
 		break;
 	case 3:
 		if (!justRotate)
-			action = cc.MoveBy.create(1, cc.p(-cellSize, 0));
-		action2 = cc.RotateTo.create(.25, -90);
+			action = cc.MoveBy.create(gameVars.unitSpeed/1000, cc.p(-cellSize, 0));
+		action2 = cc.RotateTo.create(gameVars.unitSpeed/4000, -90);
 		break;
 	default:
 		break;
@@ -861,13 +912,17 @@ var dragMovement = function() {
  * Holds necessary variables for the game, which would be used outside of the game. Such as score
  * on the level, game speed, maximum frames, how many to spawn, and how quickly new boats spawn.
  */
-var gameVars = function() {
+var gameVariables = function() {
 	score: null;
 	unitsLeft: null;
 	unitsComplete: null;
+	unitsStart: null;
 	unitSpeed: null;
 	frameRate: null;
 	spawnCount: null;
 	spawnRate: null;
 	difficulty: null;
+	difficultyOffsetUp: null;
+	difficultyOffsetDown: null;
+	unitsOnBoard: null;
 }

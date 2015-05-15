@@ -7,23 +7,15 @@ var PreGameLayer = cc.Layer.extend({
 		this._super();
 		//var size = cc.winSize;
 		//MenuItems to navigate to Runner, Settings, and MainMenu scene
-		var menuItem2 = new cc.MenuItemSprite(
-				new cc.Sprite("res/settings_default.png"),
-				new cc.Sprite("res/settings_default.png"),
-				preSettings, this);
-		var menuItem1 = new cc.MenuItemSprite(
-				new cc.Sprite("res/play_default.png"),
-				new cc.Sprite("res/play_default.png"),
-				preStart, this);
-		var menuItem3 = new cc.MenuItemSprite(
-				new cc.Sprite("res/back_default.png"),
-				new cc.Sprite("res/back_default.png"),
-				preBack, this);
+		var menuItem1 = new cc.MenuItemFont("Start", preStart);
+		var menuItem2 = new cc.MenuItemFont("Settings", preSettings);
+		var menuItem3 = new cc.MenuItemFont("Back", preBack);
 		//Adds menuItems to a Menu
 		var menu = new cc.Menu(menuItem1, menuItem2, menuItem3);
 		//Aligns the items vertically
-		menu.alignItemsVerticallyWithPadding(130);
+		menu.alignItemsVertically();
 		//Adds menu to layer
+		this.removeAllChildren();
 		this.addChild(menu);
 
 		return true;
@@ -44,14 +36,14 @@ var preStart = function() {
 var preBack = function() {
 	INITIALIZED3 = false;
 	var scene = new MenuScene();
-	cc.director.runScene(scene);
+	cc.director.popScene();
 }
 
 var preSettings = function() {
 	INITIALIZED3 = false;
 	var scene = new SettingsScene();
 	cc.audioEngine.playEffect(res.button);
-	cc.director.runScene(scene); //push
+	cc.director.pushScene(scene); //push
 }
 //PreGameScene
 //Adds a PreGameLayer to itself if the scene has not already been initialized
@@ -64,6 +56,7 @@ var PreGameScene = cc.Scene.extend({
 			INITIALIZED3 = true;
 
 			var layer = new PreGameLayer();
+			this.removeAllChildren();
 			this.addChild(layer);
 		}
 	}

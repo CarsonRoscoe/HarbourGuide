@@ -11,6 +11,7 @@ var HUDLayer = cc.Layer.extend({
 
 	init:function(boatsLeft){
 		this._super();
+		this.removeAllChildren();
 
 		var winsize = cc.director.getWinSize();
 		
@@ -45,7 +46,7 @@ var HUDLayer = cc.Layer.extend({
 	addScore:function(unitTime){
 		var winsize = cc.director.getWinSize();
 		//score variable from gameBoard
-		var score = Math.round(gameVars.difficulty - (gameVars.difficulty / 20) * unitTime);
+		var score = Math.round(gameVars.difficulty / (unitTime / 5));
 		if (score < 0)
 			score = 0;
 		gameVars.score += score

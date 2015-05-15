@@ -19,7 +19,7 @@ var savePlayerData = function(data) {
 }
 
 function buildPlayerString(data) {
-	return data.difficulty;
+	return data.difficulty + ";" + data.difficultyUp + ";" + data.difficultyDown;
 }
 
 function buildScoreString(data) {
@@ -37,19 +37,21 @@ var scoreData = function(name, score, difficulty, time) {
 	this.time = time;
 }
 
-var playerData = function(d) {
+var playerDataObj = function(d, u, down) {
 	this.difficulty = d;
+	this.difficultyUp = u;
+	this.difficultyDown = down;
 }
 
 var loadPlayer = function(defDifficulty) {
 	if (localStorage.getItem("playerData") == null) {
-		savePlayerData(new playerData(defDifficulty));
+		savePlayerData(new playerDataObj(defDifficulty, 5, 5));
 	}
 	var r = localStorage.getItem("playerData").split(";");
 	if (r[0] == null) {
-		savePlayerData(new playerData(defDifficulty));
+		savePlayerData(new playerDataObj(defDifficulty, 5, 5));
 	}
-	return new playerData(parseInt(r[0]));	
+	return new playerDataObj(parseInt(r[0]), parseInt(r[1]), parseInt(r[2]));	
 }
 
 function loadScore(index) {

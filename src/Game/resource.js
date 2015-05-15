@@ -11,12 +11,7 @@ var res = {
     UnitSprite_png : folder + "1x1_sprite/1container_red.png",
     ObstacleSmall_png : folder + "1x2_sprite/v1.png",
     ObstacleMedium_png : folder + "1x3_sprite/v1.png",
-    ObstacleLarge_png : folder + "1x4_sprite/v1.png",
-    PlayButton_png : folder + "buttons/play_default.png",
-    BackButton_png : folder + "buttons/back_default.png",
-    ScoreButton_png : folder + "buttons/scores_default.png",
-    SettingButton_png : folder + "buttons/settings_default.png"
-    /*,
+    ObstacleLarge_png : folder + "1x4_sprite/v1.png"/*,
     background_mp3 : "res/sound/mainbg.mp3",
     button : "res/sound/button.mp3",
     GameBackground_mp3 : "res/sound/gamebg.mp3"*/
