@@ -20,6 +20,7 @@
     "src/MainMenuScene.js",
     "src/PreGameScene.js",
     "src/SettingsScene.js",
-    "src/ScoresScene.js"
+    "src/ScoresScene.js",
+	"src/comparefunctions.js"
   ]
 }

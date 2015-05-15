@@ -1,3 +1,4 @@
+var dataPackArray = null;
 
 var test = function() {
 	var data = new dataPack("niceTRY", 234, 654, 123);
@@ -7,7 +8,7 @@ var test = function() {
 var sendCommand = function(command, dP) {
 	var formatted = "";
 	switch(command) {
-	case "GETSCORE":
+	case "GETSCORE;":
 		formatted = command;
 		break;
 	case "DATA":
@@ -26,9 +27,14 @@ var sendCommand = function(command, dP) {
 	});
 };
 
+var getDataPackArray = function() {
+	return dataPackArray;
+}
+
 var getScore = function(json) {
+	dataPackArray = [];
 	for(var i = 0; i < json.ScoreboardStats.length; i++) {
-		alert('Name: ' + json.ScoreboardStats[i].Name + " Score: " + json.ScoreboardStats[i].Score + " Difficulty: " + json.ScoreboardStats[i].Difficulty + " Time: " + json.ScoreboardStats[i].Time);
+		dataPackArray[i] = new dataPack(json.ScoreboardStats[i].Name, json.ScoreboardStats[i].Score, json.ScoreboardStats[i].Difficulty, json.ScoreboardStats[i].Time);
 	}
 };
 

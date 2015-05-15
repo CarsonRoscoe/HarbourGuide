@@ -19,6 +19,8 @@ var ScoresLayer = cc.Layer.extend({
 	fontRoom: null,
 	dataArray: null,
 	snapBack: null,
+	sortBy: null,
+	locGlob: null,
 	
 	ctor:function() {
 		this._super();
@@ -32,6 +34,12 @@ var init = function(Layer) {
 	offset = 0;
 	isDown = false;
 	spriteArray = [];
+	//Score;Dif;Time
+	sortBy = 0;
+	//Local;Global
+	locGlob = 1;
+	labelArray = [];
+	dataArray = [];
 	
 	spriteArray[0] = spriteBack = new cc.Sprite.create(res.UnclickedRect_png);
 	spriteBack.setAnchorPoint(cc.p(0.5, 0.5));
@@ -71,40 +79,75 @@ var init = function(Layer) {
 	
 	//initLocalData(Layer);
 	initOnlineDataPre();
+	var waitTime = 20;
+	var waitCounter = 0;
 	
-	setTimeout(function() {
-			initOnlineData(Layer);
-			initMouseEvents(Layer);
-		}, 2000);
+	var getDataDelay = setInterval(function() {
+			if (dataPackArray != null) {
+				initOnlineData(Layer);
+				initMouseEvents(Layer);
+				clearInterval(getDataDelay);
+			} else {
+				waitCounter += waitTime;
+				if (waitCounter >= 4000) {
+					noConnection(Layer);
+					clearInterval(getDataDelay);
+				}
+			}
+		}, waitTime);
 }
 
 var initOnlineDataPre = function() {
 	sendCommand("GETSCORE;", 0);
 }
 
+var noConnection = function(Layer) {
+	label = new cc.LabelTTF("No Connection", "Helvetica");
+	label.setFontSize(60);
+	label.setColor(cc.color(200,200,200));
+	label.setPosition(cc.p(cc.winSize.width / 2, cc.winSize.height / 2 - 100));
+	Layer.addChild(label);
+
+}
+
 var initOnlineData = function(Layer) {
-	dataArray = [];
 	var dataPackArray = getDataPackArray();
+	
+	if (sortBy == 0)
+		dataPackArray.sort(sortByScore);
+	if (sortBy == 1)
+		dataPackArray.sort(sortByDifficulty);
+	if (sortBy == 2)
+		dataPackArray.sort(sortByTime);
+	
+	dataArray = [];
 	for (var i = 0; i < dataPackArray.length; i++) {
 		dataArray[i] = (i+1) + " : " + dataPackArray[i].name + "\t" + dataPackArray[i].score + "\t" + dataPackArray[i].difficulty + "\t" + dataPackArray[i].time;
 	}
-
 	initScore(Layer);
 }
 
 var initScore = function(Layer) {
 	var size = cc.winSize;
-	labelArray = [];
 	fontSize = 60;
 	fontRoom = Math.round(fontSize*(9/8));
 	defaultFromTop = size.height - fontSize/2 - (spriteGlobal.height * 2) - (spriteTime.height * 2);
-	var amount = (((defaultFromTop) / fontSize - 1) < (dataArray.length))?((defaultFromTop) / fontSize - 1):dataArray.length;
-	for (var i = 0; i < amount; i++) {
-		labelArray[i] = new cc.LabelTTF(dataArray[i], "Helvetica");
-		labelArray[i].setFontSize(fontSize);
-		labelArray[i].setColor(cc.color(200,200,200));
-		labelArray[i].setPosition(cc.p(size.width / 2, defaultFromTop - (i * fontRoom) ));
-		Layer.addChild(labelArray[i]);
+	if (labelArray[0] == null) {
+		labelArray = [];	
+		var amount = (((defaultFromTop) / fontSize - 1) < (dataArray.length))?((defaultFromTop) / fontSize - 1):dataArray.length;
+		for (var i = 0; i < amount; i++) {
+			labelArray[i] = new cc.LabelTTF(dataArray[i], "Helvetica");
+			labelArray[i].setFontSize(fontSize);
+			labelArray[i].setColor(cc.color(200,200,200));
+			labelArray[i].setPosition(cc.p(size.width / 2, defaultFromTop - (i * fontRoom) ));
+			Layer.addChild(labelArray[i]);
+		}
+	} else {
+		var amount = (((defaultFromTop) / fontSize - 1) < (dataArray.length))?((defaultFromTop) / fontSize - 1):dataArray.length;
+		for (var i = 0; i < amount; i++) {
+			labelArray[i].setString(dataArray[i]);
+			labelArray[i].y = defaultFromTop - (i * fontRoom);
+		}
 	}
 	
 	var loop = setInterval(function() {
@@ -112,13 +155,18 @@ var initScore = function(Layer) {
 		}, 34);
 }
 
-var initLocalData = function(Layer) {
-	dataArray = [];
-	
+var initLocalData = function(Layer) {	
 	for (var i = 0; i < localStorage.length - 1; i++) {
 		var data = loadScore(i);
 		dataArray[i] = (i+1) + " : " + data.score + "\t" + data.difficulty + "\t" + data.time;
 	}
+	if (sortBy == 0)
+		dataArray.sort(sortByScore);
+	if (sortBy == 1)
+		dataArray.sort(sortByDifficulty);
+	if (sortBy == 2)
+		dataArray.sort(sortByTime);
+	
 	initScore(Layer);
 }
 
@@ -128,12 +176,14 @@ var initMouseEvents = function(Layer) {
 		mouseDown: null,
 		relativeY: null,
 		clickedY: null,
+		selected: null,
 		
 		onMouseDown: function(event) {
 			if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
 				isDown = true;
 				mouseDown = event.getLocation();
 				snapBack = false;
+				selected = getButtonClicked(event.getLocation())
 			}
 		},
 
@@ -143,6 +193,12 @@ var initMouseEvents = function(Layer) {
 				offset = 0;
 				if (snapBack == true)
 					moveToPos();
+				
+				if (selected != null && selected == getButtonClicked(event.getLocation())) {
+					doClicked(getButtonClicked(event.getLocation()), Layer);
+				}
+				
+				selected = null;
 			}
 		},
 
@@ -154,6 +210,89 @@ var initMouseEvents = function(Layer) {
 			}
 		}
 	}, Layer);
+}
+
+var doClicked = function(i, Layer) {
+	switch(i) {
+		case 0:
+		scoreSceneBack();
+		break;
+		case 1:
+		scorePressLocal(Layer);
+		break;
+		case 2:
+		scorePressGlobal(Layer);
+		break;
+		case 3:
+		scorePressScore(Layer);
+		break;
+		case 4:
+		scorePressDifficulty(Layer);
+		break;
+		case 5:
+		scorePressTime(Layer);
+	}
+}
+
+var scorePressLocal = function(Layer) {
+	cleanupData();
+	//initLocalData(Layer);
+}
+
+var scorePressGlobal = function(Layer) {
+	cleanupData();
+	initOnlineData(Layer);
+}
+
+var scorePressScore = function(Layer) {
+	sortBy = 0;
+	cleanupData();
+	if (locGlob == 0)
+		initLocalData(Layer);
+	else
+		initOnlineData(Layer);
+}
+
+var scorePressDifficulty = function(Layer) {
+	sortBy = 1;
+	cleanupData();
+	if (locGlob == 0)
+		initLocalData(Layer);
+	else
+		initOnlineData(Layer);
+}
+
+var cleanupData = function(Layer) {
+	dataArray = null;
+	offset = null;
+}
+
+var scorePressTime = function(Layer) {
+	sortBy = 2;
+	cleanupData();
+	if (locGlob == 0)
+		initLocalData(Layer);
+	else
+		initOnlineData(Layer);
+}
+
+var getButtonClicked = function(clickPoint) {
+	var left;
+	var right;
+	var up;
+	var down
+	var x = clickPoint.x;
+	var y = clickPoint.y;
+	for (var i = 0; i < spriteArray.length; i++) {
+		left = spriteArray[i].x - spriteArray[i].width/2;
+		right = spriteArray[i].x + spriteArray[i].width/2;
+		up = spriteArray[i].y + spriteArray[i].height/2;
+		down = spriteArray[i].y - spriteArray[i].height/2;
+		
+		if (left <= x && right >= x && up >= y && down <= y)
+			return i;
+	}
+	return null;
 }
 
 var moveToPos = function()  {
@@ -199,6 +338,7 @@ var updateScore = function() {
 //The following function is called when the button in the menu is pressed
 //All the functions reset INITIALZIED5 to false, so it can be called by the scene again
 var scoreSceneBack = function() {
+	alert("XD");
 	INITIALIZED5 = false;
 	var scene = new MenuScene();
 	cc.audioEngine.playEffect(res.button);
@@ -211,6 +351,43 @@ var settingsBack = function() {
 	cc.audioEngine.playEffect(res.button);
 	cc.director.runScene(scene);
 }
+
+var sortByScore = function(bJSON, aJSON) {
+	var result = 0;
+	result = aJSON.score - bJSON.score;
+	
+	if (result == 0)
+		result = aJSON.name - bJSON.name;
+	
+    return result;
+}
+
+var sortByDifficulty = function(bJSON, aJSON) {
+    var result = 0;
+	result = aJSON.difficulty - bJSON.difficulty;
+	
+	if (result == 0)
+		result = aJSON.score - bJSON.score;
+	
+	if (result == 0)
+		result = aJSON.name - bJSON.name;
+	
+    return result;
+}
+
+var sortByTime = function(bJSON, aJSON) {
+    var result = 0;
+	result = aJSON.time - bJSON.time;
+	
+	if (result == 0)
+		result = aJSON.score - bJSON.score;
+	
+	if (result == 0)
+		result = aJSON.name - bJSON.name;
+	
+    return result;
+}
+
 
 //ScoresScene
 //Adds a ScoresLayer to itself if the scene has not already been initialized
