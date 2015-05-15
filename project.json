@@ -20,6 +20,10 @@
     "src/PreGameScene.js",
     "src/SettingsScene.js",
     "src/ScoresScene.js",
+<<<<<<< HEAD
     "src/HudLayer.js"
+=======
+	"src/comparefunctions.js"
+>>>>>>> origin/master
   ]
 }

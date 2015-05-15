@@ -30,9 +30,14 @@ var MenuLayer = cc.Layer.extend({
 		//Adds menuItems to a Menu
 		var menu = new cc.Menu(menuItem1, menuItem2, menuItem3);
 		//Aligns the items vertically
+<<<<<<< HEAD
 		menu.alignItemsVerticallyWithPadding(130);
 		//Adds menu to layer
 		Layer.removeAllChildren();
+=======
+		menu.alignItemsVerticallyWithPadding(550);
+		//Adds menu to layer
+>>>>>>> origin/master
 		Layer.addChild(menu);
 	},
 	
