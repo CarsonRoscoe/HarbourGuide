@@ -228,7 +228,7 @@ var initData = function(Layer) {
 
 var initScore = function(Layer) {
 	var size = cc.winSize;
-	fontSize = 60;
+	fontSize = 50;
 	fontRoom = Math.round(fontSize*(9/8));
 	defaultFromTop = size.height - fontSize/2 - (spriteGlobal.height * 2) - (spriteTime.height * 2);
 	labelArray = [];
@@ -402,8 +402,7 @@ var scoreSceneBack = function(Layer) {
 	INITIALIZED5 = false;
 	var scene = new MenuScene();
 	cc.audioEngine.playEffect(res.button);
-	Layer.removeAllChildren();
-	cc.director.popScene();
+	cc.director.runScene(scene);
 }
 
 var sortByScore = function(bJSON, aJSON) {
