@@ -13,13 +13,13 @@
     "http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js",
     "src/resource.js",
     "src/connection.js",
-	"src/cache.js",
+    "src/cache.js",
     "src/app.js",
     "src/Game/GameBoard/gameBoard.js",
-    "src/hudLayer.js",
     "src/MainMenuScene.js",
     "src/PreGameScene.js",
     "src/SettingsScene.js",
-    "src/ScoresScene.js"
+    "src/ScoresScene.js",
+    "src/HudLayer.js"
   ]
 }

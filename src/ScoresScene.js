@@ -9,7 +9,10 @@ var ScoresLayer = cc.Layer.extend({
 		//MenuItem to navigate to MenuScene
 		//Scores is a placeholder, not clickable
 		var menuItem1 = new cc.MenuItemFont("Scores");
-		var menuItem2 = new cc.MenuItemFont("Back", settingsBack);
+		var menuItem2 = new cc.MenuItemSprite(
+				new cc.Sprite("res/back_default.png"),
+				new cc.Sprite("res/back_default.png"),
+				settingsBack, this);
 		//Adds menuItems to a Menu
 		var menu = new cc.Menu(menuItem1, menuItem2);
 		//Aligns the items vertically

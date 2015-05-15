@@ -7,13 +7,22 @@ var PreGameLayer = cc.Layer.extend({
 		this._super();
 		//var size = cc.winSize;
 		//MenuItems to navigate to Runner, Settings, and MainMenu scene
-		var menuItem1 = new cc.MenuItemFont("Start", preStart);
-		var menuItem2 = new cc.MenuItemFont("Settings", preSettings);
-		var menuItem3 = new cc.MenuItemFont("Back", preBack);
+		var menuItem2 = new cc.MenuItemSprite(
+				new cc.Sprite("res/settings_default.png"),
+				new cc.Sprite("res/settings_default.png"),
+				preSettings, this);
+		var menuItem1 = new cc.MenuItemSprite(
+				new cc.Sprite("res/play_default.png"),
+				new cc.Sprite("res/play_default.png"),
+				preStart, this);
+		var menuItem3 = new cc.MenuItemSprite(
+				new cc.Sprite("res/back_default.png"),
+				new cc.Sprite("res/back_default.png"),
+				preBack, this);
 		//Adds menuItems to a Menu
 		var menu = new cc.Menu(menuItem1, menuItem2, menuItem3);
 		//Aligns the items vertically
-		menu.alignItemsVertically();
+		menu.alignItemsVerticallyWithPadding(130);
 		//Adds menu to layer
 		this.addChild(menu);
 
