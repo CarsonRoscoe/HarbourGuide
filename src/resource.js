@@ -11,8 +11,16 @@ var res = {
     background_mp3 : "res/sound/mainbg.mp3",
     button : "res/sound/button.mp3",
     GameBackground_mp3 : "res/sound/gamebg.mp3",
+	GameBackground_png : folder + "bg.png",
     Button_png : "res/pause.png",
-
+	UnclickedRect_png : folder + "UnclickedRect.png",
+    PlayButton_png : folder + "buttons/play_default.png",
+    BackButton_png : folder + "buttons/back_default.png",
+    ScoreButton_png : folder + "buttons/scores_default.png",
+    SettingButton_png : folder + "buttons/settings_default.png",
+	MenuBg_png : folder + "main_bg.png",
+	MenuLogo_png : folder + "main_logo.png",
+	
    /* med1x2Shipv1: folder + "1x2_ships/1x2_v1.png",
     med1x2Shipv2: folder + "1x2_ships/1x2_v2.png",
     med1x3Shipv1: folder + "1x3_ships/1x3_v1.png",

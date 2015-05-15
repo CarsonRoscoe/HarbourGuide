@@ -486,6 +486,7 @@ var createLevel = function(difficulty, ref) {
 	lengths[1] = lengths[2] * 3;
 	lengths[0] += lengths[1] + lengths[2];
 	lengths[1] += lengths[2];
+	
 	var spawns = Math.ceil((difficulty + Math.round(Math.random() * (Math.round(Math.random() * 20)))) / 10);
 	while(spawns != null && spawns > 0) {
 		var orientation = Math.round(Math.random());
@@ -529,8 +530,12 @@ var initPaint = function(layer, ref) {
 	// Set draw to be our surface to draw to
 	drawLayers[layer] = new cc.DrawNode();
 
-	ref.addChild(drawLayers[layer]);
-
+	/*ref.addChild(drawLayers[layer]);
+	var sprite = new cc.Sprite.create(res.GameBackground_png, 100);
+	sprite.setAnchorPoint(cc.p(.5, .5));
+	sprite.setPosition(cc.p(cc.winSize.width / 2, cc.winSize.heigth / 2));
+	ref.addChild(sprite);*/
+	
 	repaint(layer);
 };
 
@@ -550,9 +555,9 @@ var repaint = function(depth) {
 	case 0:
 		for(i = 0; i < cellsRow; i++) {
 			for (j = 0; j < cellsColumn; j++) {
-				drawLayers[depth].drawRect(cc.p(i * cellSize, j * cellSize), cc.p(i * cellSize + cellSize, j * cellSize + cellSize),cc.color(255,255,255), 
-						4, 
-						cc.color(0,0,0));
+				//drawLayers[depth].drawRect(cc.p(i * cellSize, j * cellSize), cc.p(i * cellSize + cellSize, j * cellSize + cellSize),cc.color(255,255,255), 
+						//4, 
+						//cc.color(0,0,0));
 			}
 		}
 		break;
@@ -561,15 +566,15 @@ var repaint = function(depth) {
 			for (j = 0; j < cellsColumn; j++) {
 				if (grid[i][j].isEmpty == true) {
 					if (grid[i][j].gateID == null) {
-						drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 45, cc.color(255,0,0));
+						//drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 45, cc.color(255,0,0));
 					} else {
-						drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 45, cc.color(255,255,0));
+						//drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 45, cc.color(255,255,0));
 					}
 				} else {
 					if (grid[i][j].unitID != null) {
-						drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 45, cc.color(0,0,255));
+						//drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 45, cc.color(0,0,255));
 					} else if (grid[i][j].shipID != null) {
-						drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 45, cc.color(0,255,0));
+						//drawLayers[depth].drawDot(cc.p(grid[i][j].xPos, grid[i][j].yPos), 45, cc.color(0,255,0));
 					}
 				}
 			}
@@ -579,9 +584,9 @@ var repaint = function(depth) {
 		for(var t = 0; t < obstacleBoats.length; t++) {
 			var temp = obstacleBoats[t];
 			if (temp.orientation == 0) {
-				drawLayers[depth].drawDot(cc.p((temp.frontPoint.x + (temp.length * .5)) * cellSize, (temp.frontPoint.y + .5) * cellSize) , 5, cc.color(0,0,0));
+				//drawLayers[depth].drawDot(cc.p((temp.frontPoint.x + (temp.length * .5)) * cellSize, (temp.frontPoint.y + .5) * cellSize) , 5, cc.color(0,0,0));
 			} else if (temp.orientation == 1) {
-				drawLayers[depth].drawDot(cc.p((temp.frontPoint.x + .5) * cellSize, (temp.frontPoint.y + (temp.length * .5)) * cellSize) , 5, cc.color(0,0,0));
+				//drawLayers[depth].drawDot(cc.p((temp.frontPoint.x + .5) * cellSize, (temp.frontPoint.y + (temp.length * .5)) * cellSize) , 5, cc.color(0,0,0));
 			}
 		}
 		break;
