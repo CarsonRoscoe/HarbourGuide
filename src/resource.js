@@ -11,7 +11,7 @@ var res = {
     background_mp3 : "res/sound/mainbg.mp3",
     button : "res/sound/button.mp3",
     GameBackground_mp3 : "res/sound/gamebg.mp3",
-	GameBackground_png : folder + "bg.png",
+	GameBackground_png : folder + "grid_colored.png",
     Button_png : "res/pause.png",
 	UnclickedRect_png : folder + "UnclickedRect.png",
     PlayButton_png : folder + "buttons/play_default.png",

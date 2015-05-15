@@ -56,6 +56,8 @@ var GameBoard = cc.Layer.extend({
 		hud = newHudLayer;
 		hud.updateBoatsLeft(gameVars.unitsLeft);
 		
+		drawBackground(this);
+		
 		createGates();
 		
 		initUnitMovement(this);
@@ -332,6 +334,20 @@ var createGrid = function() {
 	}
 	return grid;
 };
+
+
+var drawBackground = function(ref) {
+	var temp = new cc.Sprite.create(res.GameBackground_png);	
+	temp.setAnchorPoint(0,0);
+	temp.setScaleX(cc.winSize.width / temp.width);
+	temp.setScaleY((cellSize * cellsColumn) / temp.height);
+	
+	temp.setPosition(cc.p(0,0));
+
+
+	ref.addChild(temp, 100);
+	
+}
 
 /**
  * Creates an obstacle boat on the grid.
@@ -657,7 +673,6 @@ var adjustDifficulty = function() {
 	var down = gameVars.difficultyOffsetDown;
 	var score = gameVars.score;
 	var avgScore = gameVars.unitsStart * Math.round(diff / (10 + (diff / 20)));
-	alert("DIF" + gameVars.difficultyOffsetUp);
 	if (score >= avgScore) {
 		diff += up;
 		if (up < 10) {
@@ -698,7 +713,8 @@ var updateUnits = function(ref) {
 				hud.addScore(unitBoats[i].spawnTime);
 			}
 			unitAnimate(unitBoats[i].sprite, tempDir);
-			deleteUnit(unitBoats[i].selfID, 1, ref);
+			deleteUnit(i, 1, ref);
+			--i;
 		} else {
 			if (tempDir == 0 && unitBoats[i].point.y < cellsColumn - 1 && (grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].isEmpty == true
 					|| grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].unitID == unitBoats[i].selfID)) {
@@ -802,18 +818,10 @@ var unitAnimate = function(unit, direction, justRotate) {
  * unitID = The unit id to remove.
  * ref = The surface being referenced to remove the sprite.
  */
-var deleteUnit = function(unitID, stepsWait, ref) {
-	var index = 0;
+var deleteUnit = function(unitIndex, stepsWait, ref) {
+	removeUnitSprite(unitBoats[unitIndex].sprite, stepsWait, ref);
 	
-	for (var i = 0; i < unitBoats.length; i++) {
-		if (unitBoats[i].selfID == unitID) {
-			index = i;
-			removeUnitSprite(unitBoats[i].sprite, stepsWait, ref);
-			break;
-		}
-	}
-	
-	for (var i = index; i < unitBoats.length - 1; i++) {
+	for (var i = unitIndex; i < unitBoats.length - 1; i++) {
 		unitBoats[i] = unitBoats[i + 1];
 	}
 	unitBoats.splice(unitBoats.length - 1, 1);
