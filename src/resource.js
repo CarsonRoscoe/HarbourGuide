@@ -12,6 +12,7 @@ var res = {
     button : "res/sound/button.mp3",
     GameBackground_mp3 : "res/sound/gamebg.mp3",
     Button_png : "res/pause.png",
+	UnclickedRect_png : folder + "UnclickedRect.png",
 
    /* med1x2Shipv1: folder + "1x2_ships/1x2_v1.png",
     med1x2Shipv2: folder + "1x2_ships/1x2_v2.png",
