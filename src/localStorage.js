@@ -1,4 +1,7 @@
 var saveScore = function(data) {
+	if (localStorage.getItem("playerData") == null) {
+		savePlayerData(new playerData(null));
+	}
 	for(var i = 0; i < localStorage.length - 1; i++) {
 		if (data.score > loadData(i).score) {
 			for (var j = localStorage.length - 1; j > i; j--) {
@@ -12,7 +15,7 @@ var saveScore = function(data) {
 }
 
 var savePlayerData = function(data) {
-	saveData("playerData", buildScoreString(data));
+	saveData("playerData", buildPlayerString(data));
 }
 
 function buildPlayerString(data) {
@@ -38,15 +41,21 @@ var playerData = function(d) {
 	this.difficulty = d;
 }
 
-function loadPlayer(defDifficulty) {
-	if (localStorage.key("playerData") == null) {
+var loadPlayer = function(defDifficulty) {
+	if (localStorage.getItem("playerData") == null) {
 		savePlayerData(new playerData(defDifficulty));
 	}
 	var r = localStorage.getItem("playerData").split(";");
-	return new scoreData(parseInt(r[0]));	
+	if (r[0] == null) {
+		savePlayerData(new playerData(defDifficulty));
+	}
+	return new playerData(parseInt(r[0]));	
 }
 
 function loadScore(index) {
+	if (localStorage.getItem("playerData") == null) {
+		savePlayerData(new playerData(null));
+	}
 	var r = localStorage.getItem(index).split(";");
 	return new scoreData(r[0], parseInt(r[1]), parseInt(r[2]), parseInt(r[3]));
 }

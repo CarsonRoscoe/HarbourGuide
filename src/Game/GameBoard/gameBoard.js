@@ -46,15 +46,11 @@ var GameBoard = cc.Layer.extend({
 		gameVars.frameRate = 16;
 		gameVars.spawnCount = 0;
 		gameVars.spawnRate = 12;
-		gameVars.difficulty = 50;
+		gameVars.difficulty = loadPlayer(50).difficulty;
 		hud = newHudLayer;
 		hud.updateBoatsLeft(gameVars.unitsLeft);
 		
 		createGates();
-		
-		if (confirm("Try to send data?")) {
-			new test();
-		}
 		
 		initUnitMovement(this);
 		createLevel(gameVars.difficulty, this);
@@ -873,4 +869,5 @@ var gameVars = function() {
 	frameRate: null;
 	spawnCount: null;
 	spawnRate: null;
+	difficulty: null;
 }
