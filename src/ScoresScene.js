@@ -21,6 +21,7 @@ var ScoresLayer = cc.Layer.extend({
 	snapBack: null,
 	sortBy: null,
 	locGlob: null,
+	dataPackArray: null,
 	
 	ctor:function() {
 		this._super();
@@ -179,7 +180,6 @@ var getDataPackLocal = function() {
 
 
 var initData = function(Layer) {
-	var dataPackArray;
 	
 	if (locGlob == 0) {
 		dataPackArray = getDataPackLocal();
@@ -199,31 +199,59 @@ var initData = function(Layer) {
 	dataArray = [];
 	
 	for (var i = 0; i < dataPackArray.length; i++) {
-		
-		for (var j = dataPackArray[i].name.length; j < 8; j++)
+		formatString(i);
+	}
+	
+	initScore(Layer);
+}
+
+var formatString = function(i) {
+	for (var j = dataPackArray[i].name.length; j < 8; j++)
 			dataPackArray[i].name += " ";
 		
-		if (dataPackArray[i].score< 10)
-			dataPackArray[i].score = dataPackArray[i].score + "  ";
-		else
-		if (dataPackArray[i].score < 100)
-			dataPackArray[i].score = dataPackArray[i].score + " ";
+	if (dataPackArray[i].score< 10)
+		dataPackArray[i].score = dataPackArray[i].score + "   ";
+	else
+	if (dataPackArray[i].score < 100)
+		dataPackArray[i].score = dataPackArray[i].score + "  ";
+	else
+	if (dataPackArray[i].score < 1000)
+		dataPackArray[i].score = dataPackArray[i].score + " ";
+	
+	
+	if (dataPackArray[i].difficulty < 10)
+		dataPackArray[i].difficulty = dataPackArray[i].difficulty + " ";
 		
-		if (dataPackArray[i].difficulty < 10)
-			dataPackArray[i].difficulty = dataPackArray[i].difficulty + "  ";
+	if (dataPackArray[i].time< 10)
+		dataPackArray[i].time = dataPackArray[i].time + "  ";
+	else
+	if (dataPackArray[i].time < 100)
+		dataPackArray[i].time = dataPackArray[i].time + " ";
 		
-		if (dataPackArray[i].time< 10)
-			dataPackArray[i].time = dataPackArray[i].time + "  ";
-		else
-		if (dataPackArray[i].time < 100)
-			dataPackArray[i].time = dataPackArray[i].time + " ";
+			if (i < 9)
+		dataArray[i] = (i+1) + " : " + dataPackArray[i].name + "\t" + dataPackArray[i].score + "\t" + dataPackArray[i].difficulty + "\t" + dataPackArray[i].time;
+	else
+		dataArray[i] = (i+1) + ": " + dataPackArray[i].name + "\t" + dataPackArray[i].score + "\t" + dataPackArray[i].difficulty + "\t" + dataPackArray[i].time;
+}
+
+var reinitData = function(Layer) {
+	if (sortBy == 0)
+		dataPackArray.sort(sortByScore);
+	if (sortBy == 1)
+		dataPackArray.sort(sortByDifficulty);
+	if (sortBy == 2)
+		dataPackArray.sort(sortByTime);
+	
+	dataArray = [];
+	
+	for (var i = 0; i < dataPackArray.length; i++) {
 		if (i < 9)
 			dataArray[i] = (i+1) + " : " + dataPackArray[i].name + "\t" + dataPackArray[i].score + "\t" + dataPackArray[i].difficulty + "\t" + dataPackArray[i].time;
 		else
 			dataArray[i] = (i+1) + ": " + dataPackArray[i].name + "\t" + dataPackArray[i].score + "\t" + dataPackArray[i].difficulty + "\t" + dataPackArray[i].time;
 	}
 	
-	initScore(Layer);
+	reinitScore(Layer);
 }
 
 var initScore = function(Layer) {
@@ -245,6 +273,16 @@ var initScore = function(Layer) {
 	var loop = setInterval(function() {
 			updateScore();
 		}, 34);
+}
+
+var reinitScore = function(Layer) {
+	var amount = dataArray.length;
+	cc.log(amount);
+	for (var i = 0; i < amount; i++) {
+		cc.log(i);
+		labelArray[i].setString(dataArray[i]);
+		labelArray[i].y = defaultFromTop - (i * fontRoom);
+	}
 }
 
 var initTouchEvents = function(Layer) {
@@ -277,43 +315,6 @@ var initTouchEvents = function(Layer) {
             }
         }), Layer);
 }
-
-//Currently Unused
-/*
-var initMouseEvents = function(Layer) {
-	cc.eventManager.addListener({
-		event: cc.EventListener.MOUSE,
-		mouseDown: null,
-		relativeY: null,
-		clickedY: null,
-		
-		onMouseDown: function(event) {
-			if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
-				isDown = true;
-				mouseDown = event.getLocation();
-				snapBack = false;
-				doClicked(getButtonClicked(event.getLocation()), Layer);
-			}
-		},
-
-		onMouseUp: function(event) {
-			if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
-				isDown = false;
-				offset = 0;
-				if (snapBack == true)
-					moveToPos();
-			}
-		},
-
-		onMouseMove: function(event) {
-			if(isDown) {
-				var cury = event.getLocation().y;
-				var dis = cury - mouseDown.y;
-				offset = (Math.abs(dis / 8) < 16)?dis/8:((dis > 0)?16:-16);
-			}
-		}
-	}, Layer);
-}*/
 
 var doClicked = function(i, Layer) {
 	switch(i) {
@@ -352,20 +353,26 @@ var scorePressGlobal = function(Layer) {
 
 var scorePressScore = function(Layer) {
 	sortBy = 0;
-	Layer.removeAllChildren();
-	init(Layer);
+	for(i = 3; i <= 5; i++)
+		spriteArray[i].runAction(cc.TintTo.create(0, 255, 255, 255));
+	spriteArray[3].runAction(cc.TintTo.create(0, 100, 100, 100));
+	reinitData(Layer);
 }
 
 var scorePressDifficulty = function(Layer) {
 	sortBy = 1;
-	Layer.removeAllChildren();
-	init(Layer);
+	for(i = 3; i <= 5; i++)
+		spriteArray[i].runAction(cc.TintTo.create(0, 255, 255, 255));
+	spriteArray[4].runAction(cc.TintTo.create(0, 100, 100, 100));
+	reinitData(Layer);
 }
 
 var scorePressTime = function(Layer) {
 	sortBy = 2;
-	Layer.removeAllChildren();
-	init(Layer);
+	for(i = 3; i <= 5; i++)
+		spriteArray[i].runAction(cc.TintTo.create(0, 255, 255, 255));
+	spriteArray[5].runAction(cc.TintTo.create(0, 100, 100, 100));
+	reinitData(Layer);
 }
 
 var getButtonClicked = function(clickPoint) {
