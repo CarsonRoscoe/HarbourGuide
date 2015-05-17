@@ -16,8 +16,6 @@ namespace HarbourGuideServerAndDB {
 
         public static String Call;
 
-        public static String Achievements;
-
         public Request(String type, String url, String host) {
             Type = type;
             URL = url;
@@ -47,40 +45,41 @@ namespace HarbourGuideServerAndDB {
                 url = tokens[1];
                 host = tokens[4];
                 Console.WriteLine(url);
-            
-
-                if (url.Contains("DATA;")) {
-                    dataTokens = url.Split(';');
-                    Console.WriteLine("\nDataString: " + dataTokens[0] + "," + dataTokens[1] + "," + dataTokens[2] + "," + dataTokens[3] + "," + dataTokens[4] + ",");
-                    Call = "Data";
-                    if (dataTokens != null)
-                        Valid = HandleData(dataTokens);
-                }
-                else if (url.Contains("GETSCORE;"))
-                {
-                    Call = "Getscore";
-                }
-                else if (url.Contains("/index.html"))
-                {
-                    Call = "Index";
-                } else
-                {
-                    Call = "Invalid";
-                }
-
             }
             catch (System.Exception e)
             {
                 Console.WriteLine("Error:" + e + "\n\n\n" + tokens[0] + "\n" + tokens[1] + "\n" + tokens[2]);
-                return null;
             }
+
+            if (url.Contains("DATA;")) {
+                dataTokens = url.Split(';');
+                Console.WriteLine("\nDotaString: " + dataTokens[0] + "," + dataTokens[1] + "," + dataTokens[2] + "," + dataTokens[3] + "," + dataTokens[4] + ",");
+                Call = "Data";
+            }
+            else if (url.Contains("GETSCORE;"))
+            {
+                HandleGetScore();
+                Call = "Getscore";
+            }
+            else
+            {
+                Call = "Invalid";
+            }
+
+            if (dataTokens != null)
+                Valid = HandleData(dataTokens);
+
 
 
             return new Request(type, url, host);
         }
 
+        private static void HandleGetScore()
+        {
+
+        }
+
         private static bool HandleData(String[] dataGiven) {
-            Console.WriteLine("Handling Data");
             String[] dataTokens = dataGiven;
 
             //Checks if data being passed in is valid
@@ -108,14 +107,10 @@ namespace HarbourGuideServerAndDB {
                 Console.Write(s + ", ");
 
             //Moves all data one index lower, then makes the highest one carry a newline character.
-            for (int i = 0; i <= 3; i++) {
+            for (int i = 0; i < 3; i++) {
                 dataTokens[i] = dataTokens[i + 1];
             }
-            Console.WriteLine("Handled Data\nHandling Achievements");
-            DetermineAchievements da = new DetermineAchievements(Int32.Parse(dataTokens[1]), Int32.Parse(dataTokens[2]), Int32.Parse(dataTokens[3]));
-            Console.WriteLine("Dif: " + Int32.Parse(dataTokens[2]) + ", Time: " + Int32.Parse(dataTokens[3]));
-            Achievements = da.getAchievements();
-            Console.WriteLine("Handled Achievments");
+            Console.WriteLine("\nCounter Is: " + Program.counter);
             Database.SetScore(dataTokens, ++Program.counter);
 
             return true;

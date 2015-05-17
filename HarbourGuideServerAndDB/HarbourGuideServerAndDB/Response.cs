@@ -37,10 +37,7 @@ namespace HarbourGuideServerAndDB
                 {
                     return DataStoredRequest();
                 }
-                else if (request.getCall() == "Index")
-                {
-                    return IndexRequest();
-                } else
+                else
                 {
                     return MakeNullRequest();
                 }
@@ -125,27 +122,9 @@ namespace HarbourGuideServerAndDB
             return new Response("Failed", "application/javascript", d);
         }
 
-        private static Response IndexRequest()
-        {
-            String file = "C:\\Game\\index.html";
-            FileInfo fi = new FileInfo(file);
-            FileStream fs = fi.OpenRead();
-            BinaryReader reader = new BinaryReader(fs);
-            Byte[] d = new Byte[fs.Length];
-            reader.Read(d, 0, d.Length);
-            fs.Close();
-
-            return new Response("Play", "text/html", d);
-        }
-
-
         private static Response DataSaveRequest()
         {
-            System.IO.StreamWriter before = new System.IO.StreamWriter(Environment.CurrentDirectory + HTTPServer.MSG_DIR + "achievements.JSON");
-            before.WriteLine(Request.Achievements);
-            before.Close();
-
-            String file = Environment.CurrentDirectory + HTTPServer.MSG_DIR + "achievements.JSON";
+            String file = Environment.CurrentDirectory + HTTPServer.MSG_DIR + "received.JSON";
             FileInfo fi = new FileInfo(file);
             FileStream fs = fi.OpenRead();
             BinaryReader reader = new BinaryReader(fs);
@@ -180,7 +159,7 @@ namespace HarbourGuideServerAndDB
 
         public void Post(NetworkStream stream) {
             StreamWriter writer = new StreamWriter(stream);
-            writer.WriteLine(String.Format("{0} {1}\r\nServer: {2}\r\nContent-Type: {3}\r\nAccept-Ranges: bytes\r\nContent-Length: {4}\r\n\n",
+            writer.WriteLine(String.Format("{0} {1}\r\nServer: {2}\r\nContent-Type: {3}\r\nAccept-Ranges: bytes\r\nContent-Length: {4}\r\n",
                 HTTPServer.VERSION, status, HTTPServer.NAME, mime, data.Length));
 
             stream.Write(data, 0, data.Length);
