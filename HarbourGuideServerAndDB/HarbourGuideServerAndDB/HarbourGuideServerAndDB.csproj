@@ -116,6 +116,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DetermineAchievements.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="assemblyinfo.cs" />
     <Compile Include="Database.cs" />
