@@ -141,7 +141,7 @@ var init = function(Layer) {
 		var getDataDelay = setInterval(function() {
 				if (dataPackArray != null) {
 					initData(Layer);
-					initMouseEvents(Layer);
+					initTouchEvents(Layer);
 					clearInterval(getDataDelay);
 				} else {
 					waitCounter += waitTime;
@@ -247,6 +247,39 @@ var initScore = function(Layer) {
 		}, 34);
 }
 
+var initTouchEvents = function(Layer) {
+        cc.eventManager.addListener(cc.EventListener.create({
+			touchDown: null,
+			relativeY: null,
+			clickedY: null,
+            event: cc.EventListener.TOUCH_ALL_AT_ONCE,
+			
+            onTouchesBegan: function(touches, event) {
+				isDown = true;
+				touchDown = touches[0].getLocation();
+				snapBack = false;
+				doClicked(getButtonClicked(touches[0].getLocation()), Layer);
+            },
+
+            onTouchesMoved: function(touches, event) {
+                if(isDown) {
+				var cury = touches[0].getLocation().y;
+				var dis = cury - touchDown.y;
+				offset = (Math.abs(dis / 8) < 16)?dis/8:((dis > 0)?16:-16);
+				}
+            },
+
+            onTouchesEnded: function(touches, event){
+				isDown = false;
+				offset = 0;
+				if (snapBack == true)
+					moveToPos();
+            }
+        }), Layer);
+}
+
+//Currently Unused
+/*
 var initMouseEvents = function(Layer) {
 	cc.eventManager.addListener({
 		event: cc.EventListener.MOUSE,
@@ -280,7 +313,7 @@ var initMouseEvents = function(Layer) {
 			}
 		}
 	}, Layer);
-}
+}*/
 
 var doClicked = function(i, Layer) {
 	switch(i) {

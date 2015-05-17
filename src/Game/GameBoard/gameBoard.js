@@ -72,7 +72,7 @@ var GameBoard = cc.Layer.extend({
 			 * Handles all the touch and swipe movements on the grid.
 			 */
 			cc.eventManager.addListener({
-				event: cc.EventListener.MOUSE,
+				event: cc.EventListener.TOUCH_ALL_AT_ONCE,
 				mouseDown: null,
 				mouseUp: null,
 				clickOffset: null,
@@ -85,30 +85,28 @@ var GameBoard = cc.Layer.extend({
 				 * Sets up the movement variables and detects if the user clicked on a boat.
 				 * WHEN MOUSE CLICKED/TAPPED.
 				 */
-				onMouseDown: function(event) {
-					if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
-						clickOffset = null;
-						mouseDown = event.getLocation();
-						mouseDown.y -= boardGlobY;
-						mouseDown.x -= boardGlobX;
-						if (mouseDown.x >= boardGlobX && mouseDown.x <= (cellSize * cellsRow)
-								&& mouseDown.y >= 0 && mouseDown.y <= (cellSize * cellsColumn)) {
-							interaction = new dragMovement();
-							interaction.pointClicked = mouseDown;
-							shipSelected = grid[Math.floor(interaction.pointClicked.x / cellSize)][Math.floor(interaction.pointClicked.y / cellSize)].shipID;
-							if (shipSelected == null) {
-								shipSelected = grid[Math.floor(interaction.pointClicked.x / cellSize)][Math.floor(interaction.pointClicked.y / cellSize)].unitID;
-								isUnitSelected = true;
+				onTouchesBegan: function(touches, event) {
+					clickOffset = null;
+					mouseDown = touches[0].getLocation();
+					mouseDown.y -= boardGlobY;
+					mouseDown.x -= boardGlobX;
+					if (mouseDown.x >= boardGlobX && mouseDown.x <= (cellSize * cellsRow)
+							&& mouseDown.y >= 0 && mouseDown.y <= (cellSize * cellsColumn)) {
+						interaction = new dragMovement();
+						interaction.pointClicked = mouseDown;
+						shipSelected = grid[Math.floor(interaction.pointClicked.x / cellSize)][Math.floor(interaction.pointClicked.y / cellSize)].shipID;
+						if (shipSelected == null) {
+							shipSelected = grid[Math.floor(interaction.pointClicked.x / cellSize)][Math.floor(interaction.pointClicked.y / cellSize)].unitID;
+							isUnitSelected = true;
+						} else {
+							if (obstacleBoats[shipSelected].orientation == 0) {
+								relativeX = interaction.pointClicked.x - (obstacleBoats[shipSelected].frontPoint.x + (obstacleBoats[shipSelected].length * .5)) * cellSize;
+								relativeY = interaction.pointClicked.y - (obstacleBoats[shipSelected].frontPoint.y + .5) * cellSize;
 							} else {
-								if (obstacleBoats[shipSelected].orientation == 0) {
-									relativeX = interaction.pointClicked.x - (obstacleBoats[shipSelected].frontPoint.x + (obstacleBoats[shipSelected].length * .5)) * cellSize;
-									relativeY = interaction.pointClicked.y - (obstacleBoats[shipSelected].frontPoint.y + .5) * cellSize;
-								} else {
-									relativeX = interaction.pointClicked.x - (obstacleBoats[shipSelected].frontPoint.x + .5) * cellSize;
-									relativeY = interaction.pointClicked.y - (obstacleBoats[shipSelected].frontPoint.y + (obstacleBoats[shipSelected].length * .5)) * cellSize;
-								}
-								isUnitSelected = false;
+								relativeX = interaction.pointClicked.x - (obstacleBoats[shipSelected].frontPoint.x + .5) * cellSize;
+								relativeY = interaction.pointClicked.y - (obstacleBoats[shipSelected].frontPoint.y + (obstacleBoats[shipSelected].length * .5)) * cellSize;
 							}
+							isUnitSelected = false;
 						}
 					}
 				},
@@ -117,13 +115,11 @@ var GameBoard = cc.Layer.extend({
 				 * Refreshes the grid movement object.
 				 * WHEN MOUSE CLICK/TAP RELEASED.
 				 */
-				onMouseUp: function(event) {
-					if (event.getButton() == cc.EventMouse.BUTTON_LEFT) {
-						interaction = null;
-						clickOffset = null;
-						shipSelected = null;
-						isUnitSelected = null;
-					}
+				onTouchesEnded: function(touches, event) {
+					interaction = null;
+					clickOffset = null;
+					shipSelected = null;
+					isUnitSelected = null;
 				},
 
 
@@ -132,10 +128,10 @@ var GameBoard = cc.Layer.extend({
 				 * Updates obstacle movement immediatly, changes variables for unit movement.
 				 * WHEN MOUSE CLICK/TAP IS MOVED.
 				 */
-				onMouseMove: function(event) {
+				onTouchesMoved: function(touches, event) {
 					if (interaction != null) {
 						var action = null;
-						mouseUp = event.getLocation();
+						mouseUp = touches[0].getLocation();
 						mouseUp.y -= boardGlobY;
 						mouseUp.x -= boardGlobX;
 						interaction.pointCurrent = mouseUp;
