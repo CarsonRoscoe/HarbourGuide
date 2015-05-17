@@ -47,8 +47,9 @@ namespace HarbourGuideServerAndDB {
                 url = tokens[1];
                 host = tokens[4];
                 Console.WriteLine(url);
-            
-
+                url = PrepDecoder(url);
+                url = Decoder.DecryptStringAES(url);
+                Console.WriteLine(url);
                 if (url.Contains("DATA;")) {
                     dataTokens = url.Split(';');
                     Console.WriteLine("\nDataString: " + dataTokens[0] + "," + dataTokens[1] + "," + dataTokens[2] + "," + dataTokens[3] + "," + dataTokens[4] + ",");
@@ -77,6 +78,17 @@ namespace HarbourGuideServerAndDB {
 
 
             return new Request(type, url, host);
+        }
+
+        private static string PrepDecoder(string str)
+        {
+            var strtemp = "";
+            for (var i = 7; str[i] != '%' && str[i + 1] != '5' && str[i+2] != 'D'; i++)
+            {
+                strtemp += str[i];
+            }
+            Console.WriteLine(strtemp);
+            return strtemp;
         }
 
         private static bool HandleData(String[] dataGiven) {

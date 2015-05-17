@@ -116,6 +116,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Decoder.cs" />
     <Compile Include="DetermineAchievements.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="assemblyinfo.cs" />
