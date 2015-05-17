@@ -22,12 +22,19 @@ var ScoresLayer = cc.Layer.extend({
 	sortBy: null,
 	locGlob: null,
 	dataPackArray: null,
+	spriteBackground: null,
 	
 	ctor:function() {
 		this._super();
 		spriteArray = [];
 		locGlob = 1;
 		sortBy = 0;
+		spriteBackground = new cc.Sprite.create(res.ScoreboardBack_png);
+		spriteBackground.setAnchorPoint(cc.p(0.5, 0.5));
+		spriteBackground.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height/2));
+		spriteBackground.setScaleX(cc.winSize.width/spriteBackground.width);
+		spriteBackground.setScaleY(cc.winSize.height/spriteBackground.height);
+		this.addChild(spriteBackground, -200);
 		init(this);	
 		return true;
 	}
@@ -42,46 +49,43 @@ var init = function(Layer) {
 	dataArray = [];
 	
 	/*GET RID OF THESE LABELS ONCE PROPER GRAPHICS ARE IN PLACE FOR BUTTONS*/
-	spriteArray[0] = spriteBack = new cc.Sprite.create(res.UnclickedRect_png);
+	spriteArray[0] = spriteBack = new cc.Sprite.create(res.ScoreboardBackButton_png);
 	spriteBack.setAnchorPoint(cc.p(0.5, 0.5));
-	var backSize = ((size.width/10)*2)/spriteBack.width;
-	spriteBack.setPosition(cc.p(spriteBack.width * backSize/2,size.height-spriteBack.height));
-	spriteBack.setScaleX(backSize);
-	spriteBack.setScaleY(2);
+	var backSize = ((size.width/10)*1)/spriteBack.width;
+	spriteBack.setPosition(cc.p((spriteBack.width * (backSize*1.2)/2),(size.height-(spriteBack.height)*.3)));
+	spriteBack.setScaleX(backSize*1.3);
+	spriteBack.setScaleY(backSize*1.2);
 	
-	label1 = new cc.LabelTTF("Back", "Courier");
-	label1.setFontSize(50);
-	label1.setColor(cc.color(0,0,0));
-	label1.setPosition(cc.p(spriteBack.x, spriteBack.y));
-	Layer.addChild(label1, 110);
-	
+	//size.height-(spriteLocal.height * globalLocalY)/2
 	spriteArray[1] = spriteLocal = new cc.Sprite.create(res.UnclickedRect_png);
-	var globalLocalSize = ((size.width/10)*4)/spriteLocal.width;
+	var globalLocalSize = ((size.width/10)*4.5)/spriteLocal.width;
+	var globalLocalY = (spriteArray[0].height * backSize * 1.2) / spriteLocal.height;
 	spriteLocal.setAnchorPoint(cc.p(0.5, 0.5));
-	spriteLocal.setPosition(cc.p((spriteBack.width * backSize) + (spriteLocal.width * globalLocalSize/2),size.height-spriteLocal.height));
+	spriteLocal.setPosition(cc.p((spriteBack.width * backSize*1.2) + ((spriteLocal.width * globalLocalSize)/2),spriteArray[0].y));
 	spriteLocal.setScaleX(globalLocalSize);
-	spriteLocal.setScaleY(2);
+	spriteLocal.setScaleY(((size.height - spriteArray[1].y)/spriteArray[1].height)*2);
 	if (locGlob == 0)
 		spriteLocal.runAction(cc.TintTo.create(0, 100, 100, 100));
 	
 	label2 = new cc.LabelTTF("Local", "Courier");
 	label2.setFontSize(50);
-	label2.setColor(cc.color(0,0,0));
+	label2.setColor(cc.color(255,255,255));
 	label2.setPosition(cc.p(spriteLocal.x, spriteLocal.y));
 	Layer.addChild(label2, 110);
 	
 	spriteArray[2] = spriteGlobal = new cc.Sprite.create(res.UnclickedRect_png);
 	spriteGlobal.setAnchorPoint(cc.p(0.5, 0.5));
-	spriteGlobal.setPosition(cc.p((spriteBack.width * backSize) + (spriteLocal.width * globalLocalSize) + (spriteGlobal.width * globalLocalSize/2),size.height-spriteGlobal.height));
+	spriteGlobal.setPosition(cc.p((spriteBack.width * backSize*1.2) + (spriteLocal.width * globalLocalSize) + ((spriteGlobal.width * globalLocalSize)/2), spriteArray[0].y));
 	spriteGlobal.setScaleX(globalLocalSize);
-	spriteGlobal.setScaleY(2);
+	spriteGlobal.setScaleY(((size.height - spriteArray[2].y)/spriteArray[2].height)*2);
+	var temp = ((size.height - spriteArray[2].y)/spriteArray[2].height)*2;
 	
 	if (locGlob == 1)
 		spriteGlobal.runAction(cc.TintTo.create(0, 100, 100, 100));
 	
 	label3 = new cc.LabelTTF("Global", "Courier");
 	label3.setFontSize(50);
-	label3.setColor(cc.color(0,0,0));
+	label3.setColor(cc.color(255,255,255));
 	label3.setPosition(cc.p(spriteGlobal.x, spriteGlobal.y));
 	Layer.addChild(label3, 110);
 	
@@ -89,46 +93,46 @@ var init = function(Layer) {
 	spriteArray[3] = spriteScore = new cc.Sprite.create(res.UnclickedRect_png);
 	var sortSizes = (size.width/3)/spriteScore.width;
 	spriteScore.setAnchorPoint(cc.p(0.5, 0.5));
-	spriteScore.setPosition(cc.p(spriteScore.width * sortSizes/2,size.height-spriteGlobal.height * 2 - spriteScore.height));
+	spriteScore.setPosition(cc.p(cc.p((spriteScore.width * sortSizes)/2,size.height-(spriteGlobal.height * temp) - (spriteScore.height * temp / 2))));
 	spriteScore.setScaleX(sortSizes);
-	spriteScore.setScaleY(2);
+	spriteScore.setScaleY(temp);
+	
+	label4 = new cc.LabelTTF("Score", "Courier");
+	label4.setFontSize(50);
+	label4.setColor(cc.color(255,255,255));
+	label4.setPosition(cc.p(spriteScore.x, spriteScore.y));
+	Layer.addChild(label4, 110);
 	
 	if (sortBy == 0)
 		spriteScore.runAction(cc.TintTo.create(0, 100, 100, 100));
 	
-	label4 = new cc.LabelTTF("Score", "Courier");
-	label4.setFontSize(50);
-	label4.setColor(cc.color(0,0,0));
-	label4.setPosition(cc.p(spriteScore.x, spriteScore.y));
-	Layer.addChild(label4, 110);
-	
 	spriteArray[4] = spriteDifficulty = new cc.Sprite.create(res.UnclickedRect_png);
 	spriteDifficulty.setAnchorPoint(cc.p(0.5, 0.5));
-	spriteDifficulty.setPosition(cc.p((spriteScore.width * sortSizes) + (spriteDifficulty.width * sortSizes/2),size.height-spriteGlobal.height * 2 - spriteDifficulty.height));
+	spriteDifficulty.setPosition(cc.p((spriteScore.width * sortSizes) + (spriteDifficulty.width * sortSizes/2),size.height-(spriteGlobal.height * temp) - (spriteScore.height * temp / 2)));
 	spriteDifficulty.setScaleX(sortSizes);
-	spriteDifficulty.setScaleY(2);
+	spriteDifficulty.setScaleY(temp);
 	
 	if (sortBy == 1)
 		spriteDifficulty.runAction(cc.TintTo.create(0, 100, 100, 100));
 	
 	label5 = new cc.LabelTTF("Diff.", "Courier");
 	label5.setFontSize(50);
-	label5.setColor(cc.color(0,0,0));
+	label5.setColor(cc.color(255,255,255));
 	label5.setPosition(cc.p(spriteDifficulty.x, spriteDifficulty.y));
 	Layer.addChild(label5, 110);
 	
 	spriteArray[5] = spriteTime = new cc.Sprite.create(res.UnclickedRect_png);
 	spriteTime.setAnchorPoint(cc.p(0.5, 0.5));
-	spriteTime.setPosition(cc.p((spriteScore.width * sortSizes) + (spriteDifficulty.width * sortSizes) + (spriteTime.width * sortSizes/2),size.height-spriteGlobal.height * 2 - spriteTime.height));
+	spriteTime.setPosition(cc.p((spriteScore.width * sortSizes) + (spriteDifficulty.width * sortSizes) + (spriteTime.width * sortSizes/2),size.height-(spriteGlobal.height * temp) - (spriteScore.height * temp / 2)));
 	spriteTime.setScaleX(sortSizes);
-	spriteTime.setScaleY(2);
+	spriteTime.setScaleY(temp);
 	
 	if (sortBy == 2)
 		spriteTime.runAction(cc.TintTo.create(0, 100, 100, 100));
 	
 	label6 = new cc.LabelTTF("Time", "Courier");
 	label6.setFontSize(50);
-	label6.setColor(cc.color(0,0,0));
+	label6.setColor(cc.color(255,255,255));
 	label6.setPosition(cc.p(spriteTime.x, spriteTime.y));
 	Layer.addChild(label6, 110);
 	
@@ -162,7 +166,7 @@ var initOnlineDataPre = function() {
 var noConnection = function(Layer) {
 	label = new cc.LabelTTF("No Connection", "Courier");
 	label.setFontSize(60);
-	label.setColor(cc.color(200,200,200));
+	label.setColor(cc.color(0,0,100));
 	label.setPosition(cc.p(cc.winSize.width / 2, cc.winSize.height / 2 - 100));
 	Layer.addChild(label);
 
@@ -256,17 +260,19 @@ var reinitData = function(Layer) {
 
 var initScore = function(Layer) {
 	var size = cc.winSize;
-	fontSize = 50;
+	var temp = ((cc.winSize.height - spriteArray[2].y)/spriteArray[2].height)*2;
+	var temp2 = size.height-(spriteGlobal.height * temp) - (spriteScore.height * temp);
+	fontSize = 46;
 	fontRoom = Math.round(fontSize*(9/8));
-	defaultFromTop = size.height - fontSize/2 - (spriteGlobal.height * 2) - (spriteTime.height * 2);
+	defaultFromTop = temp2 - fontSize/2 ;
 	labelArray = [];
 	var amount = (((defaultFromTop) / fontSize - 1) < (dataArray.length))?((defaultFromTop) / fontSize - 1):dataArray.length;
 	for (var i = 0; i < amount; i++) {
 		labelArray[i] = new cc.LabelTTF(dataArray[i], "Courier");
 		labelArray[i].setFontSize(fontSize);
-		labelArray[i].setColor(cc.color(200,200,200));
+		labelArray[i].setColor(cc.color(0,0,100));
 		labelArray[i].setAnchorPoint(cc.p(0, 0.5));
-		labelArray[i].setPosition(cc.p(0, defaultFromTop - (i * fontRoom) ));
+		labelArray[i].setPosition(cc.p(cc.winSize.width/20, defaultFromTop - (i * fontRoom) ));
 		Layer.addChild(labelArray[i]);
 	}
 

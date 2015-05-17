@@ -20,6 +20,8 @@ var res = {
     SettingButton_png : folder + "buttons/settings_default.png",
 	MenuBg_png : folder + "main_bg.png",
 	MenuLogo_png : folder + "main_logo.png",
+	ScoreboardBack_png : folder + "scoreboardbg.png",
+	ScoreboardBackButton_png : folder + "buttons/back_button_small.png",
 	
    /* med1x2Shipv1: folder + "1x2_ships/1x2_v1.png",
     med1x2Shipv2: folder + "1x2_ships/1x2_v2.png",
