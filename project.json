@@ -21,6 +21,8 @@
     "src/PreGameScene.js",
     "src/SettingsScene.js",
     "src/ScoresScene.js",
-	"src/aes.js"
+	"src/aes.js",
+	"src/AchievementScene.js",
+	"src/Achievement.js"
   ]
 }

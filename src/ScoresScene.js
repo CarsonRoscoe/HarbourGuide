@@ -363,6 +363,7 @@ var scorePressScore = function(Layer) {
 		spriteArray[i].runAction(cc.TintTo.create(0, 255, 255, 255));
 	spriteArray[3].runAction(cc.TintTo.create(0, 100, 100, 100));
 	reinitData(Layer);
+	test();
 }
 
 var scorePressDifficulty = function(Layer) {
