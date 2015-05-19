@@ -20,10 +20,10 @@ var HUDLayer = cc.Layer.extend({
 		Layer.scoreBackground = new cc.Sprite("res/woodenLabel.png");
 		Layer.scoreBackground.setPosition(cc.p(360, winsize.height - 80));
 		
-		Layer.scoreLabel = new cc.LabelTTF("Score: 0", "Helvetica", 100);
+		Layer.scoreLabel = new cc.LabelTTF("Score: 0", "Amiga Forever", 50);
 		Layer.scoreLabel.setColor(cc.color(0,0,0));
 		Layer.scoreLabel.setPosition(cc.p(
-				winsize.width/2,
+				winsize.width / 2,
 				winsize.height / 10));
 		
 		Layer.scoreBackground.addChild(this.scoreLabel);
@@ -40,7 +40,7 @@ var HUDLayer = cc.Layer.extend({
 		Layer.boatsLeftBackground = new cc.Sprite("res/woodenLabel.png");
 		Layer.boatsLeftBackground.setPosition(cc.p(360, winsize.height - 1200));
 		
-		Layer.boatsLeftLabel = new cc.LabelTTF("Boats Left: ", "Helvetica", 100);
+		Layer.boatsLeftLabel = new cc.LabelTTF("Boats Left: ", "Amiga Forever", 50);
 		Layer.boatsLeftLabel.setColor(cc.color(0,0,0));
 		Layer.boatsLeftLabel.setPosition(cc.p(
 				winsize.width/2, 
