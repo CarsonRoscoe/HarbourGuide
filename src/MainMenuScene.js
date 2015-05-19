@@ -28,8 +28,12 @@ var MenuLayer = cc.Layer.extend({
 				new cc.Sprite("res/settings_default.png"),
 				new cc.Sprite("res/settings_default.png"),
 				Layer.mainSettings, Layer);
+		var menuItem4 = new cc.MenuItemSprite(
+				new cc.Sprite("res/settings_default.png"),
+				new cc.Sprite("res/settings_default.png"),
+				Layer.mainAchievement, Layer);
 		//Adds menuItems to a Menu
-		var menu = new cc.Menu(menuItem1, menuItem2, menuItem3);
+		var menu = new cc.Menu(menuItem1, menuItem2, menuItem3, menuItem4);
 		//Aligns the items vertically
 		if(paddedMain == false){
 			menu.alignItemsVerticallyWithPadding(150);
@@ -68,6 +72,13 @@ var MenuLayer = cc.Layer.extend({
 	mainSettings: function() {
 		INITIALIZED2 = false;
 		var scene = new SettingsScene();
+		cc.audioEngine.playEffect(res.button, false); //button sound doesn't loop
+		cc.director.pushScene(scene); //push
+	},
+	
+	mainAchievement: function() {
+		INITIALIZED2 = false;
+		var scene = new AchievementScene();
 		cc.audioEngine.playEffect(res.button, false); //button sound doesn't loop
 		cc.director.pushScene(scene); //push
 	}
