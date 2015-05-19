@@ -1,5 +1,6 @@
 //Variable to create the scene if it has not yet been initalized
 var INITIALIZED2 = false;
+var paddedMain = false;
 //MenuLayer 
 //Contains 3 menu items and is called by the MenuScene
 var MenuLayer = cc.Layer.extend({
@@ -30,7 +31,13 @@ var MenuLayer = cc.Layer.extend({
 		//Adds menuItems to a Menu
 		var menu = new cc.Menu(menuItem1, menuItem2, menuItem3);
 		//Aligns the items vertically
-		menu.alignItemsVerticallyWithPadding(130);
+		if(paddedMain == false){
+			menu.alignItemsVerticallyWithPadding(150);
+			paddedMain = true;
+		}else{
+			menu.alignItemsVertically();
+		}
+		
 		
 		var backgroundLogo = new cc.Sprite.create(res.MenuLogo_png);
 		backgroundLogo.setPosition(cc.p(winsize.width / 2, winsize.heigth / 2));
