@@ -8,46 +8,46 @@ var HUDLayer = cc.Layer.extend({
 
 	ctor:function() {
 		this._super();
-		this.init();
+		this.init(this);
 	},
 
-	init:function(boatsLeft){
-		this._super();
-		this.removeAllChildren();
+	init:function(Layer){
+		Layer._super();
+		Layer.removeAllChildren();
 
 		var winsize = cc.director.getWinSize();
 		
-		this.scoreBackground = new cc.Sprite("res/woodenLabel.png");
-		this.scoreBackground.setPosition(cc.p(360, winsize.height - 80));
+		Layer.scoreBackground = new cc.Sprite("res/woodenLabel.png");
+		Layer.scoreBackground.setPosition(cc.p(360, winsize.height - 80));
 		
-		this.scoreLabel = new cc.LabelTTF("Score: 0", "Helvetica", 100);
-		this.scoreLabel.setColor(cc.color(200,200,200));
-		this.scoreLabel.setPosition(cc.p(
-				this.scoreBackground.width/2,
-				this.scoreBackground.height/2));
+		Layer.scoreLabel = new cc.LabelTTF("Score: 0", "Helvetica", 100);
+		Layer.scoreLabel.setColor(cc.color(0,0,0));
+		Layer.scoreLabel.setPosition(cc.p(
+				winsize.width/2,
+				winsize.height / 10));
 		
-		this.scoreBackground.addChild(this.scoreLabel);
-		this.addChild(this.scoreBackground);
+		Layer.scoreBackground.addChild(this.scoreLabel);
+		Layer.addChild(this.scoreBackground);
 		
 		var settingsLabel = new cc.MenuItemSprite(
 				new cc.Sprite(res.Button_png),
 				new cc.Sprite(res.Button_png),
 				this.settings, this);
 		var menu = new cc.Menu(settingsLabel);
-		menu.setPosition(cc.p(winsize.width - 100, winsize.height - 100));
-		this.addChild(menu);
+		menu.setPosition(cc.p(winsize.width - 40, winsize.height - 140));
+		Layer.addChild(menu);
 		
-		this.boatsLeftBackground = new cc.Sprite("res/woodenLabel.png");
-		this.boatsLeftBackground.setPosition(cc.p(360, winsize.height - 1200));
+		Layer.boatsLeftBackground = new cc.Sprite("res/woodenLabel.png");
+		Layer.boatsLeftBackground.setPosition(cc.p(360, winsize.height - 1200));
 		
-		this.boatsLeftLabel = new cc.LabelTTF("Boats Left: ", "Helvetica", 100);
-		this.boatsLeftLabel.setColor(cc.color(200,200,200));
-		this.boatsLeftLabel.setPosition(cc.p(
-				this.boatsLeftBackground.width/2, 
-				this.boatsLeftBackground.height/2));
+		Layer.boatsLeftLabel = new cc.LabelTTF("Boats Left: ", "Helvetica", 100);
+		Layer.boatsLeftLabel.setColor(cc.color(0,0,0));
+		Layer.boatsLeftLabel.setPosition(cc.p(
+				winsize.width/2, 
+				winsize.height / 10));
 		
-		this.boatsLeftBackground.addChild(this.boatsLeftLabel);
-		this.addChild(this.boatsLeftBackground);
+		Layer.boatsLeftBackground.addChild(Layer.boatsLeftLabel);
+		Layer.addChild(Layer.boatsLeftBackground);
 	},
 	
 	settings :function() {
@@ -68,7 +68,6 @@ var HUDLayer = cc.Layer.extend({
 			score = 0;
 		gameVars.score += score
 		this.scoreLabel.setString("Score: " + gameVars.score);
-		this.boatsLeftLabel.setPosition(cc.p(280, winsize.height - winsize.height + 100));
 	}
 
 });
