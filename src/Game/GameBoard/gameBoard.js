@@ -44,7 +44,7 @@ var GameBoard = cc.Layer.extend({
 		gameVars.difficulty = readPlayer.difficulty;
 		gameVars.difficultyOffsetUp = readPlayer.difficultyUp;
 		gameVars.difficultyOffsetDown = readPlayer.difficultyDown;
-		gameVars.unitSpeed = 1500 - Math.round(gameVars.difficulty * 19);
+		gameVars.unitSpeed = 1500 - Math.round(gameVars.difficulty * 14);
 		gameVars.unitsStart = 5 + Math.round(gameVars.difficulty * .35);
 		gameVars.unitsLeft = gameVars.unitsStart;
 		gameVars.unitsComplete = 0;
@@ -134,12 +134,16 @@ var GameBoard = cc.Layer.extend({
 						mouseUp.y -= boardGlobY;
 						mouseUp.x -= boardGlobX;
 						interaction.pointCurrent = mouseUp;
-						if (shipSelected != null && isUnitSelected == false) {
-							var clickY = Math.floor(interaction.pointClicked.y / cellSize);
-							var clickX = Math.floor(interaction.pointClicked.x / cellSize);
-							var curY = Math.floor(interaction.pointCurrent.y / cellSize);
-							var curX = Math.floor(interaction.pointCurrent.x / cellSize);
-							
+						
+						var clickY = Math.floor(interaction.pointClicked.y / cellSize);
+						var clickX = Math.floor(interaction.pointClicked.x / cellSize);
+						var curY = Math.floor(interaction.pointCurrent.y / cellSize);
+						var curX = Math.floor(interaction.pointCurrent.x / cellSize);
+						if (Math.abs(interaction.pointClicked.y - interaction.pointCurrent.y) < (cellSize / 2) - 25 && Math.abs(interaction.pointClicked.x - interaction.pointCurrent.x) < (cellSize / 2) - 25) {
+							return;
+						}
+						
+						if (shipSelected != null && isUnitSelected == false) {							
 							if (obstacleBoats[shipSelected].orientation == 0) {
 								if (clickOffset == null) {
 									clickOffset = obstacleBoats[shipSelected].backPoint.x - clickX;
@@ -235,6 +239,45 @@ var GameBoard = cc.Layer.extend({
 									break;
 								}
 							}
+							cc.log(unitBoats[indexShip].sprite.rotation);
+							if (unitBoats[indexShip].direction == 0 && unitBoats[indexShip].point.y < cellsColumn - 1 && (grid[unitBoats[indexShip].point.x][unitBoats[indexShip].point.y + 1].isEmpty == true
+									|| grid[unitBoats[indexShip].point.x][unitBoats[indexShip].point.y + 1].unitID == unitBoats[indexShip].selfID)) {
+								var spin = 360 - (unitBoats[indexShip].sprite.rotation % 360 - unitBoats[indexShip].direction * 90);
+								unitBoats[indexShip].sprite.runAction(cc.RotateBy.create((gameVars.unitSpeed/1000 / 360) * spin, spin));
+								interaction = null;
+								clickOffset = null;
+								shipSelected = null;
+								isUnitSelected = null;
+								return;
+							} else if (unitBoats[indexShip].direction == 1 && unitBoats[indexShip].point.x < cellsRow - 1 && (grid[unitBoats[indexShip].point.x + 1][unitBoats[indexShip].point.y].isEmpty == true
+									|| grid[unitBoats[indexShip].point.x + 1][unitBoats[indexShip].point.y].unitID == unitBoats[indexShip].selfID)) {
+								var spin = 360 - (unitBoats[indexShip].sprite.rotation % 360 - unitBoats[indexShip].direction * 90);
+								unitBoats[indexShip].sprite.runAction(cc.RotateBy.create((gameVars.unitSpeed/1000 / 360) * spin, spin));
+								interaction = null;
+								clickOffset = null;
+								shipSelected = null;
+								isUnitSelected = null;
+								return;
+							} else if (unitBoats[indexShip].direction == 2 && unitBoats[indexShip].point.y > 0 && (grid[unitBoats[indexShip].point.x][unitBoats[indexShip].point.y - 1].isEmpty == true
+									|| grid[unitBoats[indexShip].point.x][unitBoats[indexShip].point.y - 1].unitID == unitBoats[indexShip].selfID)) {
+								var spin = 360 - (unitBoats[indexShip].sprite.rotation % 360 - unitBoats[indexShip].direction * 90);
+								unitBoats[indexShip].sprite.runAction(cc.RotateBy.create((gameVars.unitSpeed/1000 / 360) * spin, spin));
+								interaction = null;
+								clickOffset = null;
+								shipSelected = null;
+								isUnitSelected = null;
+								return;
+							} else if (unitBoats[indexShip].direction == 3 && unitBoats[indexShip].point.x > 0 && (grid[unitBoats[indexShip].point.x - 1][unitBoats[indexShip].point.y].isEmpty == true
+									|| grid[unitBoats[indexShip].point.x - 1][unitBoats[indexShip].point.y].unitID == unitBoats[indexShip].selfID)) {
+								var spin = 360 - (unitBoats[indexShip].sprite.rotation % 360 - unitBoats[indexShip].direction * 90);
+								unitBoats[indexShip].sprite.runAction(cc.RotateBy.create((gameVars.unitSpeed/1000 / 360) * spin, spin));
+								interaction = null;
+								clickOffset = null;
+								shipSelected = null;
+								isUnitSelected = null;
+								return;
+							}
+							
 							
 							if (Math.abs(clickY - curY) > Math.abs(clickX - curX)) {
 								if (clickY - curY > 0) {
@@ -249,10 +292,16 @@ var GameBoard = cc.Layer.extend({
 									unitBoats[indexShip].direction = 1;
 								}
 							}
+							unitBoats[indexShip].dirChanged = true;
+							interaction = null;
+							clickOffset = null;
+							shipSelected = null;
+							isUnitSelected = null;
 						}
 					}
 				}
 			}, this);
+			
 
 			this.runAction(cc.Place.create(cc.p(boardGlobX, boardGlobY)));
 			
@@ -260,6 +309,62 @@ var GameBoard = cc.Layer.extend({
 		return true;
 	}
 });
+
+var checkNewLevel = function() {
+	var testGrid = createGrid();
+	var shipSpawn = [];
+	shipSpawn = obstacleBoats;
+	for (var i = 0; i < shipSpawn.length; i++) {
+		for (var j = 0; j < shipSpawn[i].length; j++) {
+			if (shipSpawn[i].orientation == 0) {
+				testGrid[shipSpawn[i].frontPoint.x + j][shipSpawn[i].frontPoint.y].isEmpty = false;
+				testGrid[shipSpawn[i].frontPoint.x + j][shipSpawn[i].frontPoint.y].unitID = 0;
+				testGrid[shipSpawn[i].frontPoint.x + j][shipSpawn[i].frontPoint.y].shipID = i;
+			} else if (shipSpawn[i].orientation == 1) {
+				testGrid[shipSpawn[i].frontPoint.x][shipSpawn[i].frontPoint.y + j].isEmpty = false;
+				testGrid[shipSpawn[i].frontPoint.x][shipSpawn[i].frontPoint.y + j].unitID = 1;
+				testGrid[shipSpawn[i].frontPoint.x][shipSpawn[i].frontPoint.y + j].shipID = i;
+			}
+		}
+	}
+	for (var t = 0; t < cellsColumn; t++) {
+		var count = 0;
+		for (var c = 0; c < cellsRow; c++) {
+			if (testGrid[c][t].isEmpty == false) {
+				if (testGrid[c][t].unitID == 0) {
+					count++;
+				}
+			}
+		}
+		if (count >= 7) {
+			cc.log("CANT PASS BOATS");
+			return false;
+		}
+	}
+	for (var i = 0; i < shipSpawn; i++) {
+		if (shipSpawn[i].length == 4 && shipSpawn[i].startPoint.y == cellsColumn - 1) {
+			cc.log("4 BOAT ON TOP");
+			return false;
+		}
+	}
+	for (var i = 0; i < shipSpawn; i++) {
+		if (shipSpawn[i].length == 4 && shipSpawn[i].orientation == 1 && shipSpawn[i].frontPoint.y == cellsColumn - 1 
+				&& shipSpawn[testGrid[shipSpawn[i].frontPoint.x][shipSpawn[i].backPoint.y - 1].shipID].length == 4) {
+			cc.log("4 BOAT TRAPPED");
+			return false;
+		}
+	}
+	return true;
+}
+
+var ShipObstacle = function() {
+	length: null;
+orientation: null;
+frontPoint: null;
+backPoint: null;
+origin: null;
+sprite: null;
+}
 
 /**
  * Creates the gates of where the boats should be sent. Initializes the correct
@@ -291,15 +396,15 @@ var createGates = function() {
 	gridGates[7].direction = 1;
 	gridGates[8].direction = 1;
 	
-	gridGates[0].color = 0;
-	gridGates[1].color = 0;
-	gridGates[2].color = 0;
-	gridGates[3].color = 1;
-	gridGates[4].color = 1;
-	gridGates[5].color = 1;
-	gridGates[6].color = 2;
-	gridGates[7].color = 2;
-	gridGates[8].color = 2;
+	gridGates[0].gateID = 0;
+	gridGates[1].gateID = 1;
+	gridGates[2].gateID = 2;
+	gridGates[3].gateID = 3;
+	gridGates[4].gateID = 4;
+	gridGates[5].gateID = 5;
+	gridGates[6].gateID = 6;
+	gridGates[7].gateID = 7;
+	gridGates[8].gateID = 8;
 	
 	grid[0][3].gateID = 0;
 	grid[0][5].gateID = 1;
@@ -332,15 +437,56 @@ var createGrid = function() {
 
 
 var drawBackground = function(ref) {
-	var temp = new cc.Sprite.create(res.GameBackground_png);	
-	temp.setAnchorPoint(0,0);
-	temp.setScaleX(cc.winSize.width / temp.width);
-	temp.setScaleY((cellSize * cellsColumn) / temp.height);
+	var back = new cc.Sprite.create(res.GameBackground_png);	
+	back.setAnchorPoint(0,0);
+	back.setScaleX(cc.winSize.width / back.width);
+	back.setScaleY((cellSize * cellsColumn) / back.height);
+	back.setPosition(cc.p(0,0));
+	ref.addChild(back, 100);
 	
-	temp.setPosition(cc.p(0,0));
-
-
-	ref.addChild(temp, 100);
+	var gates = 3;
+	var sgate = [];
+	for (var i = 0; i < gates; i++) {
+		sgate[i] = new cc.Sprite.create(res.backgroundGate);	
+		sgate[i].setAnchorPoint(0,0);
+		sgate[i].setScaleX(cellSize / sgate[i].width);
+		sgate[i].setPosition(cc.p(cellSize + (2 * i * cellSize),0));
+		sgate[i].runAction(cc.TintTo.create(0, 225, 177, 77));
+		ref.addChild(sgate[i], 10000);
+	}
+	
+	var redgate = [];
+	for (var i = 0; i < gates; i++) {
+		redgate[i] = new cc.Sprite.create(res.backgroundGate);	
+		redgate[i].setAnchorPoint(0,0);
+		redgate[i].setScaleX(cellSize / redgate[i].width);
+		redgate[i].setPosition(cc.p(0 , (cellSize * 4) + (2 * i * cellSize)));
+		redgate[i].runAction(cc.RotateTo.create(0, 90));
+		redgate[i].runAction(cc.TintTo.create(0, 255, 0, 0));
+		ref.addChild(redgate[i], 10000);
+	}
+	
+	var greengate = [];
+	for (var i = 0; i < gates; i++) {
+		greengate[i] = new cc.Sprite.create(res.backgroundGate);	
+		greengate[i].setAnchorPoint(0,0);
+		greengate[i].setScaleX(cellSize / greengate[i].width);
+		greengate[i].setPosition(cc.p(boardGlobX + (cellSize * 2) + (2 * i * cellSize), (cellsColumn) * cellSize));
+		greengate[i].runAction(cc.RotateTo.create(0, 180));
+		greengate[i].runAction(cc.TintTo.create(0, 0, 255, 0));
+		ref.addChild(greengate[i], 10000);
+	}
+	
+	var bluegate = [];
+	for (var i = 0; i < gates; i++) {
+		bluegate[i] = new cc.Sprite.create(res.backgroundGate);	
+		bluegate[i].setAnchorPoint(0,0);
+		bluegate[i].setScaleX(cellSize / bluegate[i].width);
+		bluegate[i].setPosition(cc.p((cellsRow) * cellSize, (cellSize * 3) + (2 * i * cellSize)));
+		bluegate[i].runAction(cc.RotateTo.create(0, -90));
+		bluegate[i].runAction(cc.TintTo.create(0, 0, 0, 255));
+		ref.addChild(bluegate[i], 10000);
+	}
 	
 }
 
@@ -420,32 +566,53 @@ var createUnit = function(startPoint, direction, ref) {
 	}
 	var unit = new ShipUnit();
 	unit.selfID = gameVars.unitsLeft;
-	unit.color = Math.floor(Math.random()*3);
+	unit.gateID = Math.floor(Math.random()*9);
 	unit.direction = direction;
 	unit.spawnTime = 0;
 	unit.point = startPoint;
 	unit.pointLast = cc.p(startPoint.x, startPoint.y);
-	switch(unit.color) {
-	case 0:
-		unit.sprite = new cc.Sprite.create(res.unit1red);
-		break;
+	unit.dirChanged = false;
+	switch(unit.gateID) {
+		case 0:
+			unit.sprite = new cc.Sprite.create(res.unit0);
+			break;
 		case 1:
-			unit.sprite = new cc.Sprite.create(res.unit1green);
-		break;
+			unit.sprite = new cc.Sprite.create(res.unit1);
+			break;
 		case 2:
+			unit.sprite = new cc.Sprite.create(res.unit2);
+			break;
 		case 3:
-			unit.sprite = new cc.Sprite.create(res.unit1blue);
-		break;
+			unit.sprite = new cc.Sprite.create(res.unit3);
+			break;
+		case 4:
+			unit.sprite = new cc.Sprite.create(res.unit4);
+			break;
+		case 5:
+			unit.sprite = new cc.Sprite.create(res.unit5);
+			break;
+		case 6:
+			unit.sprite = new cc.Sprite.create(res.unit6);
+			break;
+		case 7:
+			unit.sprite = new cc.Sprite.create(res.unit7);
+			break;
+		case 8:
+		case 9:
+			unit.sprite = new cc.Sprite.create(res.unit8);
+			break;
 		default:
 			break;
 	}
 	
 	unit.sprite.setAnchorPoint(.5, .5);
-	unit.sprite.setPosition(cc.p((startPoint.x + .5) * cellSize, (startPoint.y + .5) * cellSize));
-	
+	unit.sprite.setPosition(cc.p((startPoint.x + .5) * cellSize, ((startPoint.y + .5) * cellSize) - (cellSize)));
 	
 	ref.addChild(unit.sprite, 100);
 	unitBoats[unitBoats.length] = unit;
+	
+
+	unitAnimate(unit.sprite, direction, true, true);
 
 	grid[startPoint.x][startPoint.y].isEmpty = false;
 	grid[startPoint.x][startPoint.y].unitID = unitBoats.length - 1;
@@ -498,7 +665,7 @@ var createLevel = function(difficulty, ref) {
 	lengths[0] += lengths[1] + lengths[2];
 	lengths[1] += lengths[2];
 	var orientation = 0;
-	var spawns = Math.ceil((difficulty + Math.round(Math.random() * (Math.round(Math.random() * 20)))) / 10);
+	var spawns = 8 + Math.round(difficulty / 20);//Math.ceil((difficulty + Math.round(Math.random() * (Math.round(Math.random() * 20)))) / 10);
 	while(spawns != null && spawns > 0) {
 		if (orientation == 0) {
 			var xx = Math.round(Math.random() * cellsColumn);
@@ -529,6 +696,17 @@ var createLevel = function(difficulty, ref) {
 				spawns--;
 			}
 		}
+	}
+	if (!checkNewLevel()) {
+		ref.removeAllChildren();		
+		drawBackground(ref);
+		//might cause leak, not sure if they get removed.
+		initPaint(0, ref);
+		initPaint(1, ref);
+		initPaint(2, ref);
+		obstacleBoats = [];
+		grid = createGrid();
+		createLevel(difficulty, ref);
 	}
 };
 
@@ -622,10 +800,10 @@ var repaintLoop = function(kill) {
  * ref = The layer to spawn to.
  */
 var spawnUnit = function(ref) {
-	var attempts = cellsRow * 2;
+	var attempts = cellsRow;
 	gameVars.spawnCount += gameVars.unitSpeed;
 	if (gameVars.spawnCount >= gameVars.spawnRate && gameVars.unitsLeft > 0) {
-		while (!createUnit(cc.p(Math.floor(Math.random() * (cellsRow - 0.00001)),0), 0, ref) && attempts > 0) {
+		while (!createUnit(cc.p(1 + (Math.floor(Math.random() * (3 - 0.00001)) * 2),0), 0, ref) && attempts > 0) {
 			attempts--;
 		}
 		if (attempts <= 0) {
@@ -669,7 +847,8 @@ var adjustDifficulty = function() {
 	var up = gameVars.difficultyOffsetUp;
 	var down = gameVars.difficultyOffsetDown;
 	var score = gameVars.score;
-	var avgScore = gameVars.unitsStart * Math.round(diff / (10 + (diff / 20)));
+	var avgScore = gameVars.unitsStart * (Math.round(diff / (10 + (diff / 20))) + (diff * (.8 + (diff / 500)))) ;
+	cc.log(avgScore);
 	if (score >= avgScore) {
 		diff += up;
 		if (up < 10) {
@@ -706,11 +885,11 @@ var updateUnits = function(ref) {
 			}
 			grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
 			grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
-			if (gridGates[grid[unitBoats[i].point.x][unitBoats[i].point.y].gateID].color == unitBoats[i].color) {
+			if (gridGates[grid[unitBoats[i].point.x][unitBoats[i].point.y].gateID].gateID == unitBoats[i].gateID) {
 				gameVars.unitsComplete++;
 				hud.addScore(unitBoats[i].spawnTime);
 			}
-			unitAnimate(unitBoats[i].sprite, tempDir);
+			unitAnimate(unitBoats[i].sprite, tempDir, true, true);
 			deleteUnit(i, 1, ref);
 			--i;
 		} else {
@@ -725,7 +904,7 @@ var updateUnits = function(ref) {
 				grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].isEmpty = false;
 				grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].unitID = unitBoats[i].selfID;
 				unitBoats[i].point.y += 1;
-				unitAnimate(unitBoats[i].sprite, tempDir, false);
+				unitAnimate(unitBoats[i].sprite, tempDir, true, false);
 			//Move right
 			} else if (tempDir == 1 && unitBoats[i].point.x < cellsRow - 1 && (grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].isEmpty == true
 					|| grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].unitID == unitBoats[i].selfID)) {
@@ -737,7 +916,7 @@ var updateUnits = function(ref) {
 				grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].isEmpty = false;
 				grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].unitID = unitBoats[i].selfID;
 				unitBoats[i].point.x += 1;
-				unitAnimate(unitBoats[i].sprite, tempDir, false);
+				unitAnimate(unitBoats[i].sprite, tempDir, true, false);
 			//Move down
 			} else if (tempDir == 2 && unitBoats[i].point.y > 0 && (grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].isEmpty == true
 					|| grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].unitID == unitBoats[i].selfID)) {
@@ -749,7 +928,7 @@ var updateUnits = function(ref) {
 				grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].isEmpty = false;
 				grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].unitID = unitBoats[i].selfID;
 				unitBoats[i].point.y -= 1;
-				unitAnimate(unitBoats[i].sprite, tempDir, false);
+				unitAnimate(unitBoats[i].sprite, tempDir, true, false);
 			//Move left
 			} else if (tempDir == 3 && unitBoats[i].point.x > 0 && (grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].isEmpty == true
 					|| grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].unitID == unitBoats[i].selfID)) {
@@ -761,7 +940,7 @@ var updateUnits = function(ref) {
 				grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].isEmpty = false;
 				grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].unitID = unitBoats[i].selfID;
 				unitBoats[i].point.x -= 1;
-				unitAnimate(unitBoats[i].sprite, tempDir, false);
+				unitAnimate(unitBoats[i].sprite, tempDir, true, false);
 			} else {
 			//Don't move
 				if (unitBoats[i].pointLast.x != unitBoats[i].point.x || unitBoats[i].pointLast.y != unitBoats[i].point.y) {
@@ -770,7 +949,10 @@ var updateUnits = function(ref) {
 					unitBoats[i].pointLast = cc.p(unitBoats[i].point.x,unitBoats[i].point.y);
 				}
 			}
-			unitAnimate(unitBoats[i].sprite, tempDir, true);
+			if (unitBoats[i].dirChanged) {
+				unitAnimate(unitBoats[i].sprite, tempDir, false, true);
+				unitBoats[i].dirChanged = false;
+			}
 		}
 	}
 };
@@ -781,29 +963,33 @@ var updateUnits = function(ref) {
  * unit = The unit to reference.
  * direction = The direction the unit is moving to, to calulate rotation and move direction.
  */
-var unitAnimate = function(unit, direction, justRotate) {
+var unitAnimate = function(unit, direction, move, rotate) {
 	var action = null;
 	var action2 = null;
 	switch(direction) {
 	case 0:
-		if (!justRotate)
+		if (move)
 			action = cc.MoveBy.create(gameVars.unitSpeed/1000, cc.p(0, cellSize));
-		action2 = cc.RotateTo.create(gameVars.unitSpeed/4000, 0);
+		if (rotate)
+			action2 = cc.RotateTo.create(gameVars.unitSpeed/4000, 0);
 		break;
 	case 1:
-		if (!justRotate)
+		if (move)
 			action = cc.MoveBy.create(gameVars.unitSpeed/1000, cc.p(cellSize, 0));
-		action2 = cc.RotateTo.create(gameVars.unitSpeed/4000, 90);
+		if (rotate)
+			action2 = cc.RotateTo.create(gameVars.unitSpeed/4000, 90);
 		break;
 	case 2:
-		if (!justRotate)
+		if (move)
 			action = cc.MoveBy.create(gameVars.unitSpeed/1000, cc.p(0, -cellSize));
-		action2 = cc.RotateTo.create(gameVars.unitSpeed/4000, 180);
+		if (rotate)
+			action2 = cc.RotateTo.create(gameVars.unitSpeed/4000, 180);
 		break;
 	case 3:
-		if (!justRotate)
+		if (move)
 			action = cc.MoveBy.create(gameVars.unitSpeed/1000, cc.p(-cellSize, 0));
-		action2 = cc.RotateTo.create(gameVars.unitSpeed/4000, -90);
+		if (rotate)
+			action2 = cc.RotateTo.create(gameVars.unitSpeed/4000, -90);
 		break;
 	default:
 		break;
@@ -873,8 +1059,6 @@ var Cell = function() {
 var Gate = function() {
 	position: null;
 	direction: null;
-	color: null;
-	weight: null;
 }
 
 /**
@@ -904,9 +1088,9 @@ var ShipUnit = function() {
 	pointLast: null;
 	origin: null;
 	sprite: null;
-	color: null;
-	weight: null;
+	gateID: null;
 	spawnTime: null;
+	dirChanged: null;
 }
 
 /**

@@ -30,10 +30,18 @@ var res = {
     med1x4Shipv1: folder + "ObstacleLarge.png",
     med1x4Shipv2: folder + "ObstacleLarge.png",
 */
-    unit1red: folder + "unit1/1x1_1_container_red.png",
-    unit1green: folder + "unit1/1x1_1_container_green.png",
-    unit1blue: folder + "unit1/1x1_1_container_blue.png",
-    
+    unit0: folder + "units/unit_0.png",
+	unit1: folder + "units/unit_1.png",
+	unit2: folder + "units/unit_2.png",
+	unit3: folder + "units/unit_3.png",
+	unit4: folder + "units/unit_4.png",
+	unit5: folder + "units/unit_5.png",
+	unit6: folder + "units/unit_6.png",
+	unit7: folder + "units/unit_7.png",
+	unit8: folder + "units/unit_8.png",
+	
+	backgroundGate: folder + "spawnGate.png",
+	
     med1x2Shipv1: folder + "ObstacleSmall.png",
     med1x3Shipv1: folder + "ObstacleMedium.png",
     med1x4Shipv1: folder + "ObstacleLarge.png",
