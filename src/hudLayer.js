@@ -32,7 +32,7 @@ var HUDLayer = cc.Layer.extend({
 		var settingsLabel = new cc.MenuItemSprite(
 				new cc.Sprite(res.Button_png),
 				new cc.Sprite(res.Button_png),
-				this.settings, this);
+				handlePause, this);
 		var menu = new cc.Menu(settingsLabel);
 		menu.setPosition(cc.p(winsize.width - 40, winsize.height - 140));
 		Layer.addChild(menu);
@@ -50,12 +50,7 @@ var HUDLayer = cc.Layer.extend({
 		Layer.addChild(Layer.boatsLeftBackground);
 	},
 	
-	settings :function() {
-		var scene = new SettingsScene();
-		cc.audioEngine.playEffect(res.button, false); //button sound doesn't loop
-		cc.director.runScene(scene); //push
-	},
-	
+
 	updateBoatsLeft:function(boats) {
 		this.boatsLeftLabel.setString("Boats Left: " + boats);
 	},

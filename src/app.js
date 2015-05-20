@@ -4,10 +4,12 @@ var GameScene = cc.Layer.extend({
 	ctor:function() {
 		this._super();
 		var hudLayer = new HUDLayer();
-		var gameBoard = new GameBoard(hudLayer);
+		var pauseLayer = new PauseLayer();
+		var gameBoard = new GameBoard(hudLayer, pauseLayer);
 		this.removeAllChildren();
 		this.addChild(gameBoard);
 		this.addChild(hudLayer);
+		this.addChild(pauseLayer);
 		return true;
 	}
 });
