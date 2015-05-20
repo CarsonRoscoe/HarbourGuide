@@ -864,9 +864,9 @@ var initUnitMovement = function(ref){
 var checkGameFinished = function() {
 	if (unitBoats.length < 1 && gameVars.unitsLeft < 1) {
 		//realSpeed
-		var newData = new dataPack("Guest", gameVars.score, gameVars.difficulty, Math.round(gameVars.realSpeed));
-		cc.log(gameVars.score + ", " + gameVars.difficulty + ", " + Math.round(gameVars.realSpeed));
+		var newData = new dataPack("Guest", Math.floor(gameVars.score), gameVars.difficulty, Math.round(gameVars.realSpeed));
 		new sendCommand("DATA", newData);
+		saveScore(newData);
 		adjustDifficulty();
 		return true;
 	}

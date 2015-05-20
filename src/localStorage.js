@@ -5,7 +5,7 @@ var saveScore = function(data) {
 	if (localStorage.getItem("achData") == null) {
 		saveAchievements([]);
 	}
-	for(var i = 0; i < localStorage.length; i++) {
+	for(var i = 0; i < localStorage.length - 2 && i < 50; i++) {
 		if (data.score > loadScore(i).score) {
 			for (var j = localStorage.length - 2; j > i; j--) {
 				saveData(j, buildScoreString(loadScore(j - 1)));
@@ -14,7 +14,8 @@ var saveScore = function(data) {
 			return;
 		}
 	}
-	saveData(localStorage.length - 2, buildDataString(data));
+	if (localStorage.length - 2 < 50)
+		saveData(localStorage.length - 2, buildScoreString(data));
 }
 
 var savePlayerData = function(data) {
@@ -33,9 +34,12 @@ var saveAchievements = function(indexes) {
 
 var loadAchievements = function() {
 	var indexes = [];
-	var r = localStorage.getItem("achData").split(";");
-	for (var i = 0; i < r.length; i++)
-		indexes[i] = parseInt(r[i]);
+	var data = localStorage.getItem("achData");
+	if (data != null) {
+		var r = data.split(";");
+		for (var i = 0; i < r.length; i++)
+			indexes[i] = parseInt(r[i]);
+	}
 	return indexes;	
 }
 
