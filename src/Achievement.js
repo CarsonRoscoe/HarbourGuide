@@ -76,6 +76,34 @@ var getMyAchievements = function(List) {
 	return endArray;
 }
 
+var getAchievements = function(indexes) {
+
+	if (indexes == null || indexes == undefined || indexes == [])
+		return;
+	
+	var newAch = indexes;
+
+	var oldAch = loadAchievements();
+		
+	if (oldAch == null || oldAch == undefined || oldAch == "NaN")
+		oldAch = [];
+	
+	for(var i = 0; i < newAch.length && newAch.length > 0; i++) {
+		if (oldAch.indexOf(newAch[i]) != -1) {
+			newAch.splice(i, 1);
+			i--;
+		}
+	}
+	
+	var temp = cc.director.getRunningScene();
+	newAch.sort(function cmp(a, b) { return a - b;});
+	constructAchievement(temp, newAch);
+	newAch = newAch.concat(oldAch);
+	newAch.sort(function cmp(a, b) { return a - b;});
+	saveAchievements(newAch);
+	
+}
+
 var constructAchievement = function(Layer, ind) {
 	if (ind.length == 0)
 		return;
@@ -87,7 +115,6 @@ var constructAchievement = function(Layer, ind) {
 	var freeLayer = function(target, Layer){
 			if (i != 0) {
 				Layer.removeChild(achLayer, true);
-				cc.log(i);
 			}
 			
 			if (i < ind.length) {
@@ -107,10 +134,6 @@ var constructAchievement = function(Layer, ind) {
 	var freeLayerFunc = cc.CallFunc.create(freeLayer, this, Layer);
 	
 	freeLayer(Layer, Layer);	
-}
-
-var alertThis = function() {
-	alert("Hi");
 }
 
 var AchLayer = cc.Layer.extend({
