@@ -1,5 +1,5 @@
 //Variable to create the scene if it has not yet been initialized
-var INITIALIZED5 = false;
+var INITIALIZED6 = false;
 
 //ScoresLayer 
 //Contains 1 menu item and is called by the ScoresScene
@@ -62,7 +62,7 @@ var init = function(Layer) {
 }
 
 var initData = function() {
-	dataArray = getMyAchievements([2,3,4,5,6,7,8,9,10,11,12,13]);
+	dataArray = getMyAchievements(loadAchievements());
 }
 
 var formatString = function(i) {
@@ -151,8 +151,9 @@ var initTouchEventsAch = function(Layer) {
             onTouchesEnded: function(touches, event){
 				isDown = false;
 				offset = 0;
-				if (((achArray[0].id) == 0 && achArray[0].spriteB.y <= defaultFromTop)?true:false)
-					moveToPosTop();
+				if (achArray.length != 0)
+					if (((achArray[0].id) == 0 && achArray[0].spriteB.y <= defaultFromTop)?true:false)
+						moveToPosTop();
             }
         }), Layer);
 }
@@ -226,7 +227,7 @@ var updateAch = function() {
 //The following function is called when the button in the menu is pressed
 //All the functions reset INITIALZIED5 to false, so it can be called by the scene again
 var achSceneBack = function(Layer) {
-	INITIALIZED5 = false;
+	INITIALIZED6 = false;
 	var scene = new MenuScene();
 	cc.audioEngine.playEffect(res.button);
 	cc.director.runScene(scene);
@@ -238,9 +239,9 @@ var AchievementScene = cc.Scene.extend({
 	onEnter:function() {
 		this._super();
 
-		if(INITIALIZED5 == false) {
+		if(INITIALIZED6 == false) {
 
-			INITIALIZED5 = true;
+			INITIALIZED6 = true;
 
 			var layer = new AchievementLayer();
 			this.addChild(layer);

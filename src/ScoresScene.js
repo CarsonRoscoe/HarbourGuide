@@ -23,18 +23,13 @@ var ScoresLayer = cc.Layer.extend({
 	locGlob: null,
 	dataPackArray: null,
 	spriteBackground: null,
+	dataPackArray: null,
 	
 	ctor:function() {
 		this._super();
 		spriteArray = [];
-		locGlob = 1;
+		locGlob = 0;
 		sortBy = 0;
-		spriteBackground = new cc.Sprite.create(res.ScoreboardBack_png);
-		spriteBackground.setAnchorPoint(cc.p(0.5, 0.5));
-		spriteBackground.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height/2));
-		spriteBackground.setScaleX(cc.winSize.width/spriteBackground.width);
-		spriteBackground.setScaleY(cc.winSize.height/spriteBackground.height);
-		this.addChild(spriteBackground, -200);
 		init(this);	
 		return true;
 	}
@@ -47,6 +42,12 @@ var init = function(Layer) {
 	//Score;Dif;Time
 	//Local;Global
 	dataArray = [];
+	spriteBackground = new cc.Sprite.create(res.ScoreboardBack_png);
+	spriteBackground.setAnchorPoint(cc.p(0.5, 0.5));
+	spriteBackground.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height/2));
+	spriteBackground.setScaleX(cc.winSize.width/spriteBackground.width);
+	spriteBackground.setScaleY(cc.winSize.height/spriteBackground.height);
+	Layer.addChild(spriteBackground, -200);
 	
 	/*GET RID OF THESE LABELS ONCE PROPER GRAPHICS ARE IN PLACE FOR BUTTONS*/
 	spriteArray[0] = spriteBack = new cc.Sprite.create(res.ScoreboardBackButton_png);
@@ -139,24 +140,28 @@ var init = function(Layer) {
 	for(var i = 0; i < spriteArray.length; i++)
 		Layer.addChild(spriteArray[i], 100);
 	
-	if (locGlob == 1) {
-		initOnlineDataPre();
-		var waitTime = 20;
-		var waitCounter = 0;
-		var getDataDelay = setInterval(function() {
-				if (dataPackArray != null) {
-					initData(Layer);
-					initTouchEvents(Layer);
+	initOnlineDataPre();
+	var waitTime = 20;
+	var waitCounter = 0;
+	initData(Layer);
+	initTouchEvents(Layer);
+	var getDataDelay = setInterval(function() {
+			if (dataPackOnline != null) {
+				clearInterval(getDataDelay);
+			} else {
+				waitCounter += waitTime;
+				if (waitCounter >= 60000) {
 					clearInterval(getDataDelay);
-				} else {
-					waitCounter += waitTime;
-					if (waitCounter >= 10000) {
-						noConnection(Layer);
-						clearInterval(getDataDelay);
-					}
 				}
-			}, waitTime);
-	}
+			}
+		}, waitTime);
+}
+
+var getDataPackGlobal = function() {
+	if (dataPackOnline != null)
+		return getDataPackArray();
+	else
+		return null;
 }
 
 var initOnlineDataPre = function() {
@@ -175,7 +180,7 @@ var noConnection = function(Layer) {
 var getDataPackLocal = function() {
 	var dpArray = [];
 	
-	for (var i = 0; i < localStorage.length - 1; i++) {
+	for (var i = 0; i < localStorage.length - 2; i++) {
 			dpArray[i] = loadScore(i);
 		}
 		
@@ -184,14 +189,14 @@ var getDataPackLocal = function() {
 
 
 var initData = function(Layer) {
-	
 	if (locGlob == 0) {
 		dataPackArray = getDataPackLocal();
+	} else if (locGlob == 1) {
+		dataPackArray = getDataPackGlobal();
 	}
 	
-	else if (locGlob == 1) {
-		dataPackArray = getDataPackArray();
-	}
+	if (dataPackArray == null)
+		return;
 
 	if (sortBy == 0)
 		dataPackArray.sort(sortByScore);
@@ -247,14 +252,12 @@ var reinitData = function(Layer) {
 		dataPackArray.sort(sortByTime);
 	
 	dataArray = [];
-	
 	for (var i = 0; i < dataPackArray.length; i++) {
 		if (i < 9)
 			dataArray[i] = (i+1) + " : " + dataPackArray[i].name + "\t" + dataPackArray[i].score + "\t" + dataPackArray[i].difficulty + "\t" + dataPackArray[i].time;
 		else
 			dataArray[i] = (i+1) + ": " + dataPackArray[i].name + "\t" + dataPackArray[i].score + "\t" + dataPackArray[i].difficulty + "\t" + dataPackArray[i].time;
 	}
-	
 	reinitScore(Layer);
 }
 
@@ -282,8 +285,8 @@ var initScore = function(Layer) {
 }
 
 var reinitScore = function(Layer) {
-	var amount = dataArray.length;
-	cc.log(amount);
+	var amount = (((defaultFromTop) / fontSize - 1) < (dataArray.length))?((defaultFromTop) / fontSize - 1):dataArray.length;
+	cc.log(amount + ", " + labelArray.length);
 	for (var i = 0; i < amount; i++) {
 		cc.log(i);
 		labelArray[i].setString(dataArray[i]);
@@ -347,14 +350,30 @@ var doClicked = function(i, Layer) {
 
 var scorePressLocal = function(Layer) {
 	locGlob = 0;
-	Layer.removeAllChildren();
-	init(Layer);
+	
+	for (var i = 0; i < dataArray.length; i++) {
+		Layer.removeChild(dataArray[i], true);
+		Layer.removeChild(labelArray[i], true);
+	}
+	
+	spriteArray[2].runAction(cc.TintTo.create(0, 255, 255, 255));
+	spriteArray[1].runAction(cc.TintTo.create(0, 100, 100, 100));
+
+	
+	initData(Layer);
 }
 
 var scorePressGlobal = function(Layer) {
 	locGlob = 1;
-	Layer.removeAllChildren();
-	init(Layer);
+	
+	for (var i = 0; i < dataArray.length; i++) {
+		Layer.removeChild(dataArray[i], true);
+		Layer.removeChild(labelArray[i], true);
+	}
+	spriteArray[1].runAction(cc.TintTo.create(0, 255, 255, 255));
+	spriteArray[2].runAction(cc.TintTo.create(0, 100, 100, 100));
+
+	initData(Layer);
 }
 
 var scorePressScore = function(Layer) {
@@ -363,7 +382,6 @@ var scorePressScore = function(Layer) {
 		spriteArray[i].runAction(cc.TintTo.create(0, 255, 255, 255));
 	spriteArray[3].runAction(cc.TintTo.create(0, 100, 100, 100));
 	reinitData(Layer);
-	test();
 }
 
 var scorePressDifficulty = function(Layer) {
@@ -447,9 +465,9 @@ var updateScore = function() {
 //All the functions reset INITIALZIED5 to false, so it can be called by the scene again
 var scoreSceneBack = function(Layer) {
 	INITIALIZED5 = false;
-	var scene = new MenuScene();
 	cc.audioEngine.playEffect(res.button);
-	cc.director.runScene(scene);
+	var scene = new MenuScene();
+	cc.director.popScene();
 }
 
 var sortByScore = function(bJSON, aJSON) {

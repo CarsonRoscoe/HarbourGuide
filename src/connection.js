@@ -1,4 +1,4 @@
-var dataPackArray = null;
+var dataPackOnline = null;
 
 var test = function() {
 	var data = new dataPack("niceTRY", 234, 654, 123);
@@ -41,13 +41,13 @@ var encryptData = function(formatted, key, iv) {
 }
 
 var getDataPackArray = function() {
-	return dataPackArray;
+	return dataPackOnline;
 }
 
 var getScore = function(json) {
-	dataPackArray = [];
+	dataPackOnline = [];
 	for(var i = 0; i < json.ScoreboardStats.length; i++) {
-		dataPackArray[i] = new dataPack(json.ScoreboardStats[i].Name, json.ScoreboardStats[i].Score, json.ScoreboardStats[i].Difficulty, json.ScoreboardStats[i].Time);
+		dataPackOnline[i] = new dataPack(json.ScoreboardStats[i].Name, json.ScoreboardStats[i].Score, json.ScoreboardStats[i].Difficulty, json.ScoreboardStats[i].Time);
 	}
 };
 
