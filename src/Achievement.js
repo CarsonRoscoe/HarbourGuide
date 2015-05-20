@@ -73,6 +73,82 @@ var getMyAchievements = function(List) {
 			index++;
 		}
 	}
-	
 	return endArray;
 }
+
+var constructAchievement = function(Layer, ind) {
+	if (ind.length == 0)
+		return;
+	var animationLen = 4;
+	var height = (new cc.Sprite.create(res.AchievementBack_png)).height * 4;
+	var achLayer = new AchLayer();
+	var i = 0;
+	
+	var freeLayer = function(target, Layer){
+			if (i != 0) {
+				Layer.removeChild(achLayer, true);
+				cc.log(i);
+			}
+			
+			if (i < ind.length) {
+				achLayer = new AchLayer();
+				achLayer.init(achLayer, ind[i]);
+				achLayer.setAnchorPoint(cc.p(0.5,0.3));
+				
+				var growAction = cc.MoveBy.create(animationLen/8, cc.p(0, height));
+				var growAction2 = cc.MoveBy.create(animationLen/8*6, cc.p(0, 0));
+				var growAction3 = cc.MoveBy.create(animationLen/8, cc.p(0, -height));
+				achLayer.runAction(cc.Sequence.create( growAction, growAction2, growAction3, freeLayerFunc));
+				Layer.addChild(achLayer);
+			}
+			i++
+		}
+		
+	var freeLayerFunc = cc.CallFunc.create(freeLayer, this, Layer);
+	
+	freeLayer(Layer, Layer);	
+}
+
+var alertThis = function() {
+	alert("Hi");
+}
+
+var AchLayer = cc.Layer.extend({
+	ctor:function() {
+		this._super();
+	},
+
+	init:function(Layer, i){
+		var tempData = getAllAchievements();
+		var newY = 0;
+		var spriteB = new cc.Sprite.create(res.AchievementBack_png);
+		spriteB.setAnchorPoint(cc.p(0, 1));
+		spriteB.setPosition(cc.p(0, newY));
+		spriteB.setScaleX(cc.winSize.width/spriteB.width);
+		spriteB.setScaleY(4);
+
+		var spriteI = new cc.Sprite.create(tempData[i].Img);
+		spriteI.setAnchorPoint(cc.p(0, .5));
+		spriteI.setPosition(cc.p(spriteI.width/3, spriteB.y - spriteB.height*2));
+		spriteI.setScaleX(2);
+		spriteI.setScaleY(2);
+
+		achRoom = spriteB.height * 4;
+		var label = new cc.LabelTTF(tempData[i].Details, "Courier");
+		label.setFontSize(30);
+		label.setColor(cc.color(0,0,0));
+		label.setAnchorPoint(cc.p(0, 0.5));
+		label.setPosition(cc.p(spriteI.width * 2 + spriteI.x + 10, newY - (spriteB.height*2.4)));
+
+		var labelT = new cc.LabelTTF(tempData[i].Title, "Courier");
+		labelT.setFontSize(50);
+		labelT.setColor(cc.color(0,0,0));
+		labelT.setAnchorPoint(cc.p(0, 0.5));
+		labelT.setPosition(cc.p(cc.winSize.width/2 + spriteI.x, newY - (spriteB.height * 1.2)));
+		Layer.addChild(spriteB);
+		Layer.addChild(label);
+		Layer.addChild(spriteI);
+		Layer.addChild(labelT);
+}
+});
+
