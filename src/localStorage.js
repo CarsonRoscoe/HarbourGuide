@@ -2,10 +2,13 @@ var saveScore = function(data) {
 	if (localStorage.getItem("playerData") == null) {
 		savePlayerData(new playerData(null));
 	}
-	for(var i = 0; i < localStorage.length - 2; i++) {
-		if (data.score > loadData(i).score) {
+	if (localStorage.getItem("achData") == null) {
+		saveAchievements([]);
+	}
+	for(var i = 0; i < localStorage.length; i++) {
+		if (data.score > loadScore(i).score) {
 			for (var j = localStorage.length - 2; j > i; j--) {
-				saveData(j, buildScoreString(loadData(j - 1)));
+				saveData(j, buildScoreString(loadScore(j - 1)));
 			}
 			saveData(i, buildScoreString(data));
 			return;
@@ -75,6 +78,9 @@ var loadPlayer = function(defDifficulty) {
 function loadScore(index) {
 	if (localStorage.getItem("playerData") == null) {
 		savePlayerData(new playerData(null));
+	}
+	if (localStorage.getItem("achData") == null) {
+		saveAchievements([]);
 	}
 	var r = localStorage.getItem(index).split(";");
 	return new scoreData(r[0], parseInt(r[1]), parseInt(r[2]), parseInt(r[3]));
