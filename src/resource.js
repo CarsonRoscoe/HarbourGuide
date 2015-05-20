@@ -31,6 +31,7 @@ var res = {
 	GoldIcon_png : folder + "achievements/goldIco.png",
 	DifIcon_png : folder + "achievements/difIco.png",
 	BronzeIcon_png : folder + "achievements/bronzeIco.png",
+	PauseBG_png : "res/PauseBG.png",
 	
    /* med1x2Shipv1: folder + "1x2_ships/1x2_v1.png",
     med1x2Shipv2: folder + "1x2_ships/1x2_v2.png",
