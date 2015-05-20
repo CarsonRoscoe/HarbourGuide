@@ -17,13 +17,14 @@ var GameBoard = cc.Layer.extend({
 	drawLayers: null,
 	gameVars: null,
 	hud: null,
+	pause: null,
 	paintInterval: null,
 
 	/**
 	 * Constructor that builds the game grid.
 	 * @returns {Boolean} = was successful?
 	 */
-	ctor:function (newHudLayer) {
+	ctor:function (newHudLayer, newPauseLayer) {
 		// Super init first
 		this._super();
 		cellsRow = 7;
@@ -57,6 +58,7 @@ var GameBoard = cc.Layer.extend({
 		gameVars.isPaused = false;
 		gameVars.thisScene = this;
 		hud = newHudLayer;
+		pause = newPauseLayer;
 		hud.updateBoatsLeft(gameVars.unitsLeft);
 		
 		drawBackground(this);
@@ -864,9 +866,9 @@ var initUnitMovement = function(ref){
 var checkGameFinished = function() {
 	if (unitBoats.length < 1 && gameVars.unitsLeft < 1) {
 		//realSpeed
-		var newData = new dataPack("Guest", Math.floor(gameVars.score), gameVars.difficulty, Math.round(gameVars.realSpeed));
+		var newData = new dataPack("Guest", gameVars.score, gameVars.difficulty, Math.round(gameVars.realSpeed));
+		cc.log(gameVars.score + ", " + gameVars.difficulty + ", " + Math.round(gameVars.realSpeed));
 		new sendCommand("DATA", newData);
-		saveScore(newData);
 		adjustDifficulty();
 		return true;
 	}
@@ -875,9 +877,11 @@ var checkGameFinished = function() {
 var handlePause = function() {
 	if (!gameVars.isPaused) {
 		gameVars.isPaused = true;
+		pause.init(pause);
 		return true;
 	} else {
 		gameVars.isPaused = false;
+		pause.deinit(pause);
 		initUnitMovement(gameVars.thisScene);
 		repaintLoop(false);
 		return false;
