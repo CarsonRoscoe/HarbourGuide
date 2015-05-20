@@ -30,12 +30,12 @@ var ScoresLayer = cc.Layer.extend({
 		spriteArray = [];
 		locGlob = 0;
 		sortBy = 0;
-		init(this);	
+		initScores(this);	
 		return true;
 	}
 });
 
-var init = function(Layer) {
+var initScores = function(Layer) {
 	var size = cc.winSize;
 	offset = 0;
 	isDown = false;
@@ -143,7 +143,7 @@ var init = function(Layer) {
 	initOnlineDataPre();
 	var waitTime = 20;
 	var waitCounter = 0;
-	initData(Layer);
+	initDataScores(Layer);
 	initTouchEvents(Layer);
 	var getDataDelay = setInterval(function() {
 			if (dataPackOnline != null) {
@@ -188,7 +188,7 @@ var getDataPackLocal = function() {
 }
 
 
-var initData = function(Layer) {
+var initDataScores = function(Layer) {
 	if (locGlob == 0) {
 		dataPackArray = getDataPackLocal();
 	} else if (locGlob == 1) {
@@ -208,13 +208,13 @@ var initData = function(Layer) {
 	dataArray = [];
 	
 	for (var i = 0; i < dataPackArray.length; i++) {
-		formatString(i);
+		formatStringScore(i);
 	}
 	
 	initScore(Layer);
 }
 
-var formatString = function(i) {
+var formatStringScore = function(i) {
 	for (var j = dataPackArray[i].name.length; j < 8; j++)
 			dataPackArray[i].name += " ";
 		
@@ -243,7 +243,7 @@ var formatString = function(i) {
 		dataArray[i] = (i+1) + ": " + dataPackArray[i].name + "\t" + dataPackArray[i].score + "\t" + dataPackArray[i].difficulty + "\t" + dataPackArray[i].time;
 }
 
-var reinitData = function(Layer) {
+var reinitDataScores = function(Layer) {
 	if (sortBy == 0)
 		dataPackArray.sort(sortByScore);
 	if (sortBy == 1)
@@ -305,7 +305,7 @@ var initTouchEvents = function(Layer) {
 				isDown = true;
 				touchDown = touches[0].getLocation();
 				snapBack = false;
-				doClicked(getButtonClicked(touches[0].getLocation()), Layer);
+				doClickedScore(getButtonClicked(touches[0].getLocation()), Layer);
             },
 
             onTouchesMoved: function(touches, event) {
@@ -325,7 +325,7 @@ var initTouchEvents = function(Layer) {
         }), Layer);
 }
 
-var doClicked = function(i, Layer) {
+var doClickedScore = function(i, Layer) {
 	switch(i) {
 		case 0:
 		scoreSceneBack(Layer);
@@ -360,7 +360,7 @@ var scorePressLocal = function(Layer) {
 	spriteArray[1].runAction(cc.TintTo.create(0, 100, 100, 100));
 
 	
-	initData(Layer);
+	initDataScores(Layer);
 }
 
 var scorePressGlobal = function(Layer) {
@@ -373,7 +373,7 @@ var scorePressGlobal = function(Layer) {
 	spriteArray[1].runAction(cc.TintTo.create(0, 255, 255, 255));
 	spriteArray[2].runAction(cc.TintTo.create(0, 100, 100, 100));
 
-	initData(Layer);
+	initDataScores(Layer);
 }
 
 var scorePressScore = function(Layer) {
@@ -381,7 +381,7 @@ var scorePressScore = function(Layer) {
 	for(i = 3; i <= 5; i++)
 		spriteArray[i].runAction(cc.TintTo.create(0, 255, 255, 255));
 	spriteArray[3].runAction(cc.TintTo.create(0, 100, 100, 100));
-	reinitData(Layer);
+	reinitDataScores(Layer);
 }
 
 var scorePressDifficulty = function(Layer) {
@@ -389,7 +389,7 @@ var scorePressDifficulty = function(Layer) {
 	for(i = 3; i <= 5; i++)
 		spriteArray[i].runAction(cc.TintTo.create(0, 255, 255, 255));
 	spriteArray[4].runAction(cc.TintTo.create(0, 100, 100, 100));
-	reinitData(Layer);
+	reinitDataScores(Layer);
 }
 
 var scorePressTime = function(Layer) {
@@ -397,7 +397,7 @@ var scorePressTime = function(Layer) {
 	for(i = 3; i <= 5; i++)
 		spriteArray[i].runAction(cc.TintTo.create(0, 255, 255, 255));
 	spriteArray[5].runAction(cc.TintTo.create(0, 100, 100, 100));
-	reinitData(Layer);
+	reinitDataScores(Layer);
 }
 
 var getButtonClicked = function(clickPoint) {
@@ -466,7 +466,6 @@ var updateScore = function() {
 var scoreSceneBack = function(Layer) {
 	INITIALIZED5 = false;
 	cc.audioEngine.playEffect(res.button);
-	var scene = new MenuScene();
 	cc.director.popScene();
 }
 
@@ -509,14 +508,14 @@ var sortByTime = function(bJSON, aJSON) {
 
 //ScoresScene
 //Adds a ScoresLayer to itself if the scene has not already been initialized
-var ScoresScene = cc.Scene.extend({
+var ScoresScenes = cc.Scene.extend({
 	onEnter:function() {
 		this._super();
 
 		if(INITIALIZED5 == false) {
 
 			INITIALIZED5 = true;
-
+			cc.log("Here");
 			var layer = new ScoresLayer();
 			this.addChild(layer);
 		}
