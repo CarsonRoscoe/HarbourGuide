@@ -59,15 +59,18 @@ var HUDLayer = cc.Layer.extend({
 	updateBoatsLeft:function(boats) {
 		this.boatsLeftLabel.setString("Boats Left: " + boats);
 	},
+	
+	updateScore:function() {
+		this.scoreLabel.setString("Score: " + Math.floor(gameVars.score));
+	},
 
 	addScore:function(unitTime) {
-		var winsize = cc.director.getWinSize();
 		//score variable from gameBoard
-		var score = Math.round(gameVars.difficulty / (unitTime / 5));
+		var score = Math.round(gameVars.difficulty / (unitTime / 50)) + gameVars.difficulty;
 		if (score < 0)
 			score = 0;
 		gameVars.score += score
-		this.scoreLabel.setString("Score: " + gameVars.score);
+		this.scoreLabel.setString("Score: " + Math.floor(gameVars.score));
 	}
 
 });
