@@ -2,20 +2,38 @@ var saveScore = function(data) {
 	if (localStorage.getItem("playerData") == null) {
 		savePlayerData(new playerData(null));
 	}
-	for(var i = 0; i < localStorage.length - 1; i++) {
+	for(var i = 0; i < localStorage.length - 2; i++) {
 		if (data.score > loadData(i).score) {
-			for (var j = localStorage.length - 1; j > i; j--) {
+			for (var j = localStorage.length - 2; j > i; j--) {
 				saveData(j, buildScoreString(loadData(j - 1)));
 			}
 			saveData(i, buildScoreString(data));
 			return;
 		}
 	}
-	saveData(localStorage.length - 1, buildDataString(data));
+	saveData(localStorage.length - 2, buildDataString(data));
 }
 
 var savePlayerData = function(data) {
 	saveData("playerData", buildPlayerString(data));
+}
+
+var saveAchievements = function(indexes) {
+	var string = "";
+	for (var i = 0; i < indexes.length; i++) {
+		string += indexes[i];
+		if (i < indexes.length - 1)
+			string += ";";
+	}
+	saveData("achData", string);
+}
+
+var loadAchievements = function() {
+	var indexes = [];
+	var r = localStorage.getItem("achData").split(";");
+	for (var i = 0; i < r.length; i++)
+		indexes[i] = parseInt(r[i]);
+	return indexes;	
 }
 
 function buildPlayerString(data) {
