@@ -46,6 +46,8 @@ var GameBoard = cc.Layer.extend({
 		gameVars.difficultyOffsetDown = readPlayer.difficultyDown;
 		gameVars.unitSpeed = 1500 - Math.round(gameVars.difficulty * 14);
 		gameVars.unitsStart = 5 + Math.round(gameVars.difficulty * .35);
+		gameVars.speedCount = 0;
+		gameVars.realSpeed = 0;
 		gameVars.unitsLeft = gameVars.unitsStart;
 		gameVars.unitsComplete = 0;
 		gameVars.frameRate = 16;
@@ -849,6 +851,8 @@ var initUnitMovement = function(ref){
 			gameVars.score = 0;
 		}
 		updateUnits(ref);
+		gameVars.realSpeed = ++gameVars.speedCount * (gameVars.unitSpeed / 1000);
+		//hud.updateTime(gameVars.realSpeed);
 		if (unitBoats.length < gameVars.unitsOnBoard)
 		spawnUnit(ref);
 		repaint(1);
@@ -859,6 +863,10 @@ var initUnitMovement = function(ref){
 
 var checkGameFinished = function() {
 	if (unitBoats.length < 1 && gameVars.unitsLeft < 1) {
+		//realSpeed
+		var newData = new dataPack("Guest", gameVars.score, gameVars.difficulty, Math.round(gameVars.realSpeed));
+		cc.log(gameVars.score + ", " + gameVars.difficulty + ", " + Math.round(gameVars.realSpeed));
+		new sendCommand("DATA", newData);
 		adjustDifficulty();
 		return true;
 	}
@@ -1156,4 +1164,6 @@ var gameVariables = function() {
 	unitsOnBoard: null;
 	isPaused: null;
 	thisScene: null;
+	speedCount: null;
+	realSpeed: null;
 }

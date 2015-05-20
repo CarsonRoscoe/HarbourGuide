@@ -14,6 +14,7 @@ var res = {
 	GameBackground_png : folder + "grid_colored.png",
     Button_png : "res/pause.png",
 	UnclickedRect_png : folder + "UnclickedRect.png",
+	AchievementBack_png : folder + "AchievementBack.png",
     PlayButton_png : folder + "buttons/play_default.png",
     BackButton_png : folder + "buttons/back_default.png",
     ScoreButton_png : folder + "buttons/scores_default.png",

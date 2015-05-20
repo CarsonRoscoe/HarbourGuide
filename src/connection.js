@@ -15,7 +15,6 @@ var sendCommand = function(command, dP) {
 		break;
 	case "DATA":
 		formatted = buildData(dP);
-		alert(formatted);
 		break;
 	default:
 		return false;
@@ -38,10 +37,7 @@ var encryptData = function(formatted, key, iv) {
 		mode: CryptoJS.mode.CBC,
 		padding: CryptoJS.pad.Pkcs7
 	});
-	var str2 = "[[";
-	str2 += encryptedString;
-	str2 += "]]";
-	return str2;
+	return encryptedString;
 }
 
 var getDataPackArray = function() {
@@ -56,11 +52,12 @@ var getScore = function(json) {
 };
 
 var sendStatus = function(json) {
-	alert(json.Status);
+	cc.log(json.Status);
 };
 
 var buildData = function(dP) {
-	return "DATA;" + dP.name + ";" + dP.score + ";" + dP.difficulty + ";" + dP.time + ";";
+	cc.log(dP.name + ", " + dP.score + ", " + dP.difficulty + ", " + dP.time);
+	return "DATA;" + dP.name + ";" + dP.score + ";" + dP.difficulty + ";" + dP.time;
 };
 
 var dataPack = function(n, s, d, t) {
