@@ -946,7 +946,12 @@ var checkGameFinished = function() {
 	}
 }
 
-var handlePause = function() {
+var handlePause = function(kill) {
+	if (kill) {
+		gameVars.isPaused = true;
+		cc.director.popScene();
+		return true;
+	}
 	if (!gameVars.isPaused) {
 		gameVars.isPaused = true;
 		pause.init(pause);
