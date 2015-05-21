@@ -5,7 +5,8 @@ var HUDLayer = cc.Layer.extend({
 	boatsLeftLabel: null,
 	scoreBackground: null,
 	boatsLeftBackground: null,
-
+	cellSize: null,
+	
 	ctor:function() {
 		this._super();
 		this.init(this);
@@ -17,10 +18,27 @@ var HUDLayer = cc.Layer.extend({
 
 		var winsize = cc.director.getWinSize();
 		
-		Layer.scoreBackground = new cc.Sprite("res/woodenLabel.png");
-		Layer.scoreBackground.setPosition(cc.p(360, winsize.height - 80));
+		if (winsize.height >= 1536) {
+			Layer.scoreBackground = new cc.Sprite("res/highRes/woodenLabel.png");
+			Layer.boatsLeftBackground = new cc.Sprite("res/highRes/woodenLabel.png");
+			cellSize = 220;
+		}
+		else if (winsize.height >= 720) {
+			Layer.scoreBackground = new cc.Sprite("res/mediumRes/woodenLabel.png");
+			Layer.boatsLeftBackground = new cc.Sprite("res/mediumRes/woodenLabel.png");
+			cellSize = 102;
+		}
+		else {
+			Layer.scoreBackground = new cc.Sprite("res/lowRes/woodenLabel.png");
+			Layer.boatsLeftBackground = new cc.Sprite("res/lowRes/woodenLabel.png");
+			cellSize = 46;
+		}
 		
-		Layer.scoreLabel = new cc.LabelTTF("Score: 0", "Amiga Forever", 50);
+		Layer.scoreBackground.setPosition(cc.p(
+				winsize.width / 2, 
+				(winsize.height - (cellSize * 9)) / 2));
+		
+		Layer.scoreLabel = new cc.LabelTTF("Score: 0", "Amiga Forever", cellSize / 2);
 		Layer.scoreLabel.setColor(cc.color(0,0,0));
 		Layer.scoreLabel.setPosition(cc.p(
 				winsize.width / 2,
@@ -32,25 +50,31 @@ var HUDLayer = cc.Layer.extend({
 		var settingsLabel = new cc.MenuItemSprite(
 				new cc.Sprite(res.Button_png),
 				new cc.Sprite(res.Button_png),
-				handlePause, this);
+				this.settings, this);
 		var menu = new cc.Menu(settingsLabel);
 		menu.setPosition(cc.p(winsize.width - 40, winsize.height - 140));
 		Layer.addChild(menu);
 		
-		Layer.boatsLeftBackground = new cc.Sprite("res/woodenLabel.png");
-		Layer.boatsLeftBackground.setPosition(cc.p(360, winsize.height - 1200));
+		Layer.boatsLeftBackground.setPosition(cc.p(
+				winsize.width / 2,
+				(winsize.height - (cellSize * 9)) / 2));
 		
-		Layer.boatsLeftLabel = new cc.LabelTTF("Boats Left: ", "Amiga Forever", 50);
+		Layer.boatsLeftLabel = new cc.LabelTTF("Boats Left: ", "Amiga Forever", cellSize / 2);
 		Layer.boatsLeftLabel.setColor(cc.color(0,0,0));
 		Layer.boatsLeftLabel.setPosition(cc.p(
-				winsize.width/2, 
+				winsize.width / 2, 
 				winsize.height / 10));
 		
 		Layer.boatsLeftBackground.addChild(Layer.boatsLeftLabel);
 		Layer.addChild(Layer.boatsLeftBackground);
 	},
 	
-
+	settings :function() {
+		var scene = new SettingsScene();
+		cc.audioEngine.playEffect(res.button, false); //button sound doesn't loop
+		cc.director.runScene(scene); //push
+	},
+	
 	updateBoatsLeft:function(boats) {
 		this.boatsLeftLabel.setString("Boats Left: " + boats);
 	},
