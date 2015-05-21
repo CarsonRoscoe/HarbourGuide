@@ -18,8 +18,8 @@ var SettingsLayer = cc.Layer.extend({
 	init:function(Layer){
 		var winsize = cc.director.getWinSize();
 
-		Layer.currentVolume = cc.audioEngine.getMusicVolume();
-		Layer.currentEffectVolume = cc.audioEngine.getEffectsVolume();
+		Layer.currentVolume = cc.audioEngine.getMusicVolume().toFixed(1);
+		Layer.currentEffectVolume = cc.audioEngine.getEffectsVolume().toFixed(1);
 
 
 		//Static right now because its giving me hell, not sure what else I can do.
@@ -51,7 +51,9 @@ var SettingsLayer = cc.Layer.extend({
 		menu.alignItemsVertically();
 		//Adds menu to layer
 		Layer.addChild(menu);
+
 	},
+	
 	
 	volumeDown: function() {
 		var current = cc.audioEngine.getMusicVolume() - 0.1;
@@ -103,9 +105,8 @@ var SettingsLayer = cc.Layer.extend({
 	//All the functions reset INITIALZIED4 to false, so it can be called by the scene again
 	backScene: function() {
 		INITIALIZED4 = false;
-		var scene = new MenuScene();
-		cc.audioEngine.playEffect(res.button);
-		cc.director.runScene(scene);
+
+		cc.director.popScene();
 	},
 	
 	//Just testing things with this
