@@ -17,12 +17,13 @@
     "src/app.js",
     "src/Game/GameBoard/gameBoard.js",
     "src/hudLayer.js",
+    "src/ScoresScene.js",
     "src/MainMenuScene.js",
     "src/PreGameScene.js",
     "src/SettingsScene.js",
-    "src/ScoresScene.js",
 	"src/aes.js",
 	"src/AchievementScene.js",
-	"src/Achievement.js"
+	"src/Achievement.js",
+	"src/PauseLayer.js"
   ]
 }

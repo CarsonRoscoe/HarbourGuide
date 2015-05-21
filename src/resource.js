@@ -23,23 +23,23 @@ var res = {
 	MenuLogo_png : folder + "main_logo.png",
 	ScoreboardBack_png : folder + "scoreboardbg.png",
 	ScoreboardBackButton_png : folder + "buttons/back_button_small.png",
-	ScoreIcon_png : folder + "achievements/scoreIco.png",
-	TimeIcon_png : folder + "achievements/timeIco.png",
-	SilverIcon_png : folder + "achievements/silverIco.png",
-	GoldIcon_png : folder + "achievements/goldIcoIco.png",
+	ScoreIcon_png : folder + "achievements/achievement_score.png",
+	TimeIcon_png : folder + "achievements/achievement_time.png",
+	SilverIcon_png : folder + "achievements/achievement_silver.png",
+	GoldIcon_png : folder + "achievements/achievement_gold.png",
 	MiscIcon_png : folder + "achievements/miscIco.png",
-	GoldIcon_png : folder + "achievements/goldIco.png",
-	DifIcon_png : folder + "achievements/difIco.png",
-	BronzeIcon_png : folder + "achievements/bronzeIco.png",
+	DifIcon_png : folder + "achievements/achievement_difficulty.png",
+	BronzeIcon_png : folder + "achievements/achievement_bronze.png",
 	PauseBG_png : "res/PauseBG.png",
+	AchievementP_png : "buttons/achievement_pressed.png",
+	BackP_png : "buttons/back_pressed.png",
+	NextDefault_png : "buttons/next_default.png",
+	NextP_png : "buttons/next_pressed.png",
+	PlayP_png : "buttons/play_pressed.png",
+	ScoresP_png : "buttons/scores_pressed.png",
+	SettingsP_png : "buttons/settings_pressed.png",
+	StartP_png : "buttons/start_pressed.png",
 	
-   /* med1x2Shipv1: folder + "1x2_ships/1x2_v1.png",
-    med1x2Shipv2: folder + "1x2_ships/1x2_v2.png",
-    med1x3Shipv1: folder + "1x3_ships/1x3_v1.png",
-    med1x3Shipv2: folder + "1x3_ships/1x3_v2.png",
-    med1x4Shipv1: folder + "ObstacleLarge.png",
-    med1x4Shipv2: folder + "ObstacleLarge.png",
-*/
     unit0: folder + "units/unit_0.png",
 	unit1: folder + "units/unit_1.png",
 	unit2: folder + "units/unit_2.png",
@@ -55,10 +55,6 @@ var res = {
     med1x2Shipv1: folder + "ObstacleSmall.png",
     med1x3Shipv1: folder + "ObstacleMedium.png",
     med1x4Shipv1: folder + "ObstacleLarge.png",
-
-    /*unit1red: folder + "UnitSprite.png",
-    unit1green: folder + "UnitSprite.png",
-    unit1blue: folder + "UnitSprite.png"*/
 };
 
 var g_resources = [];
