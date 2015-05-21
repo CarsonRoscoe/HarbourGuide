@@ -57,6 +57,7 @@ var res = {
 	SortScore_png : folder + "buttons/score_label.png",
 	SortTime_png : folder + "buttons/time_label.png",
 	AmigaForever_ttf : "res/AmigaForever.ttf",
+	warning: folder + "warning.png",
 	
     unit0: folder + "units/unit_0.png",
 	unit1: folder + "units/unit_1.png",
