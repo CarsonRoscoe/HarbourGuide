@@ -39,6 +39,7 @@ var res = {
 	ScoresP_png : "buttons/scores_pressed.png",
 	SettingsP_png : "buttons/settings_pressed.png",
 	StartP_png : "buttons/start_pressed.png",
+	warning: folder + "warning.png",
 	
     unit0: folder + "units/unit_0.png",
 	unit1: folder + "units/unit_1.png",

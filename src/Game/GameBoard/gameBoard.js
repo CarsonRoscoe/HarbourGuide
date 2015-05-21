@@ -45,7 +45,7 @@ var GameBoard = cc.Layer.extend({
 		gameVars.difficulty = readPlayer.difficulty;
 		gameVars.difficultyOffsetUp = readPlayer.difficultyUp;
 		gameVars.difficultyOffsetDown = readPlayer.difficultyDown;
-		gameVars.unitSpeed = 1500 - Math.round(gameVars.difficulty * 14);
+		gameVars.unitSpeed = 1000 - Math.round(gameVars.difficulty * 9);
 		gameVars.unitsStart = 5 + Math.round(gameVars.difficulty * .35);
 		gameVars.speedCount = 0;
 		gameVars.realSpeed = 0;
@@ -57,6 +57,7 @@ var GameBoard = cc.Layer.extend({
 		gameVars.unitsOnBoard = 1 + Math.round(gameVars.difficulty / 20);
 		gameVars.isPaused = false;
 		gameVars.thisScene = this;
+		gameVars.blockedSpawns = 0;
 		hud = newHudLayer;
 		pause = newPauseLayer;
 		hud.updateBoatsLeft(gameVars.unitsLeft);
@@ -71,7 +72,7 @@ var GameBoard = cc.Layer.extend({
 		initPaint(0, this);
 		initPaint(1, this);
 		initPaint(2, this);
-		repaintLoop(false);
+		repaintLoop(false, this);
 		
 			/**
 			 * Handles all the touch and swipe movements on the grid.
@@ -104,14 +105,9 @@ var GameBoard = cc.Layer.extend({
 						if (shipSelected == null) {
 							shipIndexSelected = grid[Math.floor(interaction.pointClicked.x / cellSize)][Math.floor(interaction.pointClicked.y / cellSize)].unitID;
 							if (shipIndexSelected != null) {
-								for (var tt = 0; tt < unitBoats.length; tt++) {
-									if (unitBoats[tt].selfID == shipIndexSelected) {
-										shipSelected = tt;
-										break;
-									}
-								}
+								shipSelected = getUnitID(shipIndexSelected).selfID;
+								isUnitSelected = true;
 							}
-							isUnitSelected = true;
 						} else {
 							if (obstacleBoats[shipSelected].orientation == 0) {
 								relativeX = interaction.pointClicked.x - (obstacleBoats[shipSelected].frontPoint.x + (obstacleBoats[shipSelected].length * .5)) * cellSize;
@@ -242,48 +238,59 @@ var GameBoard = cc.Layer.extend({
 								}
 							}
 							
-						} else if (shipSelected != null && isUnitSelected == true && unitBoats[shipSelected].selfID == shipIndexSelected) {
+						} else if (shipSelected != null && isUnitSelected == true && getUnitID(shipIndexSelected).selfID == shipSelected) {
 							var clickY = interaction.pointClicked.y;
 							var clickX = interaction.pointClicked.x;
 							var curY = interaction.pointCurrent.y;
 							var curX = interaction.pointCurrent.x;
-							if (unitBoats[shipSelected].direction == 0 && unitBoats[shipSelected].point.y < cellsColumn - 1 && (grid[unitBoats[shipSelected].point.x][unitBoats[shipSelected].point.y + 1].isEmpty == true
-									|| grid[unitBoats[shipSelected].point.x][unitBoats[shipSelected].point.y + 1].unitID == unitBoats[shipSelected].selfID)) {
-								var spin = 360 - (unitBoats[shipSelected].sprite.rotation % 360 - unitBoats[shipSelected].direction * 90);
-								unitBoats[shipSelected].sprite.runAction(cc.RotateBy.create((gameVars.unitSpeed/1000 / 360) * spin, spin));
+							var tempShip = getUnitID(shipIndexSelected); 
+							if (grid[tempShip.point.x][tempShip.point.y].gateID != null 
+									&& gridGates[grid[tempShip.point.x][tempShip.point.y].gateID].direction == tempShip.direction) {
+								var spin = 360 - (tempShip.sprite.rotation % 360 - tempShip.direction * 90);
+								tempShip.sprite.runAction(cc.RotateBy.create((gameVars.unitSpeed/1000 / 360) * spin, spin));
 								interaction = null;
 								clickOffset = null;
-								shipSelected = null;
+								shipIndexSelected = null;
 								shipSelected = null;
 								isUnitSelected = null;
 								return;
-							} else if (unitBoats[shipSelected].direction == 1 && unitBoats[shipSelected].point.x < cellsRow - 1 && (grid[unitBoats[shipSelected].point.x + 1][unitBoats[shipSelected].point.y].isEmpty == true
-									|| grid[unitBoats[shipSelected].point.x + 1][unitBoats[shipSelected].point.y].unitID == unitBoats[shipSelected].selfID)) {
-								var spin = 360 - (unitBoats[shipSelected].sprite.rotation % 360 - unitBoats[shipSelected].direction * 90);
-								unitBoats[shipSelected].sprite.runAction(cc.RotateBy.create((gameVars.unitSpeed/1000 / 360) * spin, spin));
+							} else if (tempShip.direction == 0 && tempShip.point.y < cellsColumn - 1 && (grid[tempShip.point.x][tempShip.point.y + 1].isEmpty == true
+									|| grid[tempShip.point.x][tempShip.point.y + 1].unitID == tempShip.selfID)) {
+								var spin = 360 - (tempShip.sprite.rotation % 360 - tempShip.direction * 90);
+								tempShip.sprite.runAction(cc.RotateBy.create((gameVars.unitSpeed/1000 / 360) * spin, spin));
 								interaction = null;
 								clickOffset = null;
-								shipSelected = null;
+								shipIndexSelected = null;
 								shipSelected = null;
 								isUnitSelected = null;
 								return;
-							} else if (unitBoats[shipSelected].direction == 2 && unitBoats[shipSelected].point.y > 0 && (grid[unitBoats[shipSelected].point.x][unitBoats[shipSelected].point.y - 1].isEmpty == true
-									|| grid[unitBoats[shipSelected].point.x][unitBoats[shipSelected].point.y - 1].unitID == unitBoats[shipSelected].selfID)) {
-								var spin = 360 - (unitBoats[shipSelected].sprite.rotation % 360 - unitBoats[shipSelected].direction * 90);
-								unitBoats[shipSelected].sprite.runAction(cc.RotateBy.create((gameVars.unitSpeed/1000 / 360) * spin, spin));
+							} else if (tempShip.direction == 1 && tempShip.point.x < cellsRow - 1 && (grid[tempShip.point.x + 1][tempShip.point.y].isEmpty == true
+									|| grid[tempShip.point.x + 1][tempShip.point.y].unitID == tempShip.selfID)) {
+								var spin = 360 - (tempShip.sprite.rotation % 360 - tempShip.direction * 90);
+								tempShip.sprite.runAction(cc.RotateBy.create((gameVars.unitSpeed/1000 / 360) * spin, spin));
 								interaction = null;
 								clickOffset = null;
-								shipSelected = null;
+								shipIndexSelected = null;
 								shipSelected = null;
 								isUnitSelected = null;
 								return;
-							} else if (unitBoats[shipSelected].direction == 3 && unitBoats[shipSelected].point.x > 0 && (grid[unitBoats[shipSelected].point.x - 1][unitBoats[shipSelected].point.y].isEmpty == true
-									|| grid[unitBoats[shipSelected].point.x - 1][unitBoats[shipSelected].point.y].unitID == unitBoats[shipSelected].selfID)) {
-								var spin = 360 - (unitBoats[shipSelected].sprite.rotation % 360 - unitBoats[shipSelected].direction * 90);
-								unitBoats[shipSelected].sprite.runAction(cc.RotateBy.create((gameVars.unitSpeed/1000 / 360) * spin, spin));
+							} else if (tempShip.direction == 2 && tempShip.point.y > 0 && (grid[tempShip.point.x][tempShip.point.y - 1].isEmpty == true
+									|| grid[tempShip.point.x][tempShip.point.y - 1].unitID == tempShip.selfID)) {
+								var spin = 360 - (tempShip.sprite.rotation % 360 - tempShip.direction * 90);
+								tempShip.sprite.runAction(cc.RotateBy.create((gameVars.unitSpeed/1000 / 360) * spin, spin));
 								interaction = null;
 								clickOffset = null;
+								shipIndexSelected = null;
 								shipSelected = null;
+								isUnitSelected = null;
+								return;
+							} else if (tempShip.direction == 3 && tempShip.point.x > 0 && (grid[tempShip.point.x - 1][tempShip.point.y].isEmpty == true
+									|| grid[tempShip.point.x - 1][tempShip.point.y].unitID == tempShip.selfID)) {
+								var spin = 360 - (tempShip.sprite.rotation % 360 - tempShip.direction * 90);
+								tempShip.sprite.runAction(cc.RotateBy.create((gameVars.unitSpeed/1000 / 360) * spin, spin));
+								interaction = null;
+								clickOffset = null;
+								shipIndexSelected = null;
 								shipSelected = null;
 								isUnitSelected = null;
 								return;
@@ -292,18 +299,18 @@ var GameBoard = cc.Layer.extend({
 							
 							if (Math.abs(clickY - curY) > Math.abs(clickX - curX)) {
 								if (clickY - curY > 0) {
-									unitBoats[shipSelected].direction = 2;
+									tempShip.direction = 2;
 								} else {
-									unitBoats[shipSelected].direction = 0;
+									tempShip.direction = 0;
 								}
 							} else {
 								if (clickX - curX > 0) {
-									unitBoats[shipSelected].direction = 3;
+									tempShip.direction = 3;
 								} else {
-									unitBoats[shipSelected].direction = 1;
+									tempShip.direction = 1;
 								}
 							}
-							unitBoats[shipSelected].dirChanged = true;
+							tempShip.dirChanged = true;
 							interaction = null;
 							clickOffset = null;
 							shipSelected = null;
@@ -350,6 +357,23 @@ var checkNewLevel = function() {
 		}
 		if (count >= 7) {
 			cc.log("CANT PASS BOATS");
+			return false;
+		}
+	}
+	for (var t = 0; t < cellsRow; t++) {
+		var count = 0;
+		var foundFour = false;
+		for (var c = 0; c < cellsColumn; c++) {
+			if (testGrid[t][c].isEmpty == false) {
+				if (testGrid[t][c].unitID == 1 && (t == 0 || t == cellsRow - 1)) {
+					if (shipSpawn[testGrid[t][c].shipID].length == 4)
+						foundFour = true;
+					count++;
+				}
+			}
+		}
+		if (count >= 6 && foundFour) {
+			cc.log("TOO MANY BOATS ON SIDE");
 			return false;
 		}
 	}
@@ -442,6 +466,7 @@ var createGrid = function() {
 			grid[i][j].isEmpty = true;
 			grid[i][j].xPos = cellSize * i + (cellSize / 2);
 			grid[i][j].yPos = j * cellSize + (cellSize / 2);
+			grid[i][j].holdsWarning = null;
 		}
 	}
 	return grid;
@@ -577,13 +602,14 @@ var createUnit = function(startPoint, direction, ref) {
 		return false;
 	}
 	var unit = new ShipUnit();
-	unit.selfID = gameVars.unitsLeft;
+	unit.selfID = Math.round(Math.random() * 10000);//(gameVars.unitsLeft);
 	unit.gateID = Math.floor(Math.random()*9);
 	unit.direction = direction;
 	unit.spawnTime = 0;
 	unit.point = startPoint;
 	unit.pointLast = cc.p(startPoint.x, startPoint.y);
 	unit.dirChanged = false;
+	unit.isMoving = true;
 	switch(unit.gateID) {
 		case 0:
 			unit.sprite = new cc.Sprite.create(res.unit0);
@@ -670,13 +696,13 @@ var validateShip = function(ship) {
  */
 var createLevel = function(difficulty, ref) {
 	
-	cc.log(gameVars.unitsStart * (Math.round(gameVars.difficulty / (10 + (gameVars.difficulty / 20))) + (gameVars.difficulty * (.8 + (gameVars.difficulty / 500)))));
+	cc.log(gameVars.unitsStart * (Math.round(gameVars.difficulty / (10)) + (gameVars.difficulty * (1 + (gameVars.difficulty / 100)))));
 	
 	var lengths = [];
 	lengths[0] = 100 - (difficulty / 2);
 	lengths[1] = 100 - lengths[0];
 	lengths[2] = lengths[1] / 4;
-	lengths[1] = lengths[2] * 3;
+	lengths[1] -= lengths[2];
 	lengths[0] += lengths[1] + lengths[2];
 	lengths[1] += lengths[2];
 	var orientation = 0;
@@ -703,6 +729,14 @@ var createLevel = function(difficulty, ref) {
 			for(var i = lengths.length - 1; i >= 0 ; i--) {
 				if (length <= lengths[i]) {
 					length = i + 1;
+						if (i == 2) {
+							lengths[0] = 100 - (difficulty / 2);
+							lengths[1] = 100 - lengths[0];
+							lengths[2] = 0;
+							lengths[1] -= lengths[2];
+							lengths[0] += lengths[1] + lengths[2];
+							lengths[1] += lengths[2];
+						}
 					break;
 				}
 			}
@@ -798,16 +832,39 @@ var repaint = function(depth) {
 /**
  * Loops the repaint method at a set frameRate.
  */
-var repaintLoop = function(kill) {	
+var repaintLoop = function(kill, ref) {	
 	if (kill) {
-		cc.log("NICKS");
 		clearInterval(paintInterval);
 		return;
 	}
 	paintInterval = setInterval(function() {
+		for (var i = 1; i < 6; i += 2) {
+			if (grid[i][0].holdsWarning != null && grid[i][0].isEmpty == true) {
+				toggleWarning(i, 0, ref);
+				if (gameVars.blockedSpawns > 0)
+					gameVars.blockedSpawns--;
+			}
+			if (grid[i][0].holdsWarning == null && grid[i][0].isEmpty == false) {
+				if (grid[i][0].unitID == null || (grid[i][0].unitID != null && getUnitID(grid[i][0].unitID).isMoving == false)) {
+					if (gameVars.blockedSpawns < 3)
+						gameVars.blockedSpawns++;
+					toggleWarning(i, 0, ref);
+				}
+			}
+		}
 		repaint(1);
 	}
 	, gameVars.frameRate);
+}
+/*
+ * Searches through unitBoats array for an ID that matches the index of the ship ID on the grid.
+ */
+var getUnitID = function(index) {
+	for (var i = 0; i < unitBoats.length; i++) {
+		if (unitBoats[i].selfID == index) {
+			return unitBoats[i];
+		}
+	}
 }
 
 /**
@@ -819,7 +876,8 @@ var spawnUnit = function(ref) {
 	var attempts = cellsRow;
 	gameVars.spawnCount += gameVars.unitSpeed;
 	if (gameVars.spawnCount >= gameVars.spawnRate && gameVars.unitsLeft > 0) {
-		while (!createUnit(cc.p(1 + (Math.floor(Math.random() * (3 - 0.00001)) * 2),0), 0, ref) && attempts > 0) {
+		var spawnAt = 1 + (Math.floor(Math.random() * (3 - 0.00001)) * 2);
+		while (!createUnit(cc.p(spawnAt,0), 0, ref) && attempts > 0) {
 			attempts--;
 		}
 		if (attempts <= 0) {
@@ -831,6 +889,20 @@ var spawnUnit = function(ref) {
 	}
 }
 
+var toggleWarning = function(x, y, ref) {
+	if (grid[x][y].holdsWarning == null) {
+		grid[x][y].holdsWarning = new cc.Sprite.create(res.warning);	
+		grid[x][y].holdsWarning.setAnchorPoint(.5, .5);
+		//grid[x][y].holdsWarning.setScaleX(cellSize / grid[x][y].holdsWarning.width);
+		grid[x][y].holdsWarning.setScaleY(cellSize / grid[x][y].holdsWarning.height);
+		grid[x][y].holdsWarning.setPosition(cc.p(grid[x][y].xPos, grid[x][y].yPos));
+		ref.addChild(grid[x][y].holdsWarning, 11000);
+	} else {
+		ref.removeChild(grid[x][y].holdsWarning);
+		grid[x][y].holdsWarning = null;
+	}
+}
+
 /**
  * Initializes the functions to create the units, the spawn loop, and the repaint method, in a loop.
  * ref = The layer to spawn to.
@@ -839,19 +911,19 @@ var initUnitMovement = function(ref){
 	var temp = setInterval(function() {
 		if (gameVars.isPaused) {
 			clearInterval(temp);
-			repaintLoop(true);
+			repaintLoop(true, ref);
 		}
 		if (checkGameFinished()) {
 			clearInterval(temp);
-			repaintLoop(true);
+			repaintLoop(true, ref);
 			cc.director.popScene();
 		}
-		if (gameVars.score > 0) {
-			gameVars.score -= .2;
-			hud.updateScore();
+		if (gameVars.score - (1 / (100 / gameVars.difficulty)) * (gameVars.blockedSpawns + 1) >= 0) {
+			gameVars.score -= (1 / (100 / gameVars.difficulty)) * (gameVars.blockedSpawns + 1);
 		} else {
 			gameVars.score = 0;
 		}
+		hud.updateScore();
 		updateUnits(ref);
 		gameVars.realSpeed = ++gameVars.speedCount * (gameVars.unitSpeed / 1000);
 		//hud.updateTime(gameVars.realSpeed);
@@ -883,7 +955,7 @@ var handlePause = function() {
 		gameVars.isPaused = false;
 		pause.deinit(pause);
 		initUnitMovement(gameVars.thisScene);
-		repaintLoop(false);
+		repaintLoop(false, gameVars.thisScene);
 		return false;
 	}
 }
@@ -893,7 +965,7 @@ var adjustDifficulty = function() {
 	var up = gameVars.difficultyOffsetUp;
 	var down = gameVars.difficultyOffsetDown;
 	var score = gameVars.score;
-	var avgScore = gameVars.unitsStart * (Math.round(diff / (10 + (diff / 20))) + (diff * (.8 + (diff / 500)))) ;
+	var avgScore = gameVars.unitsStart * (Math.round(diff / (10)) + (diff * (1 + (diff / 100))));
 	cc.log(avgScore);
 	if (score >= avgScore) {
 		diff += up;
@@ -922,6 +994,9 @@ var adjustDifficulty = function() {
 var updateUnits = function(ref) {
 	for (var i = 0; i < unitBoats.length; i++) {
 		unitBoats[i].spawnTime++;
+		if (i == 0) {
+			cc.log(gameVars.blockedSpawns);
+		}
 		var tempDir = unitBoats[i].direction;
 		//Going through a gate check
 		if (grid[unitBoats[i].point.x][unitBoats[i].point.y].gateID != null && gridGates[grid[unitBoats[i].point.x][unitBoats[i].point.y].gateID].direction == tempDir) {
@@ -929,6 +1004,7 @@ var updateUnits = function(ref) {
 				grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
 				grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
 			}
+			unitBoats[i].isMoving = true;
 			grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
 			grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
 			if (gridGates[grid[unitBoats[i].point.x][unitBoats[i].point.y].gateID].gateID == unitBoats[i].gateID) {
@@ -946,6 +1022,7 @@ var updateUnits = function(ref) {
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
 				}
+				unitBoats[i].isMoving = true;
 				unitBoats[i].pointLast = cc.p(unitBoats[i].point.x,unitBoats[i].point.y);
 				grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].isEmpty = false;
 				grid[unitBoats[i].point.x][unitBoats[i].point.y + 1].unitID = unitBoats[i].selfID;
@@ -958,6 +1035,7 @@ var updateUnits = function(ref) {
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
 				}
+				unitBoats[i].isMoving = true;
 				unitBoats[i].pointLast = cc.p(unitBoats[i].point.x,unitBoats[i].point.y);
 				grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].isEmpty = false;
 				grid[unitBoats[i].point.x + 1][unitBoats[i].point.y].unitID = unitBoats[i].selfID;
@@ -970,6 +1048,7 @@ var updateUnits = function(ref) {
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
 				}
+				unitBoats[i].isMoving = true;
 				unitBoats[i].pointLast = cc.p(unitBoats[i].point.x,unitBoats[i].point.y);
 				grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].isEmpty = false;
 				grid[unitBoats[i].point.x][unitBoats[i].point.y - 1].unitID = unitBoats[i].selfID;
@@ -982,13 +1061,15 @@ var updateUnits = function(ref) {
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
 				}
+				unitBoats[i].isMoving = true;
 				unitBoats[i].pointLast = cc.p(unitBoats[i].point.x,unitBoats[i].point.y);
 				grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].isEmpty = false;
 				grid[unitBoats[i].point.x - 1][unitBoats[i].point.y].unitID = unitBoats[i].selfID;
 				unitBoats[i].point.x -= 1;
 				unitAnimate(unitBoats[i].sprite, tempDir, true, false);
 			} else {
-			//Don't move
+				//Don't move
+				unitBoats[i].isMoving = false;
 				if (unitBoats[i].pointLast.x != unitBoats[i].point.x || unitBoats[i].pointLast.y != unitBoats[i].point.y) {
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].isEmpty = true;
 					grid[unitBoats[i].pointLast.x][unitBoats[i].pointLast.y].unitID = null;
@@ -1095,6 +1176,7 @@ var Cell = function() {
 	shipID: null;
 	unitID: null;
 	gateID: null;
+	holdsWarning: null;
 }
 
 /**
@@ -1138,6 +1220,7 @@ var ShipUnit = function() {
 	gateID: null;
 	spawnTime: null;
 	dirChanged: null;
+	isMoving: null;
 }
 
 /**
@@ -1170,4 +1253,5 @@ var gameVariables = function() {
 	thisScene: null;
 	speedCount: null;
 	realSpeed: null;
+	blockedSpawns: null;
 }
