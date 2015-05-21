@@ -5,18 +5,50 @@ var INITIALIZED3 = false;
 var PreGameLayer = cc.Layer.extend({
 	ctor:function() {
 		this._super();
-		//var size = cc.winSize;
+		
+		var bgSprite = new cc.Sprite.create(res.MenuBg_png);
+		bgSprite.setAnchorPoint(cc.p(0.5, 0.5));
+		bgSprite.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height/2));
+		
+		var pregameSprite = new cc.Sprite.create(res.Pregame_png);
+		pregameSprite.setAnchorPoint(cc.p(0.5, 0.5));
+		pregameSprite.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height/2));
+		
 		//MenuItems to navigate to Runner, Settings, and MainMenu scene
-		var menuItem1 = new cc.MenuItemFont("Start", preStart);
-		var menuItem2 = new cc.MenuItemFont("Settings", preSettings);
-		var menuItem3 = new cc.MenuItemFont("Back", preBack);
-		//Adds menuItems to a Menu
-		var menu = new cc.Menu(menuItem1, menuItem2, menuItem3);
+		var menuPlay = new cc.Menu(new cc.MenuItemSprite(
+				new cc.Sprite(res.StartButton_png),
+				new cc.Sprite(res.StartButtonP_png),
+				preStart, this));
+				
+		var menuBack = new cc.MenuItemSprite(
+				new cc.Sprite(res.ScoreboardBackButton_png),
+				new cc.Sprite(res.ScoreboardBackButtonP_png),
+				preBack, this);
+				
+		var menuSettings = new cc.MenuItemSprite(
+				new cc.Sprite(res.SettingsSmall_png),
+				new cc.Sprite(res.SettingsSmallP_png),
+				preSettings, this);
+				
+		var topBar = new cc.Menu(menuBack, menuSettings);
+		
+		topBar.setAnchorPoint(cc.p(0.5, 0.5));
+		topBar.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height - menuBack.height*3/4));
+		
+		menuPlay.setAnchorPoint(cc.p(0.5, 0.5));
+		menuPlay.setPosition(cc.p(cc.winSize.width/2, (pregameSprite.y - pregameSprite.height/2)/2));
 		//Aligns the items vertically
-		menu.alignItemsVertically();
+		menuPlay.alignItemsVertically();
+		
+		//Aligns top bar horizontally
+		topBar.alignItemsHorizontallyWithPadding(cc.winSize.width - menuBack.width * 2.5);
+		
 		//Adds menu to layer
 		this.removeAllChildren();
-		this.addChild(menu);
+		this.addChild(bgSprite);
+		this.addChild(pregameSprite);
+		this.addChild(menuPlay);
+		this.addChild(topBar);
 
 		return true;
 	}

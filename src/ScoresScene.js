@@ -1,5 +1,6 @@
 //Variable to create the scene if it has not yet been initialized
 var INITIALIZED5 = false;
+var backScorePushed = false;
 
 //ScoresLayer 
 //Contains 1 menu item and is called by the ScoresScene
@@ -27,6 +28,7 @@ var ScoresLayer = cc.Layer.extend({
 	
 	ctor:function() {
 		this._super();
+		backScorePushed = false;
 		spriteArray = [];
 		locGlob = 0;
 		sortBy = 0;
@@ -42,104 +44,52 @@ var initScores = function(Layer) {
 	//Score;Dif;Time
 	//Local;Global
 	dataArray = [];
-	spriteBackground = new cc.Sprite.create(res.ScoreboardBack_png);
+	
+	//Draws background
+	spriteBackground = new cc.Sprite.create(res.MenuBg_png);
 	spriteBackground.setAnchorPoint(cc.p(0.5, 0.5));
 	spriteBackground.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height/2));
 	spriteBackground.setScaleX(cc.winSize.width/spriteBackground.width);
 	spriteBackground.setScaleY(cc.winSize.height/spriteBackground.height);
 	Layer.addChild(spriteBackground, -200);
 	
-	/*GET RID OF THESE LABELS ONCE PROPER GRAPHICS ARE IN PLACE FOR BUTTONS*/
+	//Draws back button
 	spriteArray[0] = spriteBack = new cc.Sprite.create(res.ScoreboardBackButton_png);
-	spriteBack.setAnchorPoint(cc.p(0.5, 0.5));
-	var backSize = ((size.width/10)*1)/spriteBack.width;
-	spriteBack.setPosition(cc.p((spriteBack.width * (backSize*1.2)/2),(size.height-(spriteBack.height)*.3)));
-	spriteBack.setScaleX(backSize*1.3);
-	spriteBack.setScaleY(backSize*1.2);
+	spriteBack.setAnchorPoint(cc.p(0, 1));
+	spriteBack.setPosition(cc.p(0,size.height));
 	
-	//size.height-(spriteLocal.height * globalLocalY)/2
-	spriteArray[1] = spriteLocal = new cc.Sprite.create(res.UnclickedRect_png);
-	var globalLocalSize = ((size.width/10)*4.5)/spriteLocal.width;
-	var globalLocalY = (spriteArray[0].height * backSize * 1.2) / spriteLocal.height;
-	spriteLocal.setAnchorPoint(cc.p(0.5, 0.5));
-	spriteLocal.setPosition(cc.p((spriteBack.width * backSize*1.2) + ((spriteLocal.width * globalLocalSize)/2),spriteArray[0].y));
-	spriteLocal.setScaleX(globalLocalSize);
-	spriteLocal.setScaleY(((size.height - spriteArray[1].y)/spriteArray[1].height)*2);
-	if (locGlob == 0)
-		spriteLocal.runAction(cc.TintTo.create(0, 100, 100, 100));
+	//Draws local button
+	spriteArray[1] = spriteLocal = new cc.Sprite.create(res.LocalP_png);
+	spriteLocal.setAnchorPoint(cc.p(0, 1));
+	spriteLocal.setPosition(cc.p(spriteArray[0].width, size.height));
 	
-	label2 = new cc.LabelTTF("Local", "Courier");
-	label2.setFontSize(50);
-	label2.setColor(cc.color(255,255,255));
-	label2.setPosition(cc.p(spriteLocal.x, spriteLocal.y));
-	Layer.addChild(label2, 110);
+	//Draws global button
+	spriteArray[2] = spriteGlobal = new cc.Sprite.create(res.Global_png);
+	spriteGlobal.setAnchorPoint(cc.p(0, 1));
+	spriteGlobal.setPosition(cc.p(spriteArray[0].width + spriteArray[1].width, size.height));
 	
-	spriteArray[2] = spriteGlobal = new cc.Sprite.create(res.UnclickedRect_png);
-	spriteGlobal.setAnchorPoint(cc.p(0.5, 0.5));
-	spriteGlobal.setPosition(cc.p((spriteBack.width * backSize*1.2) + (spriteLocal.width * globalLocalSize) + ((spriteGlobal.width * globalLocalSize)/2), spriteArray[0].y));
-	spriteGlobal.setScaleX(globalLocalSize);
-	spriteGlobal.setScaleY(((size.height - spriteArray[2].y)/spriteArray[2].height)*2);
-	var temp = ((size.height - spriteArray[2].y)/spriteArray[2].height)*2;
+	var secondRowX = size.height - spriteArray[0].height;
 	
-	if (locGlob == 1)
-		spriteGlobal.runAction(cc.TintTo.create(0, 100, 100, 100));
+	//Draws score button
+	spriteArray[3] = spriteScore = new cc.Sprite.create(res.SortScoreP_png);
+	spriteScore.setAnchorPoint(cc.p(0, 1));
+	spriteScore.setPosition(cc.p(0, secondRowX));
 	
-	label3 = new cc.LabelTTF("Global", "Courier");
-	label3.setFontSize(50);
-	label3.setColor(cc.color(255,255,255));
-	label3.setPosition(cc.p(spriteGlobal.x, spriteGlobal.y));
-	Layer.addChild(label3, 110);
+	//Draws difficulty button
+	spriteArray[4] = spriteDifficulty = new cc.Sprite.create(res.SortDifficulty_png);
+	spriteDifficulty.setAnchorPoint(cc.p(0, 1));
+	spriteDifficulty.setPosition(cc.p(spriteArray[3].width, secondRowX));
 	
-	////////////
-	spriteArray[3] = spriteScore = new cc.Sprite.create(res.UnclickedRect_png);
-	var sortSizes = (size.width/3)/spriteScore.width;
-	spriteScore.setAnchorPoint(cc.p(0.5, 0.5));
-	spriteScore.setPosition(cc.p(cc.p((spriteScore.width * sortSizes)/2,size.height-(spriteGlobal.height * temp) - (spriteScore.height * temp / 2))));
-	spriteScore.setScaleX(sortSizes);
-	spriteScore.setScaleY(temp);
+	//Draws time button
+	spriteArray[5] = spriteTime = new cc.Sprite.create(res.SortTime_png);
+	spriteTime.setAnchorPoint(cc.p(0, 1));
+	spriteTime.setPosition(cc.p(spriteArray[3].width + spriteArray[4].width, secondRowX));
 	
-	label4 = new cc.LabelTTF("Score", "Courier");
-	label4.setFontSize(50);
-	label4.setColor(cc.color(255,255,255));
-	label4.setPosition(cc.p(spriteScore.x, spriteScore.y));
-	Layer.addChild(label4, 110);
-	
-	if (sortBy == 0)
-		spriteScore.runAction(cc.TintTo.create(0, 100, 100, 100));
-	
-	spriteArray[4] = spriteDifficulty = new cc.Sprite.create(res.UnclickedRect_png);
-	spriteDifficulty.setAnchorPoint(cc.p(0.5, 0.5));
-	spriteDifficulty.setPosition(cc.p((spriteScore.width * sortSizes) + (spriteDifficulty.width * sortSizes/2),size.height-(spriteGlobal.height * temp) - (spriteScore.height * temp / 2)));
-	spriteDifficulty.setScaleX(sortSizes);
-	spriteDifficulty.setScaleY(temp);
-	
-	if (sortBy == 1)
-		spriteDifficulty.runAction(cc.TintTo.create(0, 100, 100, 100));
-	
-	label5 = new cc.LabelTTF("Diff.", "Courier");
-	label5.setFontSize(50);
-	label5.setColor(cc.color(255,255,255));
-	label5.setPosition(cc.p(spriteDifficulty.x, spriteDifficulty.y));
-	Layer.addChild(label5, 110);
-	
-	spriteArray[5] = spriteTime = new cc.Sprite.create(res.UnclickedRect_png);
-	spriteTime.setAnchorPoint(cc.p(0.5, 0.5));
-	spriteTime.setPosition(cc.p((spriteScore.width * sortSizes) + (spriteDifficulty.width * sortSizes) + (spriteTime.width * sortSizes/2),size.height-(spriteGlobal.height * temp) - (spriteScore.height * temp / 2)));
-	spriteTime.setScaleX(sortSizes);
-	spriteTime.setScaleY(temp);
-	
-	if (sortBy == 2)
-		spriteTime.runAction(cc.TintTo.create(0, 100, 100, 100));
-	
-	label6 = new cc.LabelTTF("Time", "Courier");
-	label6.setFontSize(50);
-	label6.setColor(cc.color(255,255,255));
-	label6.setPosition(cc.p(spriteTime.x, spriteTime.y));
-	Layer.addChild(label6, 110);
-	
+	//Adds all button sprites to the draw layer
 	for(var i = 0; i < spriteArray.length; i++)
 		Layer.addChild(spriteArray[i], 100);
 	
+	//Prepares the online high score and initiates data to be drawn.
 	initOnlineDataPre();
 	var waitTime = 20;
 	var waitCounter = 0;
@@ -263,19 +213,18 @@ var reinitDataScores = function(Layer) {
 
 var initScore = function(Layer) {
 	var size = cc.winSize;
-	var temp = ((cc.winSize.height - spriteArray[2].y)/spriteArray[2].height)*2;
-	var temp2 = size.height-(spriteGlobal.height * temp) - (spriteScore.height * temp);
+	var temp = size.height- spriteGlobal.height - spriteScore.height;
 	fontSize = 46;
 	fontRoom = Math.round(fontSize*(9/8));
-	defaultFromTop = temp2 - fontSize/2 ;
+	defaultFromTop = temp - fontSize/2 ;
 	labelArray = [];
 	var amount = (((defaultFromTop) / fontSize - 1) < (dataArray.length))?((defaultFromTop) / fontSize - 1):dataArray.length;
 	for (var i = 0; i < amount; i++) {
-		labelArray[i] = new cc.LabelTTF(dataArray[i], "Courier");
+		labelArray[i] = new cc.LabelTTF(dataArray[i], res.AmigaForever_ttf);
 		labelArray[i].setFontSize(fontSize);
 		labelArray[i].setColor(cc.color(0,0,100));
 		labelArray[i].setAnchorPoint(cc.p(0, 0.5));
-		labelArray[i].setPosition(cc.p(cc.winSize.width/20, defaultFromTop - (i * fontRoom) ));
+		labelArray[i].setPosition(cc.p(10, defaultFromTop - (i * fontRoom) ));
 		Layer.addChild(labelArray[i]);
 	}
 
@@ -286,12 +235,27 @@ var initScore = function(Layer) {
 
 var reinitScore = function(Layer) {
 	var amount = (((defaultFromTop) / fontSize - 1) < (dataArray.length))?((defaultFromTop) / fontSize - 1):dataArray.length;
-	cc.log(amount + ", " + labelArray.length);
 	for (var i = 0; i < amount; i++) {
-		cc.log(i);
 		labelArray[i].setString(dataArray[i]);
 		labelArray[i].y = defaultFromTop - (i * fontRoom);
 	}
+}
+
+var myClickContainsPoint = function(clickPoint, index) {
+	var clickX = clickPoint.x;
+	var clickY = clickPoint.y;
+	var left = spriteArray[index].x;
+	var right = spriteArray[index].x + spriteArray[index].width;
+	var top = spriteArray[index].y;
+	var bottom = spriteArray[index].y - spriteArray[index].height;
+	
+	if (clickX >= left &&
+		clickX <= right &&
+		clickY <= top &&
+		clickY >= bottom) {
+		return true;
+	}
+	return false;
 }
 
 var initTouchEvents = function(Layer) {
@@ -305,7 +269,13 @@ var initTouchEvents = function(Layer) {
 				isDown = true;
 				touchDown = touches[0].getLocation();
 				snapBack = false;
-				doClickedScore(getButtonClicked(touches[0].getLocation()), Layer);
+				var rect = 0;
+				
+				cc.log(touchDown.x + ", " + touchDown.y);
+				for (var i = 0; i < spriteArray.length; i++) {
+					if (myClickContainsPoint(touchDown, i))
+						selectButtonScore(i, Layer);
+				}
             },
 
             onTouchesMoved: function(touches, event) {
@@ -321,14 +291,75 @@ var initTouchEvents = function(Layer) {
 				offset = 0;
 				if (snapBack == true)
 					moveToPos();
+				
+				if (backScorePushed == true)
+					scoreSceneBack(Layer);
             }
         }), Layer);
+}
+
+//Called when you select a button in the scoreboard scene, but have yet to click it. Used to highlight sprites selected.
+var selectButtonScore = function(i, Layer) {
+	var size = cc.winSize;
+	
+	if (i == 0) {
+		Layer.removeChild(spriteBack);
+		
+		//Draw back button clicked
+		spriteBack = new cc.Sprite.create(res.ScoreboardBackButtonP_png);
+		spriteBack.setAnchorPoint(cc.p(0, 1));
+		spriteBack.setPosition(cc.p(0,size.height));
+		
+		Layer.addChild(spriteBack, 100);
+	} else if (i == 1 || i == 2) {
+		Layer.removeChild(spriteLocal);
+		Layer.removeChild(spriteGlobal);
+			
+		//Draws local button clicked
+		spriteArray[1] = spriteLocal = new cc.Sprite.create((i == 1)?res.LocalP_png:res.Local_png);
+		spriteLocal.setAnchorPoint(cc.p(0, 1));
+		spriteLocal.setPosition(cc.p(spriteArray[0].width, size.height));
+		
+		//Draws global button clicked
+		spriteArray[2] = spriteGlobal = new cc.Sprite.create((i == 2)?res.GlobalP_png:res.Global_png);
+		spriteGlobal.setAnchorPoint(cc.p(0, 1));
+		spriteGlobal.setPosition(cc.p(spriteArray[0].width + spriteArray[1].width, size.height));
+		
+		Layer.addChild(spriteLocal, 100);
+		Layer.addChild(spriteGlobal, 100);
+		
+	} else if (i == 3 || i == 4 || i == 5) {
+		var secondRowX = size.height - spriteArray[0].height;
+		Layer.removeChild(spriteScore);
+		Layer.removeChild(spriteDifficulty);
+		Layer.removeChild(spriteTime);
+		//Draws score button
+		spriteArray[3] = spriteScore = new cc.Sprite.create((i == 3)?res.SortScoreP_png:res.SortScore_png);
+		spriteScore.setAnchorPoint(cc.p(0, 1));
+		spriteScore.setPosition(cc.p(0, secondRowX));
+		
+		//Draws difficulty button
+		spriteArray[4] = spriteDifficulty = new cc.Sprite.create((i == 4)?res.SortDifficultyP_png:res.SortDifficulty_png);
+		spriteDifficulty.setAnchorPoint(cc.p(0, 1));
+		spriteDifficulty.setPosition(cc.p(spriteArray[3].width, secondRowX));
+		
+		//Draws time button
+		spriteArray[5] = spriteTime = new cc.Sprite.create((i == 5)?res.SortTimeP_png:res.SortTime_png);
+		spriteTime.setAnchorPoint(cc.p(0, 1));
+		spriteTime.setPosition(cc.p(spriteArray[3].width + spriteArray[4].width, secondRowX));
+		
+		Layer.addChild(spriteScore, 100);
+		Layer.addChild(spriteDifficulty, 100);
+		Layer.addChild(spriteTime, 100);
+	}
+	
+	doClickedScore(i, Layer);
 }
 
 var doClickedScore = function(i, Layer) {
 	switch(i) {
 		case 0:
-		scoreSceneBack(Layer);
+		backScorePushed = true;
 		break;
 		case 1:
 		scorePressLocal(Layer);
@@ -356,10 +387,6 @@ var scorePressLocal = function(Layer) {
 		Layer.removeChild(labelArray[i], true);
 	}
 	
-	spriteArray[2].runAction(cc.TintTo.create(0, 255, 255, 255));
-	spriteArray[1].runAction(cc.TintTo.create(0, 100, 100, 100));
-
-	
 	initDataScores(Layer);
 }
 
@@ -370,53 +397,23 @@ var scorePressGlobal = function(Layer) {
 		Layer.removeChild(dataArray[i], true);
 		Layer.removeChild(labelArray[i], true);
 	}
-	spriteArray[1].runAction(cc.TintTo.create(0, 255, 255, 255));
-	spriteArray[2].runAction(cc.TintTo.create(0, 100, 100, 100));
 
 	initDataScores(Layer);
 }
 
 var scorePressScore = function(Layer) {
 	sortBy = 0;
-	for(i = 3; i <= 5; i++)
-		spriteArray[i].runAction(cc.TintTo.create(0, 255, 255, 255));
-	spriteArray[3].runAction(cc.TintTo.create(0, 100, 100, 100));
 	reinitDataScores(Layer);
 }
 
 var scorePressDifficulty = function(Layer) {
 	sortBy = 1;
-	for(i = 3; i <= 5; i++)
-		spriteArray[i].runAction(cc.TintTo.create(0, 255, 255, 255));
-	spriteArray[4].runAction(cc.TintTo.create(0, 100, 100, 100));
 	reinitDataScores(Layer);
 }
 
 var scorePressTime = function(Layer) {
 	sortBy = 2;
-	for(i = 3; i <= 5; i++)
-		spriteArray[i].runAction(cc.TintTo.create(0, 255, 255, 255));
-	spriteArray[5].runAction(cc.TintTo.create(0, 100, 100, 100));
 	reinitDataScores(Layer);
-}
-
-var getButtonClicked = function(clickPoint) {
-	var left;
-	var right;
-	var up;
-	var down
-	var x = clickPoint.x;
-	var y = clickPoint.y;
-	for (var i = 0; i < spriteArray.length; i++) {
-		left = spriteArray[i].x - spriteArray[i].width/2;
-		right = spriteArray[i].x + spriteArray[i].width/2;
-		up = spriteArray[i].y + spriteArray[i].height/2;
-		down = spriteArray[i].y - spriteArray[i].height/2;
-		
-		if (left <= x && right >= x && up >= y && down <= y)
-			return i;
-	}
-	return null;
 }
 
 var moveToPos = function()  {
@@ -515,7 +512,6 @@ var ScoresScenes = cc.Scene.extend({
 		if(INITIALIZED5 == false) {
 
 			INITIALIZED5 = true;
-			cc.log("Here");
 			var layer = new ScoresLayer();
 			this.addChild(layer);
 		}
