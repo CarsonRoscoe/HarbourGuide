@@ -18,6 +18,10 @@ var SettingsLayer = cc.Layer.extend({
 	
 	init:function(Layer){
 		var winsize = cc.director.getWinSize();
+		var bgSprite = new cc.Sprite.create(res.MenuBg_png);
+		bgSprite.setAnchorPoint(cc.p(0.5, 0.5));
+		bgSprite.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height/2));
+		this.addChild(bgSprite, -100);
 
 		Layer.currentVolume = cc.audioEngine.getMusicVolume().toFixed(1);
 		Layer.currentEffectVolume = cc.audioEngine.getEffectsVolume().toFixed(1);
