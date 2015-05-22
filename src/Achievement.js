@@ -86,12 +86,12 @@ var getAllAchievements = function(){
 		Img : res.MiscIcon_png
 	},{
 		//17
-		Title : "Finish a level!",
-		Details : "You finished your first level",
+		Title : "Done!",
+		Details : "Completed a level",
 		Img : res.MiscIcon_png
 	},{
 		//18
-		Title : "Through the gate!",
+		Title : "Right On!",
 		Details : "Your boat made it",
 		Img : res.MiscIcon_png
 	}];
