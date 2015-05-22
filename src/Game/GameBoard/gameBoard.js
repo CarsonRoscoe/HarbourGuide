@@ -19,14 +19,17 @@ var GameBoard = cc.Layer.extend({
 	hud: null,
 	pauseInit: null,
 	paintInterval: null,
+	thisLayer: null,
+	parentLayer: null,
 
 	/**
 	 * Constructor that builds the game grid.
 	 * @returns {Boolean} = was successful?
 	 */
-	ctor:function (newHudLayer, newPauseLayer) {
+	ctor:function (newHudLayer, newPauseLayer, newGameVars, pLayer) {
 		// Super init first
 		this._super();
+		parentLayer = pLayer;
 		cellsRow = 7;
 		cellsColumn = 9;
 		cellSize = cc.winSize.width / cellsRow;
@@ -39,33 +42,17 @@ var GameBoard = cc.Layer.extend({
 		boardGlobY = (cc.winSize.height - cellsColumn * cellSize) / 2;
 		interaction = null;
 		drawLayers = [];
-		gameVars = new gameVariables();
-		gameVars.score = 0;
-		var readPlayer = loadPlayer(50);
-		gameVars.difficulty = readPlayer.difficulty;
-		gameVars.difficultyOffsetUp = readPlayer.difficultyUp;
-		gameVars.difficultyOffsetDown = readPlayer.difficultyDown;
-		gameVars.unitSpeed = 1000 - Math.round(gameVars.difficulty * 9);
-		gameVars.unitsStart = 5 + Math.round(gameVars.difficulty * .35);
-		gameVars.speedCount = 0;
-		gameVars.realSpeed = 0;
-		gameVars.unitsLeft = gameVars.unitsStart;
-		gameVars.unitsComplete = 0;
-		gameVars.frameRate = 16;
-		gameVars.spawnRate = 10000 - Math.round(gameVars.difficulty * 50); //how often this spawns * time
-		gameVars.spawnCount = gameVars.spawnRate;
-		gameVars.unitsOnBoard = 1 + Math.round(gameVars.difficulty / 20);
-		gameVars.isPaused = false;
-		gameVars.thisScene = this;
-		gameVars.blockedSpawns = 0;
-		gameVars.forceKill = false;
+		gameVars = newGameVars;
 		hud = newHudLayer;
 		hud.initVars(cellSize, cellsRow, cellsColumn);
 		pauseInit = newPauseLayer;
 		//hud.updateBoatsLeft(gameVars.unitsLeft);
+		
+		thisLayer = this;
+		
 		drawBackground(this);
+		
 		createGates();
-		getAchievements([15]);
 		
 		initUnitMovement(this);
 		createLevel(gameVars.difficulty, this);
@@ -74,6 +61,7 @@ var GameBoard = cc.Layer.extend({
 		initPaint(1, this);
 		initPaint(2, this);
 		repaintLoop(false, this);
+		getAchievements([15]);
 		
 			/**
 			 * Handles all the touch and swipe movements on the grid.
@@ -249,8 +237,8 @@ var GameBoard = cc.Layer.extend({
 									&& gridGates[grid[tempShip.point.x][tempShip.point.y].gateID].direction == tempShip.direction) {
 								var spin = 360 - (tempShip.sprite.rotation % 360 - tempShip.direction * 90);
 								tempShip.sprite.runAction(cc.RotateBy.create((gameVars.unitSpeed/1000 / 360) * spin, spin));
-								getAchievements([16]);
 								interaction = null;
+								getAchievements([16]);
 								clickOffset = null;
 								shipIndexSelected = null;
 								shipSelected = null;
@@ -260,8 +248,8 @@ var GameBoard = cc.Layer.extend({
 									|| grid[tempShip.point.x][tempShip.point.y + 1].unitID == tempShip.selfID)) {
 								var spin = 360 - (tempShip.sprite.rotation % 360 - tempShip.direction * 90);
 								tempShip.sprite.runAction(cc.RotateBy.create((gameVars.unitSpeed/1000 / 360) * spin, spin));
-								getAchievements([16]);
 								interaction = null;
+								getAchievements([16]);
 								clickOffset = null;
 								shipIndexSelected = null;
 								shipSelected = null;
@@ -271,8 +259,8 @@ var GameBoard = cc.Layer.extend({
 									|| grid[tempShip.point.x + 1][tempShip.point.y].unitID == tempShip.selfID)) {
 								var spin = 360 - (tempShip.sprite.rotation % 360 - tempShip.direction * 90);
 								tempShip.sprite.runAction(cc.RotateBy.create((gameVars.unitSpeed/1000 / 360) * spin, spin));
-								getAchievements([16]);
 								interaction = null;
+								getAchievements([16]);
 								clickOffset = null;
 								shipIndexSelected = null;
 								shipSelected = null;
@@ -282,8 +270,8 @@ var GameBoard = cc.Layer.extend({
 									|| grid[tempShip.point.x][tempShip.point.y - 1].unitID == tempShip.selfID)) {
 								var spin = 360 - (tempShip.sprite.rotation % 360 - tempShip.direction * 90);
 								tempShip.sprite.runAction(cc.RotateBy.create((gameVars.unitSpeed/1000 / 360) * spin, spin));
-								getAchievements([16]);
 								interaction = null;
+								getAchievements([16]);
 								clickOffset = null;
 								shipIndexSelected = null;
 								shipSelected = null;
@@ -293,8 +281,8 @@ var GameBoard = cc.Layer.extend({
 									|| grid[tempShip.point.x - 1][tempShip.point.y].unitID == tempShip.selfID)) {
 								var spin = 360 - (tempShip.sprite.rotation % 360 - tempShip.direction * 90);
 								tempShip.sprite.runAction(cc.RotateBy.create((gameVars.unitSpeed/1000 / 360) * spin, spin));
-								getAchievements([16]);
 								interaction = null;
+								getAchievements([16]);
 								clickOffset = null;
 								shipIndexSelected = null;
 								shipSelected = null;
@@ -406,6 +394,12 @@ frontPoint: null;
 backPoint: null;
 origin: null;
 sprite: null;
+}
+
+var reInitLevel = function() {
+	thisLayer.removeAllChildren();
+	parentLayer.buildInit();
+	cc.director.popScene();
 }
 
 /**
@@ -700,10 +694,7 @@ var validateShip = function(ship) {
  * difficulty = (int 1 - 100) The difficulty of the level.
  * ref = The surface to create the obstacles on.
  */
-var createLevel = function(difficulty, ref) {
-	
-	cc.log(gameVars.unitsStart * (Math.round(gameVars.difficulty / (10)) + (gameVars.difficulty * (1 + (gameVars.difficulty / 100)))));
-	
+var createLevel = function(difficulty, ref) {	
 	var lengths = [];
 	lengths[0] = 100 - (difficulty / 2);
 	lengths[1] = 100 - lengths[0];
@@ -896,7 +887,7 @@ var spawnUnit = function(ref) {
 }
 
 var toggleWarning = function(x, y, wrongGate, ref) {
-	if (grid[x][y].holdsWarning == null || wrongGate) {
+	if (grid[x][y].holdsWarning == null) {
 		grid[x][y].holdsWarning = new cc.Sprite.create(res.warning);	
 		grid[x][y].holdsWarning.setAnchorPoint(.5, .5);
 		//grid[x][y].holdsWarning.setScaleX(cellSize / grid[x][y].holdsWarning.width);
@@ -905,7 +896,7 @@ var toggleWarning = function(x, y, wrongGate, ref) {
 		grid[x][y].holdsWarning.runAction(cc.RepeatForever.create(cc.Sequence.create(cc.FadeOut.create(1), cc.FadeIn.create(1))));
 		ref.addChild(grid[x][y].holdsWarning, 11000);
 		if (wrongGate) {
-			var temp = setTimeout(function() {
+			var warnTemp = setTimeout(function() {
 				ref.removeChild(grid[x][y].holdsWarning);
 				grid[x][y].holdsWarning = null;
 			}, 3000);
@@ -932,7 +923,11 @@ var initUnitMovement = function(ref){
 		if (checkGameFinished()) {
 			clearInterval(temp);
 			repaintLoop(true, ref);
-			cc.director.popScene();
+			//success, failed, difficulty, newDiff
+			var scene = new postGameScene(gameVars.unitsComplete, gameVars.unitsStart - gameVars.unitsComplete, gameVars.newDiff, gameVars.difficulty + gameVars.newDiff, Math.floor(gameVars.score), gameVars.realSpeed);
+			cc.audioEngine.playEffect(res.button);
+			cc.audioEngine.stopMusic(); //stops the music so that the game music can be played.
+			cc.director.pushScene(scene);
 		}
 		if (gameVars.score - (1 / (100 / gameVars.difficulty)) * (gameVars.blockedSpawns + 1) >= 0) {
 			gameVars.score -= (1 / (100 / gameVars.difficulty)) * (gameVars.blockedSpawns + 1);
@@ -953,19 +948,22 @@ var initUnitMovement = function(ref){
 
 var checkGameFinished = function() {
 	if (unitBoats.length < 1 && gameVars.unitsLeft < 1) {
-		//realSpeed
-		var newData = new dataPack("Guest", gameVars.score, gameVars.difficulty, Math.round(gameVars.realSpeed));
-		cc.log(gameVars.score + ", " + gameVars.difficulty + ", " + Math.round(gameVars.realSpeed));
-		new sendCommand("DATA", newData);
-		adjustDifficulty();
+		adjustDifficulty(false);
 		return true;
 	}
+	return false;
 }
 
 var handlePause = function() {
 	if (gameVars.forceKill) {
 		gameVars.isPaused = true;
-		cc.director.popScene();
+		if (gameVars.difficulty - 2 < 1)
+			gameVars.difficulty = 3;
+		savePlayerData(new playerDataObj(gameVars.difficulty - 2, gameVars.difficultyOffsetUp, gameVars.difficultyOffsetDown));
+		var scene = new postGameScene(gameVars.unitsComplete, gameVars.unitsStart - gameVars.unitsComplete, -2, gameVars.difficulty - 2, -1, gameVars.realSpeed);
+		cc.audioEngine.playEffect(res.button);
+		cc.audioEngine.stopMusic(); //stops the music so that the game music can be played.
+		cc.director.pushScene(scene);
 		return true;
 	}
 	if (!gameVars.isPaused) {
@@ -981,31 +979,33 @@ var handlePause = function() {
 	}
 }
 
-var adjustDifficulty = function() {
+var adjustDifficulty = function(failed) {
 	var diff = gameVars.difficulty;
 	var up = gameVars.difficultyOffsetUp;
 	var down = gameVars.difficultyOffsetDown;
 	var score = gameVars.score;
-	var avgScore = gameVars.unitsStart * (Math.round(diff / (10)) + (diff * (1 + (diff / 100))));
+	var avgScore = gameVars.passScore;//gameVars.unitsStart * (Math.round(diff / (10)) + (diff * (1 + (diff / 100))));
 	cc.log(avgScore);
-	if (score >= avgScore) {
+	if (score >= avgScore && !failed) {
 		diff += up;
-		if (up < 10) {
+		if (up < 3)
 			up++;
+		if (down > 1)
 			down--;
-		}
 	} else {
 		diff -= down;		
-		if (down < 10) {
-			up--;
+		if (down < 3)
 			down++;
-		}
+		if (up > 1) 
+			up--;
 	}
 	if (diff > 100)
 		diff = 100;
 	if (diff < 1)
 		diff = 1;
 	savePlayerData(new playerDataObj(diff, up, down));
+	gameVars.newDiff = diff - gameVars.difficulty;
+	return true;
 }
 
 /**
@@ -1029,6 +1029,7 @@ var updateUnits = function(ref) {
 			grid[unitBoats[i].point.x][unitBoats[i].point.y].isEmpty = true;
 			grid[unitBoats[i].point.x][unitBoats[i].point.y].unitID = null;
 			if (gridGates[grid[unitBoats[i].point.x][unitBoats[i].point.y].gateID].gateID == unitBoats[i].gateID) {
+				getAchievements([18]);
 				gameVars.unitsComplete++;
 				hud.addScore(unitBoats[i].spawnTime);
 			} else {
@@ -1253,29 +1254,4 @@ var ShipUnit = function() {
 var dragMovement = function() {
 	pointClicked: null;
 	pointCurrent: null;
-}
-
-/**
- * Holds necessary variables for the game, which would be used outside of the game. Such as score
- * on the level, game speed, maximum frames, how many to spawn, and how quickly new boats spawn.
- */
-var gameVariables = function() {
-	score: null;
-	unitsLeft: null;
-	unitsComplete: null;
-	unitsStart: null;
-	unitSpeed: null;
-	frameRate: null;
-	spawnCount: null;
-	spawnRate: null;
-	difficulty: null;
-	difficultyOffsetUp: null;
-	difficultyOffsetDown: null;
-	unitsOnBoard: null;
-	isPaused: null;
-	thisScene: null;
-	speedCount: null;
-	realSpeed: null;
-	blockedSpawns: null;
-	forceKill: null;
 }
