@@ -5,6 +5,17 @@ var INITIALIZED3 = false;
 var PostGameLayer = cc.Layer.extend({
 	postgameSprite: null,
 	
+	/**
+	 * Contructor for the post game layer. The data passed in populates the information
+	 * on the scene so the player can see thier results.
+	 * @param success = Amount of boats they passed successfully.
+	 * @param failed = The amounts of boats that were missed/didn't spawn because they quit.
+	 * @param difficulty = The difficulty the player played at.
+	 * @param newDiff = The offset of difficulty from the game result.
+	 * @param score = The score the player earned. (-1 if the play quit.)
+	 * @param time = The time the player took to complete the level.
+	 * @returns {Boolean} = Was constructed successfully?
+	 */
 	ctor:function(success, failed, difficulty, newDiff, score, time) {
 		this._super();
 		
@@ -45,6 +56,13 @@ var PostGameLayer = cc.Layer.extend({
 		return true;
 	},
 	
+	/**
+	 * The values to be populated from the level results.
+	 * @param unitsPass = The amounts of units that passed through the gates.
+	 * @param unitsFailed = The amounts of boats that were missed/didn't spawn because they quit.
+	 * @param difficultyChange = The difficulty the player played at.
+	 * @param newDifficulty = The offset of difficulty from the game result.
+	 */
 	initLabels: function(unitsPass, unitsFailed, difficultyChange, newDifficulty) {
 		var fontSizepostgame = postgameSprite.width/14;
 		
@@ -107,7 +125,17 @@ var postGameScene = cc.Scene.extend({
 	newDiff: null,
 	score: null,
 	time: null,
-	
+
+	/**
+	 * Contructor for the post game scene. The data passed in populates the information
+	 * on the scene so the player can see thier results.
+	 * @param sent = Amount of boats they passed successfully.
+	 * @param failed = The amounts of boats that were missed/didn't spawn because they quit.
+	 * @param change = The difficulty the player played at.
+	 * @param Diff = The offset of difficulty from the game result.
+	 * @param sc = The score the player earned. (-1 if the play quit.)
+	 * @param t = The time the player took to complete the level.
+	 */
 	ctor:function(sent, failed, change, Diff, sc, t) {
 		this._super();
 		success = sent;
@@ -118,6 +146,9 @@ var postGameScene = cc.Scene.extend({
 		time = t;
 	},
 	
+	/**
+	 * When the scene enters the app field.
+	 */
 	onEnter:function() {
 		this._super();
 

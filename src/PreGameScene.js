@@ -6,6 +6,10 @@ var PreGameLayer = cc.Layer.extend({
 	pregameSprite: null,
 	gameVars: null,
 	
+	/**
+	 * Contructor, calls the init function for the scene.
+	 * @returns {Boolean} = If constructing was completed.
+	 */
 	ctor:function() {
 		this._super();
 		this.buildInit();
@@ -14,6 +18,11 @@ var PreGameLayer = cc.Layer.extend({
 		return true;
 	},
 	
+	/**
+	 * Builds the layer and gameVars object. This is seperated from the contructor so it can be called again
+	 * to refresh the layer for when a game is completed and the player comes back to prepare to play another
+	 * one.
+	 */
 	buildInit: function () {
 		gameVars = new gameVariables();
 		gameVars.score = 0;
@@ -85,6 +94,13 @@ var PreGameLayer = cc.Layer.extend({
 		this.initLabels(gameVars.unitsStart, 8 + Math.round(gameVars.difficulty / 20), gameVars.passScore, gameVars.difficulty);
 	},
 	
+	/**
+	 * Initializes all the text lables that change based on the gameVars's data.
+	 * @param unitsToGo = The units that will be spawned.
+	 * @param obstaclesToGo = The amount of obstacles that will be spawned.
+	 * @param scoreToGo = The score required to pass.
+	 * @param difficultyToGO = The difficulty you'll be playing at.
+	 */
 	initLabels: function(unitsToGo, obstaclesToGo, scoreToGo, difficultyToGO) {
 		var fontSizePregame = pregameSprite.width/14;
 		
@@ -125,6 +141,9 @@ var PreGameLayer = cc.Layer.extend({
 //The following 3 functions are called when the buttons in the menu are pressed
 //All the functions reset INITIALZIED3 to false, so it can be called by the scene again
 //Each function runs the appropriate scene
+/**
+ * Starts a game, pushes a new game scene.
+ */
 var preStart = function() {
 	INITIALIZED3 = false;
 	var scene = new Runner(gameVars, this);
@@ -134,12 +153,18 @@ var preStart = function() {
 	cc.director.pushScene(scene);
 }
 
+/**
+ * Pops this scene, goes back to main menu.
+ */
 var preBack = function() {
 	INITIALIZED3 = false;
 	var scene = new MenuScene();
 	cc.director.popScene();
 }
 
+/**
+ * pushes a new settings scene.
+ */
 var preSettings = function() {
 	INITIALIZED3 = false;
 	var scene = new SettingsScene();
@@ -163,6 +188,10 @@ var PreGameScene = cc.Scene.extend({
 	}
 });
 
+/**
+ * Game vars object that holds all neccessary data for the game to run. This data is all changed rapidly,
+ * or is needed information to shape what the level will appear as.
+ */
 var gameVariables = function() {
 	score: null;
 	unitsLeft: null;
