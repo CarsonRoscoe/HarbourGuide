@@ -842,7 +842,7 @@ var repaintLoop = function(kill, ref) {
 	paintInterval = setInterval(function() {
 		for (var i = 1; i < 6; i += 2) {
 			if (grid[i][0].holdsWarning != null && grid[i][0].isEmpty == true) {
-				toggleWarning(i, 0, ref);
+				toggleWarning(i, 0, false, ref);
 				if (gameVars.blockedSpawns > 0)
 					gameVars.blockedSpawns--;
 			}
@@ -850,7 +850,7 @@ var repaintLoop = function(kill, ref) {
 				if (grid[i][0].unitID == null || (grid[i][0].unitID != null && getUnitID(grid[i][0].unitID).isMoving == false)) {
 					if (gameVars.blockedSpawns < 3)
 						gameVars.blockedSpawns++;
-					toggleWarning(i, 0, ref);
+					toggleWarning(i, 0, false, ref);
 				}
 			}
 		}
@@ -891,17 +891,27 @@ var spawnUnit = function(ref) {
 	}
 }
 
-var toggleWarning = function(x, y, ref) {
-	if (grid[x][y].holdsWarning == null) {
+var toggleWarning = function(x, y, wrongGate, ref) {
+	if (grid[x][y].holdsWarning == null || wrongGate) {
 		grid[x][y].holdsWarning = new cc.Sprite.create(res.warning);	
 		grid[x][y].holdsWarning.setAnchorPoint(.5, .5);
 		//grid[x][y].holdsWarning.setScaleX(cellSize / grid[x][y].holdsWarning.width);
-		grid[x][y].holdsWarning.setScaleY(cellSize / grid[x][y].holdsWarning.height);
+		//grid[x][y].holdsWarning.setScaleY(cellSize / grid[x][y].holdsWarning.height);
 		grid[x][y].holdsWarning.setPosition(cc.p(grid[x][y].xPos, grid[x][y].yPos));
+		grid[x][y].holdsWarning.runAction(cc.RepeatForever.create(cc.Sequence.create(cc.FadeOut.create(1), cc.FadeIn.create(1))));
 		ref.addChild(grid[x][y].holdsWarning, 11000);
-	} else {
+		if (wrongGate) {
+			var temp = setTimeout(function() {
+				ref.removeChild(grid[x][y].holdsWarning);
+				grid[x][y].holdsWarning = null;
+			}, 3000);
+		}
+		return;
+	}
+	if (grid[x][y].holdsWarning != null) {
 		ref.removeChild(grid[x][y].holdsWarning);
 		grid[x][y].holdsWarning = null;
+		return;
 	}
 }
 
@@ -1017,6 +1027,8 @@ var updateUnits = function(ref) {
 			if (gridGates[grid[unitBoats[i].point.x][unitBoats[i].point.y].gateID].gateID == unitBoats[i].gateID) {
 				gameVars.unitsComplete++;
 				hud.addScore(unitBoats[i].spawnTime);
+			} else {
+				toggleWarning(unitBoats[i].point.x, unitBoats[i].point.y, true, ref);
 			}
 			unitAnimate(unitBoats[i].sprite, tempDir, true, true);
 			deleteUnit(i, 1, ref);

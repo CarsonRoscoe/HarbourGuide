@@ -37,13 +37,15 @@ var HUDLayer = cc.Layer.extend({
 		
 		Layer.scoreHolder = new cc.Sprite(res.TextHolderHUD);
 		Layer.scoreHolder.setAnchorPoint(.5, .5);
-		Layer.scoreHolder.setPosition(cc.p(winsize.width / 2.75, winsize.height - ((winsize.height - (cellSize * cellsColumn)) / 4)));
+		Layer.scoreHolder.setScaleX(1.1);
+		Layer.scoreHolder.setScaleY(1.1);
+		Layer.scoreHolder.setPosition(cc.p(winsize.width / 2.45, winsize.height - ((winsize.height - (cellSize * cellsColumn)) / 4)));
 		
 		Layer.scoreIcon = new cc.Sprite(res.CurrentScoreIconHUD);
 		Layer.scoreIcon.setScaleX(Layer.scoreHolder.width * .14379 / Layer.scoreIcon.width);
 		Layer.scoreIcon.setScaleY(Layer.scoreHolder.height * .63636 / Layer.scoreIcon.height);
 		Layer.scoreIcon.setAnchorPoint(.5, .5);
-		Layer.scoreIcon.setPosition(cc.p(Layer.scoreHolder.x - Layer.scoreHolder.width / 2.54, Layer.scoreHolder.y));
+		Layer.scoreIcon.setPosition(cc.p(Layer.scoreHolder.x - (Layer.scoreHolder.width / 2.32), Layer.scoreHolder.y));
 		
 		Layer.scoreLabel = new cc.LabelTTF("0", "SF Slapstick Comic", cellSize / 2);
 		Layer.scoreLabel.setColor(cc.color(255,255,255)); 
@@ -69,13 +71,15 @@ var HUDLayer = cc.Layer.extend({
 
 		Layer.boatsLeftHolder = new cc.Sprite(res.TextHolderHUD);
 		Layer.boatsLeftHolder.setAnchorPoint(.5, .5);
+		Layer.boatsLeftHolder.setScaleX(1.1);
+		Layer.boatsLeftHolder.setScaleY(1.1);
 		Layer.boatsLeftHolder.setPosition(cc.p(winsize.width / 2, (winsize.height - (cellSize * cellsColumn)) / 4));
 		
 		Layer.cueIcon = new cc.Sprite(res.CueIconHUD);
 		Layer.cueIcon.setScaleX(Layer.boatsLeftHolder.width * .14379 / Layer.cueIcon.width);
 		Layer.cueIcon.setScaleY(Layer.boatsLeftHolder.height * .63636 / Layer.cueIcon.height);
 		Layer.cueIcon.setAnchorPoint(.5, .5);
-		Layer.cueIcon.setPosition(cc.p(Layer.boatsLeftHolder.x - Layer.boatsLeftHolder.width / 2.54, Layer.boatsLeftHolder.y));
+		Layer.cueIcon.setPosition(cc.p(Layer.boatsLeftHolder.x - Layer.boatsLeftHolder.width / 2.32, Layer.boatsLeftHolder.y));
 		
 		Layer.boatsLeftLabel = new cc.LabelTTF("", "SF Slapstick Comic", cellSize / 2);
 		Layer.boatsLeftLabel.setColor(cc.color(255,255,255));
