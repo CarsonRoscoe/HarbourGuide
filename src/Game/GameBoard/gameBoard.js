@@ -17,7 +17,7 @@ var GameBoard = cc.Layer.extend({
 	drawLayers: null,
 	gameVars: null,
 	hud: null,
-	pause: null,
+	pauseInit: null,
 	paintInterval: null,
 
 	/**
@@ -58,8 +58,9 @@ var GameBoard = cc.Layer.extend({
 		gameVars.isPaused = false;
 		gameVars.thisScene = this;
 		gameVars.blockedSpawns = 0;
+		gameVars.forceKill = false;
 		hud = newHudLayer;
-		pause = newPauseLayer;
+		pauseInit = newPauseLayer;
 		hud.updateBoatsLeft(gameVars.unitsLeft);
 		
 		drawBackground(this);
@@ -946,19 +947,19 @@ var checkGameFinished = function() {
 	}
 }
 
-var handlePause = function(kill) {
-	if (kill) {
+var handlePause = function() {
+	if (gameVars.forceKill) {
 		gameVars.isPaused = true;
 		cc.director.popScene();
 		return true;
 	}
 	if (!gameVars.isPaused) {
 		gameVars.isPaused = true;
-		pause.init(pause);
+		pauseInit.init(pauseInit);
 		return true;
 	} else {
 		gameVars.isPaused = false;
-		pause.deinit(pause);
+		pauseInit.deinit(pauseInit);
 		initUnitMovement(gameVars.thisScene);
 		repaintLoop(false, gameVars.thisScene);
 		return false;
@@ -1259,4 +1260,5 @@ var gameVariables = function() {
 	speedCount: null;
 	realSpeed: null;
 	blockedSpawns: null;
+	forceKill: null;
 }
