@@ -82,17 +82,17 @@ var initAchievements = function(Layer) {
 		achArray[i].spriteB.setScaleY(cc.winSize.width/achArray[i].spriteB.width);
 		
 		achRoom = achArray[i].spriteB.height;
-		achArray[i].label = new cc.LabelTTF(dataArrayAch[i].Details, "Courier");
+		achArray[i].label = new cc.LabelTTF(dataArrayAch[i].Details, "Cousine");
 		achArray[i].label.setFontSize(30);
 		achArray[i].label.setColor(cc.color(0,0,0));
 		achArray[i].label.setAnchorPoint(cc.p(0.5, 0));
-		achArray[i].label.setPosition(cc.p(achArray[i].spriteB.width / 2 + achArray[i].spriteB.width / 10, achArray[i].spriteB.y - fontSize * 3.7));
+		achArray[i].label.setPosition(cc.p(achArray[i].spriteB.width / 2 + achArray[i].spriteB.width / 10, achArray[i].spriteB.y - fontSize * 3.3));
 		
-		achArray[i].labelT = new cc.LabelTTF(dataArrayAch[i].Title, "Courier");
+		achArray[i].labelT = new cc.LabelTTF(dataArrayAch[i].Title, "Cousine");
 		achArray[i].labelT.setFontSize(44);
 		achArray[i].labelT.setColor(cc.color(0,0,0));
 		achArray[i].labelT.setAnchorPoint(cc.p(0.5, 0.5));
-		achArray[i].labelT.setPosition(cc.p(achArray[i].spriteB.width / 2 + achArray[i].spriteB.width / 10, achArray[i].spriteB.y - fontSize * 1.2));
+		achArray[i].labelT.setPosition(cc.p(achArray[i].spriteB.width / 2 + achArray[i].spriteB.width / 10, achArray[i].spriteB.y - fontSize * 1.1));
 		Layer.addChild(achArray[i].spriteB);
 		Layer.addChild(achArray[i].label);
 		Layer.addChild(achArray[i].labelT);
@@ -122,6 +122,7 @@ var initTouchEventsAch = function(Layer) {
 				isDown = true;
 				touchDown = touches[0].getLocation();
 				snapBack = false;
+				
 				
 				if (myClickContainsPoint(touchDown, 0)) {
 					clickBack = true;

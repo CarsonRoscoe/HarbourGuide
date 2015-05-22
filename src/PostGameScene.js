@@ -32,7 +32,7 @@ var PostGameLayer = cc.Layer.extend({
 		this.addChild(bgSprite);
 		this.addChild(postgameSprite);
 		this.addChild(menuNext);
-
+		getAchievements([17]);
 		//Boats Sent Through // Units failed(wrong gate) // Difficulty Changed(+3 // -2) // New difficulty
 		this.initLabels(success, failed, difficulty, newDiff);
 		if (score >= 0) {

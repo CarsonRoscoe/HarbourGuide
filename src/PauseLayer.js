@@ -20,7 +20,7 @@ var PauseLayer = cc.Layer.extend({
 		Layer.removeAllChildren();
 
 		var winsize = cc.director.getWinSize();
-		Layer.background = new cc.Sprite("res/PauseBG.png");
+		Layer.background = new cc.Sprite(res.PauseBg_png);
 		Layer.background.setPosition(cc.p(winsize.width /2, winsize.height / 2));
 
 		Layer.addChild(this.background);
@@ -28,10 +28,19 @@ var PauseLayer = cc.Layer.extend({
 		var menuItem1 = new cc.MenuItemFont("Resume", handlePause);
 		var menuItem2 = new cc.MenuItemFont("Settings", Layer.pauseSettings);
 		var menuItem3 = new cc.MenuItemFont("Quit", Layer.pauseQuit);
+		
+		menuItem1.setFontName("SF Slapstick Comic");
+		menuItem1.setFontSize(90);
+		
+		menuItem2.setFontName("SF Slapstick Comic");
+		menuItem2.setFontSize(90);
+		
+		menuItem3.setFontName("SF Slapstick Comic");
+		menuItem3.setFontSize(90);
 		//Adds menuItems to a Menu
 		var menu = new cc.Menu(menuItem1, menuItem2, menuItem3);
 		//Aligns the items vertically
-		menu.alignItemsVertically();
+		menu.alignItemsVerticallyWithPadding(100);
 		//Adds menu to layer
 		
 		

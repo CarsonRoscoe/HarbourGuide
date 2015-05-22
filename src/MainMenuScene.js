@@ -24,8 +24,6 @@ var MenuLayer = cc.Layer.extend({
 		logoSprite.setScaleX = 0;
 		logoSprite.setScaleY = 0;
 		
-		getAchievements([13,14,15]);
-		
 		var width = cc.winSize.width;
 		var height = cc.winSize.height;
 		
