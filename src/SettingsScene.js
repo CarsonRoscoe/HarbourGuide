@@ -23,16 +23,16 @@ var SettingsLayer = cc.Layer.extend({
 		bgSprite.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height/2));
 		this.addChild(bgSprite, -100);
 
-		Layer.currentVolume = cc.audioEngine.getMusicVolume().toFixed(1);
-		Layer.currentEffectVolume = cc.audioEngine.getEffectsVolume().toFixed(1);
+		Layer.currentVolume = cc.audioEngine.getMusicVolume().toFixed(1) * 100;
+		Layer.currentEffectVolume = cc.audioEngine.getEffectsVolume().toFixed(1) * 100;
 
 
-		var musicVolumeLabel = new cc.LabelTTF("Background Music Volume", "Helvetica", 30);
+		var musicVolumeLabel = new cc.LabelTTF("Background Music Volume %", "Helvetica", 30);
 		musicVolumeLabel.setColor(cc.color(0,0,0));
 		musicVolumeLabel.setPosition(cc.p(winsize.width/2, winsize.height/1.45));
 		Layer.addChild(musicVolumeLabel);
 		
-		var effectVolumeLabel = new cc.LabelTTF("Effect Music Volume", "Helvetica", 30);
+		var effectVolumeLabel = new cc.LabelTTF("Effect Music Volume %", "Helvetica", 30);
 		effectVolumeLabel.setColor(cc.color(0,0,0));
 		effectVolumeLabel.setPosition(cc.p(winsize.width/2, winsize.height/1.8));
 		Layer.addChild(effectVolumeLabel);
@@ -94,6 +94,14 @@ var SettingsLayer = cc.Layer.extend({
 		tempMenu.setPosition(cc.p(winsize.width/2, winsize.height/3));
 		Layer.addChild(tempMenu);
 		
+		var menuBack = new cc.MenuItemSprite(
+				new cc.Sprite(res.ScoreboardBackButton_png),
+				new cc.Sprite(res.ScoreboardBackButtonP_png),
+				preBack, this);
+		var backMenu = new cc.Menu(menuBack);
+		backMenu.setPosition(cc.p(winsize.width  / 8, winsize.height - 70));
+		Layer.addChild(backMenu);
+		
 
 	},
 	
@@ -105,7 +113,7 @@ var SettingsLayer = cc.Layer.extend({
 		if(display <= 0){
 			display = 0;
 		}
-		bgVolumeLabel.setString(display.toFixed(1));
+		bgVolumeLabel.setString(display.toFixed(1) * 100);
 
 	},
 
@@ -117,7 +125,7 @@ var SettingsLayer = cc.Layer.extend({
 		if(display >= 1){
 			display = 1;
 		}
-		bgVolumeLabel.setString(display.toFixed(1));
+		bgVolumeLabel.setString(display.toFixed(1) * 100);
 
 	},
 
@@ -128,7 +136,7 @@ var SettingsLayer = cc.Layer.extend({
 		if(display <= 0){
 			display = 0;
 		}
-		effectVolumeNumber.setString(display.toFixed(1));
+		effectVolumeNumber.setString(display.toFixed(1) * 100);
 
 	},
 
@@ -140,7 +148,7 @@ var SettingsLayer = cc.Layer.extend({
 		if(display >= 1){
 			display = 1;
 		}
-		effectVolumeNumber.setString(display.toFixed(1));
+		effectVolumeNumber.setString(display.toFixed(1) * 100);
 
 	},
 	
