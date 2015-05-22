@@ -70,11 +70,11 @@ var playerDataObj = function(d, u, down) {
 
 var loadPlayer = function(defDifficulty) {
 	if (localStorage.getItem("playerData") == null) {
-		savePlayerData(new playerDataObj(defDifficulty, 5, 5));
+		savePlayerData(new playerDataObj(defDifficulty, 1, 1));
 	}
 	var r = localStorage.getItem("playerData").split(";");
 	if (r[0] == null) {
-		savePlayerData(new playerDataObj(defDifficulty, 5, 5));
+		savePlayerData(new playerDataObj(defDifficulty, 1, 1));
 	}
 	return new playerDataObj(parseInt(r[0]), parseInt(r[1]), parseInt(r[2]));	
 }

@@ -12,9 +12,13 @@ var HUDLayer = cc.Layer.extend({
 	cellSize: null,
 	cellsRow: null,
 	cellsColumn: null,
+	shipsLeft: null,
+	reqScore : null,
 	
-	ctor:function() {
+	ctor:function(sLeft, rScore) {
 		this._super();
+		shipsLeft = sLeft;
+		reqScore = rScore;
 	},
 	
 	initVars:function(s, r, c) {
@@ -47,7 +51,7 @@ var HUDLayer = cc.Layer.extend({
 		Layer.scoreIcon.setAnchorPoint(.5, .5);
 		Layer.scoreIcon.setPosition(cc.p(Layer.scoreHolder.x - (Layer.scoreHolder.width / 2.32), Layer.scoreHolder.y));
 		
-		Layer.scoreLabel = new cc.LabelTTF("0", "SF Slapstick Comic", cellSize / 2);
+		Layer.scoreLabel = new cc.LabelTTF("0" + "/" + reqScore, "SF Slapstick Comic", cellSize / 2);
 		Layer.scoreLabel.setColor(cc.color(255,255,255)); 
 		Layer.scoreLabel.enableStroke(cc.color(0,0,0), 3, false);
 		Layer.scoreLabel.setAnchorPoint(0, .5);
@@ -81,7 +85,7 @@ var HUDLayer = cc.Layer.extend({
 		Layer.cueIcon.setAnchorPoint(.5, .5);
 		Layer.cueIcon.setPosition(cc.p(Layer.boatsLeftHolder.x - Layer.boatsLeftHolder.width / 2.32, Layer.boatsLeftHolder.y));
 		
-		Layer.boatsLeftLabel = new cc.LabelTTF("", "SF Slapstick Comic", cellSize / 2);
+		Layer.boatsLeftLabel = new cc.LabelTTF(shipsLeft, "SF Slapstick Comic", cellSize / 2);
 		Layer.boatsLeftLabel.setColor(cc.color(255,255,255));
 		Layer.boatsLeftLabel.enableStroke(cc.color(0,0,0), 3, false);
 		Layer.boatsLeftLabel.setAnchorPoint(0, .5);
@@ -99,7 +103,12 @@ var HUDLayer = cc.Layer.extend({
 	},
 	
 	updateScore:function() {
-		this.scoreLabel.setString(Math.floor(gameVars.score));
+		this.scoreLabel.setString(Math.floor(gameVars.score) + "/" + reqScore);
+		if (gameVars.score >= reqScore) {
+			this.scoreLabel.setColor(cc.color(0,255,0)); 
+		} else {
+			this.scoreLabel.setColor(cc.color(255,255,255)); 
+		}
 	},
 
 	addScore:function(unitTime) {
@@ -108,7 +117,13 @@ var HUDLayer = cc.Layer.extend({
 		if (score < 0)
 			score = 0;
 		gameVars.score += score
-		this.scoreLabel.setString(Math.floor(gameVars.score));
+		this.scoreLabel.setString(Math.floor(gameVars.score) + "/" + reqScore);
+
+		if (gameVars.score >= reqScore) {
+			this.scoreLabel.setColor(cc.color(0,255,0)); 
+		} else {
+			this.scoreLabel.setColor(cc.color(255,255,255)); 
+		}
 	}
 
 });

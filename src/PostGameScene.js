@@ -5,7 +5,7 @@ var INITIALIZED3 = false;
 var PostGameLayer = cc.Layer.extend({
 	postgameSprite: null,
 	
-	ctor:function() {
+	ctor:function(success, failed, difficulty, newDiff, score, time) {
 		this._super();
 		
 		var bgSprite = new cc.Sprite.create(res.MenuBg_png);
@@ -21,75 +21,59 @@ var PostGameLayer = cc.Layer.extend({
 				new cc.Sprite(res.NextDefault_png),
 				new cc.Sprite(res.NextP_png),
 				postNext, this));
-				
-		var menuBack = new cc.MenuItemSprite(
-				new cc.Sprite(res.ScoreboardBackButton_png),
-				new cc.Sprite(res.ScoreboardBackButtonP_png),
-				postBack, this);
-				
-		var menuSettings = new cc.MenuItemSprite(
-				new cc.Sprite(res.SettingsSmall_png),
-				new cc.Sprite(res.SettingsSmallP_png),
-				postSettings, this);
-				
-		var topBar = new cc.Menu(menuBack, menuSettings);
-		
-		topBar.setAnchorPoint(cc.p(0.5, 0.5));
-		topBar.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height - menuBack.height*3/4));
 		
 		menuNext.setAnchorPoint(cc.p(0.5, 0.5));
 		menuNext.setPosition(cc.p(cc.winSize.width/2, (postgameSprite.y - postgameSprite.height/2)/2));
 		//Aligns the items vertically
 		menuNext.alignItemsVertically();
 		
-		//Aligns top bar horizontally
-		topBar.alignItemsHorizontallyWithPadding(cc.winSize.width - menuBack.width * 2.5);
-		
 		//Adds menu to layer
 		this.removeAllChildren();
 		this.addChild(bgSprite);
 		this.addChild(postgameSprite);
 		this.addChild(menuNext);
-		this.addChild(topBar);
-		
+
 		//Boats Sent Through // Units failed(wrong gate) // Difficulty Changed(+3 // -2) // New difficulty
-		this.initLabels("11", "20", "1880", "59");
-		var name = prompt("Please enter your name and submit your score", "Guest");
-		var score = 2401;
-		var difficulty = 52;
-		var realSpeed = 521;
-		var newData = new dataPack(name, score, difficulty, realSpeed);
-		cc.log(gameVars.score + ", " + gameVars.difficulty + ", " + Math.round(gameVars.realSpeed));
-		new sendCommand("DATA", newData);
+		this.initLabels(success, failed, difficulty, newDiff);
+		if (score >= 0) {
+			var name = prompt("Please enter your name and submit your score", "Guest");
+			var newData = new dataPack(name, score, newDiff - difficulty, Math.round(time));
+			new sendCommand("DATA", newData);
+			new saveScore(newData);
+		}
 
 		return true;
 	},
 	
-	initLabels: function(unitsPassed, unitsFailed, difficultyChange, newDifficulty) {
+	initLabels: function(unitsPass, unitsFailed, difficultyChange, newDifficulty) {
 		var fontSizepostgame = postgameSprite.width/14;
 		
-		var labelUnits = new cc.LabelTTF(unitsPassed, "SF Slapstick Comic");
+		var labelUnits = new cc.LabelTTF("" + unitsPass, "SF Slapstick Comic");
 		labelUnits.setAnchorPoint(cc.p(0.5, 0.5));
 		labelUnits.setFontSize(fontSizepostgame);
 		labelUnits.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y + pregameSprite.height/3));
 		labelUnits.setColor(cc.color(255,255,255));
 		labelUnits.enableStroke(cc.color(0,0,0), 3, false)
 		
-		var labelObstacles = new cc.LabelTTF(unitsFailed, "SF Slapstick Comic");
+		var labelObstacles = new cc.LabelTTF("" + unitsFailed, "SF Slapstick Comic");
 		labelObstacles.setAnchorPoint(cc.p(0.5, 0.5));
 		labelObstacles.setFontSize(fontSizepostgame);
 		labelObstacles.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y + pregameSprite.height/7.6));
 		labelObstacles.setColor(cc.color(255,255,255));
 		labelObstacles.enableStroke(cc.color(0,0,0), 3, false)
 		
-		var labelScore = new cc.LabelTTF(difficultyChange, "SF Slapstick Comic");
+		var labelScore = new cc.LabelTTF("" + difficultyChange, "SF Slapstick Comic");
 		labelScore.setAnchorPoint(cc.p(0.5, 0.5));
 		labelScore.setFontSize(fontSizepostgame);
 		labelScore.setPosition(cc.p(cc.winSize.width*.734, pregameSprite.y - pregameSprite.height/12.5));
-		labelScore.setColor(cc.color(255,255,255));
+		if (difficultyChange >= 0) {
+			labelScore.setColor(cc.color(255,255,255));
+		} else {
+			labelScore.setColor(cc.color(255, 0, 0));
+		}
 		labelScore.enableStroke(cc.color(0,0,0), 3, false)
 		
-		var labelDifficulty = new cc.LabelTTF(newDifficulty, "SF Slapstick Comic");
+		var labelDifficulty = new cc.LabelTTF("" + newDifficulty, "SF Slapstick Comic");
 		labelDifficulty.setAnchorPoint(cc.p(0.5, 0.5));
 		labelDifficulty.setFontSize(fontSizepostgame);
 		labelDifficulty.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y - pregameSprite.height/2.8));
@@ -106,28 +90,34 @@ var PostGameLayer = cc.Layer.extend({
 //All the functions reset INITIALZIED3 to false, so it can be called by the scene again
 //Each function runs the appropriate scene
 var postNext = function() {
-	INITIALIZED3 = false;
+	/*INITIALIZED3 = false;
 	var scene = new PreGameScene();
 	cc.audioEngine.playEffect(res.button);
 	cc.audioEngine.stopMusic(); //stops the music so that the game music can be played.
-	cc.director.pushScene(scene);
-}
-
-var postBack = function() {
-	INITIALIZED3 = false;
-	var scene = new MenuScene();
+	cc.director.pushScene(scene);*/
+	reInitLevel();
 	cc.director.popScene();
-}
-
-var postSettings = function() {
-	INITIALIZED3 = false;
-	var scene = new SettingsScene();
-	cc.audioEngine.playEffect(res.button);
-	cc.director.pushScene(scene); //push
 }
 //postGameScene
 //Adds a postGameLayer to itself if the scene has not already been initialized
 var postGameScene = cc.Scene.extend({
+	success: null,
+	fail: null,
+	diffChange: null,
+	newDiff: null,
+	score: null,
+	time: null,
+	
+	ctor:function(sent, failed, change, Diff, sc, t) {
+		this._super();
+		success = sent;
+		fail = failed;
+		diffChange = change;
+		newDiff = Diff;
+		score = sc;
+		time = t;
+	},
+	
 	onEnter:function() {
 		this._super();
 
@@ -135,7 +125,7 @@ var postGameScene = cc.Scene.extend({
 
 			INITIALIZED3 = true;
 
-			var layer = new postGameLayer();
+			var layer = new PostGameLayer(success, fail, diffChange, newDiff, score, time);
 			this.removeAllChildren();
 			this.addChild(layer);
 		}
