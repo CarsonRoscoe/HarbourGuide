@@ -1,8 +1,9 @@
 //Variable to create the scene if it has not yet been initialized
 var INITIALIZED6 = false;
 
-//ScoresLayer 
-//Contains 1 menu item and is called by the ScoresScene
+/**
+* AchievementLayer which is drawn by the AchievementScene. Draws achievement.
+*/
 var AchievementLayer = cc.Layer.extend({
 	spriteBackAch: null,
 	spriteTitle: null,
@@ -17,6 +18,9 @@ var AchievementLayer = cc.Layer.extend({
 	spriteBackAchground: null,
 	loop: null,
 	
+	/**
+	* Constructor for achievement Layer. draws backgroun then calls the init function.
+	*/
 	ctor:function() {
 		this._super();
 		spriteArray = [];
@@ -31,6 +35,10 @@ var AchievementLayer = cc.Layer.extend({
 	}
 });
 
+/**
+*Init function for AchievementScene. Draws all buttons and fetches data.
+* Param: Layer to draw to.
+*/
 var init = function(Layer) {
 	var size = cc.winSize;
 	offset = 0;
@@ -55,14 +63,17 @@ var init = function(Layer) {
 	initAchievements(Layer);
 }
 
+/**
+* Initiates the data of achievements from local storage into an array.
+*/
 var initData = function() {
 	dataArrayAch = getMyAchievements(loadAchievements());
 }
 
-var formatString = function(i) {
-		dataArrayAch[i] = "Format " + i;
-}
-
+/**
+* Initiates each individual achievement drawn
+* Param: Layer to draw to.
+*/
 var initAchievements = function(Layer) {
 	var size = cc.winSize;
 	fontSize = 46;
@@ -103,6 +114,10 @@ var initAchievements = function(Layer) {
 		}, 34);
 }
 
+/**
+* Achievement objects data structure.
+* Param: Id of it.
+*/
 function achObject(newId) {
 	this.spriteB = null;
 	this.label = null;
@@ -110,7 +125,15 @@ function achObject(newId) {
 	this.id = newId;
 }
 
+/**
+* Initiates the touch events for controls.
+* Param: Layer to get touch events for.
+*/
 var initTouchEventsAch = function(Layer) {
+		
+		/**
+		* Creates the listener object
+		*/
         cc.eventManager.addListener(cc.EventListener.create({
 			touchDown: null,
 			relativeY: null,
@@ -118,12 +141,15 @@ var initTouchEventsAch = function(Layer) {
 			clickBack: null,
             event: cc.EventListener.TOUCH_ALL_AT_ONCE,
 			
+			/**
+			* Touch detection on click
+			* Param: Array of touches
+			* Event: Type of touch
+			*/
             onTouchesBegan: function(touches, event) {
 				isDown = true;
 				touchDown = touches[0].getLocation();
 				snapBack = false;
-				
-				
 				if (myClickContainsPoint(touchDown, 0)) {
 					clickBack = true;
 					Layer.removeChild(Layer.spriteBack);
@@ -135,6 +161,11 @@ var initTouchEventsAch = function(Layer) {
 						
             },
 
+			/**
+			* Touch detection on swiping
+			* Param: Array of touches
+			* Event: Type of touch
+			*/
             onTouchesMoved: function(touches, event) {
                 if(isDown) {
 				var cury = touches[0].getLocation().y;
@@ -143,6 +174,11 @@ var initTouchEventsAch = function(Layer) {
 				}
             },
 
+			/**
+			* Touch detection on ending a click
+			* Param: Array of touches
+			* Event: Type of touch
+			*/
             onTouchesEnded: function(touches, event){
 				isDown = false;
 				offset = 0;
@@ -166,6 +202,10 @@ var initTouchEventsAch = function(Layer) {
         }), Layer);
 }
 
+/**
+* Returns which button is being clicked
+* Param: Point of click
+*/
 var getButtonClicked = function(clickPoint) {
 	var left;
 	var right;
@@ -185,6 +225,9 @@ var getButtonClicked = function(clickPoint) {
 	return null;
 }
 
+/**
+*	Snaps it back to the top
+*/
 var moveToPosTop = function()  {
 	var amount = dataArrayAch.length;
 	for (var i = 0; i < amount; i++)  {
@@ -195,6 +238,9 @@ var moveToPosTop = function()  {
 	}
 }
 
+/**
+* Updates achievements positions
+*/
 var updateAch = function() {
 	if (isDown) {
 		var len = achArray.length;
