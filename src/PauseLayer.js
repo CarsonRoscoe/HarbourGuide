@@ -44,47 +44,83 @@ var PauseLayer = cc.Layer.extend({
 	initSettings:function(Layer) {
 		Layer.removeAllChildren();
 		var winsize = cc.director.getWinSize();
-		cc.log("11dd");
+		var bgSprite = new cc.Sprite.create(res.MenuBg_png);
+		bgSprite.setAnchorPoint(cc.p(0.5, 0.5));
+		bgSprite.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height/2));
+		this.addChild(bgSprite, -100);
 
-		Layer.background = new cc.Sprite("res/PauseBG.png");
-		Layer.background.setPosition(cc.p(winsize.width /2, winsize.height / 2));
-		
 		Layer.currentVolume = cc.audioEngine.getMusicVolume().toFixed(1);
 		Layer.currentEffectVolume = cc.audioEngine.getEffectsVolume().toFixed(1);
-		
-
-		Layer.addChild(this.background);
 
 
-		//Static right now because its giving me hell, not sure what else I can do.
-		bgVolumeLabel = new cc.LabelTTF("Main Volume: " + Layer.currentVolume, "Helvetica", 30);
-		bgVolumeLabel.setColor(cc.color(200,200,200));
-		bgVolumeLabel.setPosition(cc.p(winsize.width / 2, winsize.height * 0.75));
-		Layer.addChild(bgVolumeLabel);
-	
-		effectVolumeLabel = new cc.LabelTTF("Effect Volume: " + Layer.currentEffectVolume, "Helvetica", 30);
-		effectVolumeLabel.setColor(cc.color(200,200,200));
-		effectVolumeLabel.setPosition(cc.p(winsize.width / 2, winsize.height * 0.69));
+		var musicVolumeLabel = new cc.LabelTTF("Background Music Volume", "Helvetica", 30);
+		musicVolumeLabel.setColor(cc.color(0,0,0));
+		musicVolumeLabel.setPosition(cc.p(winsize.width/2, winsize.height/1.45));
+		Layer.addChild(musicVolumeLabel);
+
+		var effectVolumeLabel = new cc.LabelTTF("Effect Music Volume", "Helvetica", 30);
+		effectVolumeLabel.setColor(cc.color(0,0,0));
+		effectVolumeLabel.setPosition(cc.p(winsize.width/2, winsize.height/1.8));
 		Layer.addChild(effectVolumeLabel);
-	
-		//MenuItem to navigate to MenuScene
-		//Settings is a placeholder, not clickable
-		//Volumes are backwards here but is drawn correctly in game
-		var menuItem1 = new cc.MenuItemFont("Settings");
-		var menuItem2 = new cc.MenuItemFont("Back", Layer.backScene);
-		var menuItem3 = new cc.MenuItemFont("Game Volume Down", Layer.volumeDown);
-		var menuItem4 = new cc.MenuItemFont("Game Volume Up", Layer.volumeUp);
-		var menuItem5 = new cc.MenuItemFont("Effect Volume Down", Layer.volumeEffectDown);
-		var menuItem6 = new cc.MenuItemFont("Effect Volume Up", Layer.volumeEffectUp);
+
+		bgVolumeLabel = new cc.LabelTTF(Layer.currentVolume, "Helvetica", 30);
+		bgVolumeLabel.setColor(cc.color(0,0,0));	
+
+		var musicUp = new cc.MenuItemSprite(
+				new cc.Sprite("res/mediumRes/buttons/volume_up_default.png"),
+				new cc.Sprite("res/mediumRes/buttons/volume_up_pressed.png"),
+				Layer.volumeUp, this);
+		var menuItem2 = new cc.MenuItemLabel(bgVolumeLabel);
+		var musicDown = new cc.MenuItemSprite(
+				new cc.Sprite("res/mediumRes/buttons/volume_down_default.png"),
+				new cc.Sprite("res/mediumRes/buttons/volume_down_pressed.png"),
+				Layer.volumeDown, this);
+		var musicMenu = new cc.Menu(musicUp, menuItem2, musicDown);
+
+		musicMenu.setPosition(cc.p(winsize.width/2, winsize.height/1.6));
+
+
+
+		effectVolumeNumber = new cc.LabelTTF(Layer.currentEffectVolume, "Helvetica", 30);
+		effectVolumeNumber.setColor(cc.color(0,0,0));
+
+
+		var effectUp = new cc.MenuItemSprite(
+				new cc.Sprite("res/mediumRes/buttons/volume_up_default.png"),
+				new cc.Sprite("res/mediumRes/buttons/volume_up_pressed.png"),
+				Layer.volumeEffectUp, this);
+		var menuItem3 = new cc.MenuItemLabel(effectVolumeNumber);
+		var effectDown = new cc.MenuItemSprite(
+				new cc.Sprite("res/mediumRes/buttons/volume_down_default.png"),
+				new cc.Sprite("res/mediumRes/buttons/volume_down_pressed.png"),
+				Layer.volumeEffectDown, this);
+		var effectMenu = new cc.Menu(effectUp, menuItem3, effectDown);
+
+		effectMenu.setPosition(cc.p(winsize.width/2, winsize.height/2));
+
+		if(!paddedSettings){
+			effectMenu.alignItemsHorizontallyWithPadding(50);
+			musicMenu.alignItemsHorizontallyWithPadding(50);
+			paddedSettings = true;
+		}else{
+			effectMenu.alignItemsHorizontally();
+			musicMenu.alignItemsHorizontally();
+		}
+
+		Layer.addChild(effectMenu);
+		Layer.addChild(musicMenu);
+
+
 		colorBlind = new cc.MenuItemFont("Color Blind Mode", Layer.changeThing);
-	
-		//Adds menuItems to a Menu. The volume up and down's are backwards because it was running the functions in them on loading.
-		//So now it subtracts then adds to the volume very quickly so that you won't notice.
-		var menu = new cc.Menu(menuItem1, menuItem2, menuItem4, menuItem3, menuItem6, menuItem5, colorBlind);
-		//Aligns the items vertically
-		menu.alignItemsVertically();
-		//Adds menu to layer
-		Layer.addChild(menu);
+		colorBlind.setColor(cc.color(0,0,0));
+		var backButton = new cc.MenuItemFont("Back", Layer.backScene);
+		backButton.setColor(cc.color(0,0,0));
+		var tempMenu = new cc.Menu(colorBlind, backButton);
+		tempMenu.alignItemsVertically();
+		tempMenu.setPosition(cc.p(winsize.width/2, winsize.height/3));
+		Layer.addChild(tempMenu);
+
+
 	},
 	
 	
@@ -137,7 +173,7 @@ var PauseLayer = cc.Layer.extend({
 		if(display <= 0){
 			display = 0;
 		}
-		effectVolumeLabel.setString("Effect Volume: " + display.toFixed(1));
+		effectVolumeNumber.setString("Effect Volume: " + display.toFixed(1));
 
 	},
 
@@ -149,7 +185,7 @@ var PauseLayer = cc.Layer.extend({
 		if(display >= 1){
 			display = 1;
 		}
-		effectVolumeLabel.setString("Effect Volume: " + display.toFixed(1));
+		effectVolumeNumber.setString("Effect Volume: " + display.toFixed(1));
 
 	},
 
