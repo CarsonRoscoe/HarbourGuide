@@ -59,28 +59,28 @@ var PreGameLayer = cc.Layer.extend({
 	initLabels: function(unitsToGo, obstaclesToGo, scoreToGo, difficultyToGO) {
 		var fontSizePregame = pregameSprite.width/14;
 		
-		var labelUnits = new cc.LabelTTF(unitsToGo, res.Porkys_ttf);
+		var labelUnits = new cc.LabelTTF(unitsToGo, res.SFSlapstick_ttf);
 		labelUnits.setAnchorPoint(cc.p(0.5, 0.5));
 		labelUnits.setFontSize(fontSizePregame);
 		labelUnits.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y + pregameSprite.height/3 + 4));
 		labelUnits.setColor(cc.color(255,255,255));
 		labelUnits.enableStroke(cc.color(0,0,0), 3, false)
 		
-		var labelObstacles = new cc.LabelTTF(obstaclesToGo, res.Porkys_ttf);
+		var labelObstacles = new cc.LabelTTF(obstaclesToGo, res.SFSlapstick_ttf);
 		labelObstacles.setAnchorPoint(cc.p(0.5, 0.5));
 		labelObstacles.setFontSize(fontSizePregame);
 		labelObstacles.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y + pregameSprite.height/5));
 		labelObstacles.setColor(cc.color(255,255,255));
 		labelObstacles.enableStroke(cc.color(0,0,0), 3, false)
 		
-		var labelScore = new cc.LabelTTF(scoreToGo, res.Porkys_ttf);
+		var labelScore = new cc.LabelTTF(scoreToGo, res.SFSlapstick_ttf);
 		labelScore.setAnchorPoint(cc.p(0.5, 0.5));
 		labelScore.setFontSize(fontSizePregame);
 		labelScore.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y + pregameSprite.height/7));
 		labelScore.setColor(cc.color(255,255,255));
 		labelScore.enableStroke(cc.color(0,0,0), 3, false)
 		
-		var labelDifficulty = new cc.LabelTTF(difficultyToGO, res.Porkys_ttf);
+		var labelDifficulty = new cc.LabelTTF(difficultyToGO, res.SFSlapstick_ttf);
 		labelDifficulty.setAnchorPoint(cc.p(0.5, 0.5));
 		labelDifficulty.setFontSize(fontSizePregame);
 		labelDifficulty.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y + pregameSprite.height/9));
