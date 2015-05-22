@@ -33,6 +33,7 @@ var res = {
 	BronzeIcon_png : folder + "achievements/achievement_bronze.png",
 	PauseBG_png : "res/PauseBG.png",
 	AchievementButton_png : folder + "buttons/achievement_button.png",
+	AchievementLabel_png : folder + "buttons/achievement_label.png",
 	AchievementButtonP_png : folder + "buttons/achievement_pressed.png",
 	BackP_png : folder + "buttons/back_pressed.png",
 	NextDefault_png : folder + "buttons/next_default.png",
@@ -58,6 +59,8 @@ var res = {
 	SortTime_png : folder + "buttons/time_label.png",
 	AmigaForever_ttf : "res/AmigaForever.ttf",
 	warning: folder + "warning.png",
+	Porkys_ttf : "res/Porkys_.ttf",
+	WoodBackHUD: folder + "HudBack.png",
 	
     unit0: folder + "units/unit_0.png",
 	unit1: folder + "units/unit_1.png",

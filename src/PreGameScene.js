@@ -3,6 +3,8 @@ var INITIALIZED3 = false;
 //PreGameLayer 
 //Contains 3 menu items and is called by the PreGameScene
 var PreGameLayer = cc.Layer.extend({
+	pregameSprite: null,
+	
 	ctor:function() {
 		this._super();
 		
@@ -10,7 +12,7 @@ var PreGameLayer = cc.Layer.extend({
 		bgSprite.setAnchorPoint(cc.p(0.5, 0.5));
 		bgSprite.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height/2));
 		
-		var pregameSprite = new cc.Sprite.create(res.Pregame_png);
+		pregameSprite = new cc.Sprite.create(res.Pregame_png);
 		pregameSprite.setAnchorPoint(cc.p(0.5, 0.5));
 		pregameSprite.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height/2));
 		
@@ -49,8 +51,46 @@ var PreGameLayer = cc.Layer.extend({
 		this.addChild(pregameSprite);
 		this.addChild(menuPlay);
 		this.addChild(topBar);
+		this.initLabels("11", "20", "1880", "59");
 
 		return true;
+	},
+	
+	initLabels: function(unitsToGo, obstaclesToGo, scoreToGo, difficultyToGO) {
+		var fontSizePregame = pregameSprite.width/14;
+		
+		var labelUnits = new cc.LabelTTF(unitsToGo, res.Porkys_ttf);
+		labelUnits.setAnchorPoint(cc.p(0.5, 0.5));
+		labelUnits.setFontSize(fontSizePregame);
+		labelUnits.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y + pregameSprite.height/3 + 4));
+		labelUnits.setColor(cc.color(255,255,255));
+		labelUnits.enableStroke(cc.color(0,0,0), 3, false)
+		
+		var labelObstacles = new cc.LabelTTF(obstaclesToGo, res.Porkys_ttf);
+		labelObstacles.setAnchorPoint(cc.p(0.5, 0.5));
+		labelObstacles.setFontSize(fontSizePregame);
+		labelObstacles.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y + pregameSprite.height/5));
+		labelObstacles.setColor(cc.color(255,255,255));
+		labelObstacles.enableStroke(cc.color(0,0,0), 3, false)
+		
+		var labelScore = new cc.LabelTTF(scoreToGo, res.Porkys_ttf);
+		labelScore.setAnchorPoint(cc.p(0.5, 0.5));
+		labelScore.setFontSize(fontSizePregame);
+		labelScore.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y + pregameSprite.height/7));
+		labelScore.setColor(cc.color(255,255,255));
+		labelScore.enableStroke(cc.color(0,0,0), 3, false)
+		
+		var labelDifficulty = new cc.LabelTTF(difficultyToGO, res.Porkys_ttf);
+		labelDifficulty.setAnchorPoint(cc.p(0.5, 0.5));
+		labelDifficulty.setFontSize(fontSizePregame);
+		labelDifficulty.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y + pregameSprite.height/9));
+		labelDifficulty.setColor(cc.color(255,255,255));
+		labelDifficulty.enableStroke(cc.color(0,0,0), 3, false)
+		
+		this.addChild(labelUnits, 1000);
+		this.addChild(labelObstacles, 1000);
+		this.addChild(labelScore, 1000);
+		this.addChild(labelDifficulty, 1000);
 	}
 });
 //The following 3 functions are called when the buttons in the menu are pressed
