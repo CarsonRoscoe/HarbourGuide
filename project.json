@@ -20,6 +20,7 @@
     "src/ScoresScene.js",
     "src/MainMenuScene.js",
     "src/PreGameScene.js",
+	"src/PostGameScene.js",
     "src/SettingsScene.js",
 	"src/aes.js",
 	"src/AchievementScene.js",
