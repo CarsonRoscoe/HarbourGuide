@@ -1,5 +1,8 @@
 var INITIALIZED = false;
 
+/**
+ * Creates a layer to place a new Game scene layer, pause layer, and hud layer on.
+ */
 var GameScene = cc.Layer.extend({
 	ctor:function(newGameVars, parent) {
 		this._super();
@@ -17,7 +20,7 @@ var GameScene = cc.Layer.extend({
 
 
 
-//GameScene objected created by main. Creates our GameLayer() ibject above.
+//GameScene objected created by main. Creates our GameLayer/pause/hud objects above.
 var Runner = cc.Scene.extend({
 	newGameVars: null,
 	parentLayer: null,
