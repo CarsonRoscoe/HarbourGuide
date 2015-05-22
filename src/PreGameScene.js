@@ -51,6 +51,8 @@ var PreGameLayer = cc.Layer.extend({
 		this.addChild(pregameSprite);
 		this.addChild(menuPlay);
 		this.addChild(topBar);
+		
+		//Units To Send // Obstacles // Score To Pass // Difficulty Generated At
 		this.initLabels("11", "20", "1880", "59");
 
 		return true;
@@ -59,31 +61,31 @@ var PreGameLayer = cc.Layer.extend({
 	initLabels: function(unitsToGo, obstaclesToGo, scoreToGo, difficultyToGO) {
 		var fontSizePregame = pregameSprite.width/14;
 		
-		var labelUnits = new cc.LabelTTF(unitsToGo, res.SFSlapstick_ttf);
+		var labelUnits = new cc.LabelTTF(unitsToGo, "SF Slapstick Comic");
 		labelUnits.setAnchorPoint(cc.p(0.5, 0.5));
 		labelUnits.setFontSize(fontSizePregame);
-		labelUnits.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y + pregameSprite.height/3 + 4));
+		labelUnits.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y + pregameSprite.height/3));
 		labelUnits.setColor(cc.color(255,255,255));
 		labelUnits.enableStroke(cc.color(0,0,0), 3, false)
 		
-		var labelObstacles = new cc.LabelTTF(obstaclesToGo, res.SFSlapstick_ttf);
+		var labelObstacles = new cc.LabelTTF(obstaclesToGo, "SF Slapstick Comic");
 		labelObstacles.setAnchorPoint(cc.p(0.5, 0.5));
 		labelObstacles.setFontSize(fontSizePregame);
-		labelObstacles.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y + pregameSprite.height/5));
+		labelObstacles.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y + pregameSprite.height/7.6 ));
 		labelObstacles.setColor(cc.color(255,255,255));
 		labelObstacles.enableStroke(cc.color(0,0,0), 3, false)
 		
-		var labelScore = new cc.LabelTTF(scoreToGo, res.SFSlapstick_ttf);
+		var labelScore = new cc.LabelTTF(scoreToGo, "SF Slapstick Comic");
 		labelScore.setAnchorPoint(cc.p(0.5, 0.5));
 		labelScore.setFontSize(fontSizePregame);
-		labelScore.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y + pregameSprite.height/7));
+		labelScore.setPosition(cc.p(cc.winSize.width*.734, pregameSprite.y - pregameSprite.height/12.5));
 		labelScore.setColor(cc.color(255,255,255));
 		labelScore.enableStroke(cc.color(0,0,0), 3, false)
 		
-		var labelDifficulty = new cc.LabelTTF(difficultyToGO, res.SFSlapstick_ttf);
+		var labelDifficulty = new cc.LabelTTF(difficultyToGO, "SF Slapstick Comic");
 		labelDifficulty.setAnchorPoint(cc.p(0.5, 0.5));
 		labelDifficulty.setFontSize(fontSizePregame);
-		labelDifficulty.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y + pregameSprite.height/9));
+		labelDifficulty.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y - pregameSprite.height/2.8));
 		labelDifficulty.setColor(cc.color(255,255,255));
 		labelDifficulty.enableStroke(cc.color(0,0,0), 3, false)
 		
