@@ -7,6 +7,8 @@ var HUDLayer = cc.Layer.extend({
 	scoreBackground: null,
 	boatsLeftHolder: null,
 	boatsLeftBackground: null,
+	cueIcon: null,
+	scoreIcon: null,
 	cellSize: null,
 	cellsRow: null,
 	cellsColumn: null,
@@ -37,6 +39,12 @@ var HUDLayer = cc.Layer.extend({
 		Layer.scoreHolder.setAnchorPoint(.5, .5);
 		Layer.scoreHolder.setPosition(cc.p(winsize.width / 2.75, winsize.height - ((winsize.height - (cellSize * cellsColumn)) / 4)));
 		
+		Layer.scoreIcon = new cc.Sprite(res.CurrentScoreIconHUD);
+		Layer.scoreIcon.setScaleX(Layer.scoreHolder.width * .14379 / Layer.scoreIcon.width);
+		Layer.scoreIcon.setScaleY(Layer.scoreHolder.height * .63636 / Layer.scoreIcon.height);
+		Layer.scoreIcon.setAnchorPoint(.5, .5);
+		Layer.scoreIcon.setPosition(cc.p(Layer.scoreHolder.x - Layer.scoreHolder.width / 2.54, Layer.scoreHolder.y));
+		
 		Layer.scoreLabel = new cc.LabelTTF("0", "SF Slapstick Comic", cellSize / 2);
 		Layer.scoreLabel.setColor(cc.color(255,255,255)); 
 		Layer.scoreLabel.enableStroke(cc.color(0,0,0), 3, false);
@@ -46,8 +54,9 @@ var HUDLayer = cc.Layer.extend({
 		Layer.addChild(this.scoreBackground);
 		Layer.addChild(Layer.scoreLabel, 2000);
 		Layer.addChild(Layer.scoreHolder, 1000);
+		Layer.addChild(Layer.scoreIcon, 1000);
 		
-		var settingsLabel = new cc.MenuItemSprite(new cc.Sprite(res.Button_png), new cc.Sprite(res.Button_png),	handlePause, this);
+		var settingsLabel = new cc.MenuItemSprite(new cc.Sprite(res.pauseButtonDown), new cc.Sprite(res.pauseButtonUp),	handlePause, this);
 		var menu = new cc.Menu(settingsLabel);
 		menu.setAnchorPoint(1, .5);
 		menu.setPosition(cc.p(winsize.width - (winsize.width / 8), winsize.height - ((winsize.height - (cellSize * cellsColumn)) / 4)));
@@ -62,6 +71,12 @@ var HUDLayer = cc.Layer.extend({
 		Layer.boatsLeftHolder.setAnchorPoint(.5, .5);
 		Layer.boatsLeftHolder.setPosition(cc.p(winsize.width / 2, (winsize.height - (cellSize * cellsColumn)) / 4));
 		
+		Layer.cueIcon = new cc.Sprite(res.CueIconHUD);
+		Layer.cueIcon.setScaleX(Layer.boatsLeftHolder.width * .14379 / Layer.cueIcon.width);
+		Layer.cueIcon.setScaleY(Layer.boatsLeftHolder.height * .63636 / Layer.cueIcon.height);
+		Layer.cueIcon.setAnchorPoint(.5, .5);
+		Layer.cueIcon.setPosition(cc.p(Layer.boatsLeftHolder.x - Layer.boatsLeftHolder.width / 2.54, Layer.boatsLeftHolder.y));
+		
 		Layer.boatsLeftLabel = new cc.LabelTTF("", "SF Slapstick Comic", cellSize / 2);
 		Layer.boatsLeftLabel.setColor(cc.color(255,255,255));
 		Layer.boatsLeftLabel.enableStroke(cc.color(0,0,0), 3, false);
@@ -71,6 +86,7 @@ var HUDLayer = cc.Layer.extend({
 		Layer.addChild(Layer.boatsLeftBackground);
 		Layer.addChild(Layer.boatsLeftHolder, 1000);
 		Layer.addChild(Layer.boatsLeftLabel, 2000);
+		Layer.addChild(Layer.cueIcon, 1000);
 	},
 	
 

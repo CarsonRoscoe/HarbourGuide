@@ -11,8 +11,9 @@ var res = {
     background_mp3 : "res/sound/mainbg.mp3",
     button : "res/sound/button.mp3",
     GameBackground_mp3 : "res/sound/gamebg.mp3",
-	GameBackground_png : folder + "grid_colored.png",
-    Button_png : "res/pause.png",
+    GameBackground_png : folder + "grid_colored.png",
+    pauseButtonDown : folder + "buttons/pause_down.png",
+    pauseButtonUp : folder + "buttons/pause_up.png",
 	UnclickedRect_png : folder + "UnclickedRect.png",
 	AchievementBack_png : folder + "AchievementBack.png",
     PlayButton_png : folder + "buttons/play_default.png",
@@ -62,7 +63,10 @@ var res = {
 	Porkys_ttf : "res/Porkys_.ttf",
 	WoodBackHUD: folder + "HudBack.png",
 	TextHolderHUD: folder + "labelHolder.png",
+	CurrentScoreIconHUD: folder + "cur_score.png",
+	CueIconHUD: folder + "more_boats_logo.png",
 	SFSlapstick_ttf : "res/SF Slapstick Comic.ttf",
+	
 	
     unit0: folder + "units/unit_0.png",
 	unit1: folder + "units/unit_1.png",
