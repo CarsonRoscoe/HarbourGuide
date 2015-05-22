@@ -49,8 +49,8 @@ var PauseLayer = cc.Layer.extend({
 		bgSprite.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height/2));
 		this.addChild(bgSprite, -100);
 
-		Layer.currentVolume = cc.audioEngine.getMusicVolume().toFixed(1);
-		Layer.currentEffectVolume = cc.audioEngine.getEffectsVolume().toFixed(1);
+		Layer.currentVolume = cc.audioEngine.getMusicVolume().toFixed(1) * 100;
+		Layer.currentEffectVolume = cc.audioEngine.getEffectsVolume().toFixed(1) * 100;
 
 
 		var musicVolumeLabel = new cc.LabelTTF("Background Music Volume", "Helvetica", 30);
@@ -150,7 +150,7 @@ var PauseLayer = cc.Layer.extend({
 		if(display <= 0){
 			display = 0;
 		}
-		bgVolumeLabel.setString("Main Volume: " + display.toFixed(1));
+		bgVolumeLabel.setString("Main Volume: " + display.toFixed(1) * 100);
 
 	},
 
@@ -162,7 +162,7 @@ var PauseLayer = cc.Layer.extend({
 		if(display >= 1){
 			display = 1;
 		}
-		bgVolumeLabel.setString("Main Volume: " + display.toFixed(1));
+		bgVolumeLabel.setString("Main Volume: " + display.toFixed(1)* 100);
 
 	},
 
@@ -173,7 +173,7 @@ var PauseLayer = cc.Layer.extend({
 		if(display <= 0){
 			display = 0;
 		}
-		effectVolumeNumber.setString("Effect Volume: " + display.toFixed(1));
+		effectVolumeNumber.setString("Effect Volume: " + display.toFixed(1)* 100);
 
 	},
 
@@ -185,7 +185,7 @@ var PauseLayer = cc.Layer.extend({
 		if(display >= 1){
 			display = 1;
 		}
-		effectVolumeNumber.setString("Effect Volume: " + display.toFixed(1));
+		effectVolumeNumber.setString("Effect Volume: " + display.toFixed(1)* 100);
 
 	},
 
