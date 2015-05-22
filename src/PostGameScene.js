@@ -71,7 +71,7 @@ var PostGameLayer = cc.Layer.extend({
 		var labelUnits = new cc.LabelTTF(unitsPassed, "SF Slapstick Comic");
 		labelUnits.setAnchorPoint(cc.p(0.5, 0.5));
 		labelUnits.setFontSize(fontSizepostgame);
-		labelUnits.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y + pregameSprite.height/3);
+		labelUnits.setPosition(cc.p(cc.winSize.width*3/4, pregameSprite.y + pregameSprite.height/3));
 		labelUnits.setColor(cc.color(255,255,255));
 		labelUnits.enableStroke(cc.color(0,0,0), 3, false)
 		
