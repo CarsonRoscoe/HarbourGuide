@@ -20,7 +20,7 @@ var AchievementLayer = cc.Layer.extend({
 	ctor:function() {
 		this._super();
 		spriteArray = [];
-		spriteBackAchground = new cc.Sprite.create(res.ScoreboardBack_png);
+		spriteBackAchground = new cc.Sprite.create(res.MenuBg_png);
 		spriteBackAchground.setAnchorPoint(cc.p(0.5, 0.5));
 		spriteBackAchground.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height/2));
 		spriteBackAchground.setScaleX(cc.winSize.width/spriteBackAchground.width);
@@ -41,20 +41,13 @@ var init = function(Layer) {
 	
 	/*GET RID OF THESE LABELS ONCE PROPER GRAPHICS ARE IN PLACE FOR BUTTONS*/
 	spriteArray[0] = spriteBackAch = new cc.Sprite.create(res.ScoreboardBackButton_png);
-	spriteBackAch.setAnchorPoint(cc.p(0.5, 0.5));
-	var backSize = ((size.width/10)*1)/spriteBackAch.width;
-	spriteBackAch.setPosition(cc.p((spriteBackAch.width * (backSize*1.2)/2),(size.height-(spriteBackAch.height)*.3)));
-	spriteBackAch.setScaleX(backSize*1.3);
-	spriteBackAch.setScaleY(backSize*1.2);
+	spriteBackAch.setAnchorPoint(cc.p(0, 1));
+	spriteBackAch.setPosition(cc.p(0,cc.winSize.height));
 	
 	//size.height-(spriteTitle.height * globalLocalY)/2
-	spriteArray[1] = spriteTitle = new cc.Sprite.create(res.UnclickedRect_png);
-	var globalLocalSize = ((size.width/10)*4.5)/spriteTitle.width;
-	var globalLocalY = (spriteArray[0].height * backSize * 1.2) / spriteTitle.height;
-	spriteTitle.setAnchorPoint(cc.p(0.5, 0.5));
-	spriteTitle.setPosition(cc.p(cc.winSize.width/2,spriteArray[0].y));
-	spriteTitle.setScaleX(size.width/spriteTitle.width);
-	spriteTitle.setScaleY(((size.height - spriteArray[1].y)/spriteArray[1].height)*2);
+	spriteArray[1] = spriteTitle = new cc.Sprite.create(res.AchievementLabel_png);
+	spriteTitle.setAnchorPoint(cc.p(0, 1));
+	spriteTitle.setPosition(cc.p(spriteArray[0].width, spriteArray[0].y));
 	
 	Layer.addChild(spriteBackAch, 20);
 	Layer.addChild(spriteTitle, 10);
@@ -74,41 +67,34 @@ var initAchievements = function(Layer) {
 	var size = cc.winSize;
 	fontSize = 46;
 	initData();
-	defaultFromTop = cc.winSize.height - spriteArray[1].height * ((size.height - spriteArray[1].y)/spriteArray[1].height)*2 ;
+	defaultFromTop = cc.winSize.height - spriteArray[1].height;
 	achArray = [];
 	achRoom = ((new cc.Sprite.create(res.AchievementBack_png)).height) * 4;
 	//var amount = (((defaultFromTop) / achRoom) < (dataArrayAch.length))?Math.ceil(((defaultFromTop) / achRoom)):dataArrayAch.length;
 	var amount = dataArrayAch.length;
 	for (var i = 0; i < amount; i++) {
 		achArray[i] = new achObject(i);
-		var newY = defaultFromTop - spriteTitle.height * i * 4;
-		achArray[i].spriteB = new cc.Sprite.create(res.AchievementBack_png);
+		var newY = defaultFromTop - spriteTitle.height * i * 1.5;
+		achArray[i].spriteB = new cc.Sprite.create(dataArrayAch[i].Img);
 		achArray[i].spriteB.setAnchorPoint(cc.p(0, 1));
 		achArray[i].spriteB.setPosition(cc.p(0, newY));
 		achArray[i].spriteB.setScaleX(cc.winSize.width/achArray[i].spriteB.width);
-		achArray[i].spriteB.setScaleY(4);
+		achArray[i].spriteB.setScaleY(cc.winSize.width/achArray[i].spriteB.width);
 		
-		achArray[i].spriteI = new cc.Sprite.create(dataArrayAch[i].Img);
-		achArray[i].spriteI.setAnchorPoint(cc.p(0, .5));
-		achArray[i].spriteI.setPosition(cc.p(achArray[i].spriteI.width/3, achArray[i].spriteB.y - achArray[i].spriteB.height*2));
-		achArray[i].spriteI.setScaleX(2);
-		achArray[i].spriteI.setScaleY(2);
-		
-		achRoom = achArray[i].spriteB.height * 4;
+		achRoom = achArray[i].spriteB.height;
 		achArray[i].label = new cc.LabelTTF(dataArrayAch[i].Details, "Courier");
 		achArray[i].label.setFontSize(30);
 		achArray[i].label.setColor(cc.color(0,0,0));
-		achArray[i].label.setAnchorPoint(cc.p(0, 0.5));
-		achArray[i].label.setPosition(cc.p(achArray[i].spriteI.width * 2 + achArray[i].spriteI.x + 10, newY - (achArray[i].spriteB.height*2.4)));
+		achArray[i].label.setAnchorPoint(cc.p(0.5, 0));
+		achArray[i].label.setPosition(cc.p(achArray[i].spriteB.width / 2 + achArray[i].spriteB.width / 10, achArray[i].spriteB.y - fontSize * 3.7));
 		
 		achArray[i].labelT = new cc.LabelTTF(dataArrayAch[i].Title, "Courier");
-		achArray[i].labelT.setFontSize(50);
+		achArray[i].labelT.setFontSize(44);
 		achArray[i].labelT.setColor(cc.color(0,0,0));
-		achArray[i].labelT.setAnchorPoint(cc.p(0, 0.5));
-		achArray[i].labelT.setPosition(cc.p(cc.winSize.width/2 + achArray[i].spriteI.x, newY - (achArray[i].spriteB.height * 1.2)));
+		achArray[i].labelT.setAnchorPoint(cc.p(0.5, 0.5));
+		achArray[i].labelT.setPosition(cc.p(achArray[i].spriteB.width / 2 + achArray[i].spriteB.width / 10, achArray[i].spriteB.y - fontSize * 1.2));
 		Layer.addChild(achArray[i].spriteB);
 		Layer.addChild(achArray[i].label);
-		Layer.addChild(achArray[i].spriteI);
 		Layer.addChild(achArray[i].labelT);
 	}
 	initTouchEventsAch(Layer);
@@ -119,7 +105,6 @@ var initAchievements = function(Layer) {
 
 function achObject(newId) {
 	this.spriteB = null;
-	this.spriteI = null;
 	this.label = null;
 	this.labelT = null;
 	this.id = newId;
@@ -130,13 +115,23 @@ var initTouchEventsAch = function(Layer) {
 			touchDown: null,
 			relativeY: null,
 			clickedY: null,
+			clickBack: null,
             event: cc.EventListener.TOUCH_ALL_AT_ONCE,
 			
             onTouchesBegan: function(touches, event) {
 				isDown = true;
 				touchDown = touches[0].getLocation();
 				snapBack = false;
-				doClicked(getButtonClicked(touches[0].getLocation()), Layer);
+				
+				if (myClickContainsPoint(touchDown, 0)) {
+					clickBack = true;
+					Layer.removeChild(Layer.spriteBack);
+					Layer.spriteBack = new cc.Sprite.create(res.ScoreboardBackButtonP_png);
+					Layer.spriteBack.setAnchorPoint(cc.p(0, 1));
+					Layer.spriteBack.setPosition(cc.p(0,cc.winSize.height));
+					Layer.addChild(Layer.spriteBack, 100);
+				}
+						
             },
 
             onTouchesMoved: function(touches, event) {
@@ -153,16 +148,21 @@ var initTouchEventsAch = function(Layer) {
 				if (achArray.length != 0)
 					if (((achArray[0].id) == 0 && achArray[0].spriteB.y <= defaultFromTop)?true:false)
 						moveToPosTop();
+					
+				if (myClickContainsPoint(touchDown, 0)) {
+					if (clickBack == true) {
+						achSceneBack(Layer);
+					}
+				}
+				
+				Layer.removeChild(Layer.spriteBack);
+				Layer.spriteBack = new cc.Sprite.create(res.ScoreboardBackButton_png);
+				Layer.spriteBack.setAnchorPoint(cc.p(0, 1));
+				Layer.spriteBack.setPosition(cc.p(0,cc.winSize.height));
+				Layer.addChild(Layer.spriteBack, 100);
+				clickBack = false;
             }
         }), Layer);
-}
-
-var doClicked = function(i, Layer) {
-	switch(i) {
-		case 0:
-		achSceneBack(Layer);
-		break;
-	}
 }
 
 var getButtonClicked = function(clickPoint) {
@@ -187,11 +187,10 @@ var getButtonClicked = function(clickPoint) {
 var moveToPosTop = function()  {
 	var amount = dataArrayAch.length;
 	for (var i = 0; i < amount; i++)  {
-		var newY = defaultFromTop - spriteTitle.height * i * 4;
+		var newY = defaultFromTop - spriteTitle.height * i * 1.5;
 		achArray[i].spriteB.y = newY;
-		achArray[i].label.y = newY - (achArray[i].spriteB.height*3);
-		achArray[i].spriteI.y = achArray[i].spriteB.y - achArray[i].spriteB.height*2;
-		achArray[i].labelT.y = newY - (achArray[i].spriteB.height * 1.2);
+		achArray[i].label.y = achArray[i].spriteB.y - fontSize * 3.7;
+		achArray[i].labelT.y = achArray[i].spriteB.y - fontSize * 1.2;
 	}
 }
 
@@ -207,10 +206,8 @@ var updateAch = function() {
 						achArray[i].spriteB.y += offset;
 						achArray[i].label.y += offset;
 						achArray[i].labelT.y += offset;
-						achArray[i].spriteI.y += offset;
 					} else if (offset > 0 && goUp) {
 						achArray[i].spriteB.y += offset;
-						achArray[i].spriteI.y += offset;
 						achArray[i].label.y += offset;
 						achArray[i].labelT.y += offset;
 					}

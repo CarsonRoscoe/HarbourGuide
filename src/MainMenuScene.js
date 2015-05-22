@@ -1,6 +1,5 @@
 //Variable to create the scene if it has not yet been initalized
 var INITIALIZED2 = false;
-var paddedMain = false;
 //MenuLayer 
 //Contains 3 menu items and is called by the MenuScene
 var MenuLayer = cc.Layer.extend({
@@ -22,27 +21,56 @@ var MenuLayer = cc.Layer.extend({
 		var logoSprite = new cc.Sprite.create(res.MenuLogo_png);
 		logoSprite.setAnchorPoint(cc.p(0.5, 0.5));
 		logoSprite.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height * 3/4));
+		logoSprite.setScaleX = 0;
+		logoSprite.setScaleY = 0;
 		
+		getAchievements([13,14,15]);
 		
+		var width = cc.winSize.width;
+		var height = cc.winSize.height;
+		
+		/*var node = cc.DrawNode.create();
+		Layer.addChild(node, 1000);
+		
+		var timer = 0;
+		var drawTimer = setInterval(function (){
+			if (timer < 120 ) {
+				node.clear();
+				node.drawRect(
+					cc.p(width, height), 
+					cc.p(0, 0), 
+					cc.color(255, 255, 255, .5), 
+					1, 
+					cc.color(255, 255, 255, (120 - timer)/120)
+				);
+				cc.log();
+				timer += 1;
+			} else {
+				clearInterval(drawTimer);
+				Layer.removeChild(node, true);
+			}
+		}, 17);*/
 		
 		var menuItem1 = new cc.MenuItemSprite(
-				new cc.Sprite("res/play_default.png"),
-				new cc.Sprite("res/play_default.png"),
+				new cc.Sprite(res.PlayButton_png),
+				new cc.Sprite(res.PlayButtonP_png),
 				Layer.mainPlay, Layer);
 		var menuItem2 = new cc.MenuItemSprite(
-				new cc.Sprite("res/scores_default.png"),
-				new cc.Sprite("res/scores_default.png"),
+				new cc.Sprite(res.ScoreButton_png),
+				new cc.Sprite(res.ScoreButtonP_png),
 				Layer.mainScores, Layer);
 		var menuItem3 = new cc.MenuItemSprite(
-				new cc.Sprite("res/settings_default.png"),
-				new cc.Sprite("res/settings_default.png"),
-				Layer.mainSettings, Layer);
-		var menuItem4 = new cc.MenuItemSprite(
-				new cc.Sprite("res/settings_default.png"),
-				new cc.Sprite("res/settings_default.png"),
+				new cc.Sprite(res.AchievementButton_png),
+				new cc.Sprite(res.AchievementButtonP_png),
 				Layer.mainAchievement, Layer);
+		var menuItem4 = new cc.MenuItemSprite(
+				new cc.Sprite(res.SettingButton_png),
+				new cc.Sprite(res.SettingButtonP_png),
+				Layer.mainSettings, Layer);
+				
 		//Adds menuItems to a Menu
 		var menu = new cc.Menu(menuItem1, menuItem2, menuItem3, menuItem4);
+		menu.opacity = 0;
 		menu.setAnchorPoint(0.5, 0.5);
 		menu.setPosition(cc.winSize.width/2, cc.winSize.height/3);
 		
@@ -70,13 +98,9 @@ var MenuLayer = cc.Layer.extend({
 		logoSprite.runAction(logoActionGrow);
 		logoSprite.runAction(logoActionMove);
 		cc.log(logoSprite.x + ", " + logoSprite.y);
+		
 		//Aligns the items vertically
-		if(paddedMain == false){
-			menu.alignItemsVerticallyWithPadding(150);
-			paddedMain = true;
-		}else{
-			menu.alignItemsVertically();
-		}
+		menu.alignItemsVertically();
 		
 		//Adds menu to layer
 		Layer.addChild(bgSprite);

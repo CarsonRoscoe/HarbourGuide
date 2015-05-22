@@ -1,35 +1,35 @@
 var getAllAchievements = function(){
 	var temp = [{
 		Title : "Top Score",
-		Details : "Submit the top score",
+		Details : "Submit the top score\n",
 		Img : res.ScoreIcon_png
 	},{
 		Title : "Top 5",
-		Details : "Submit a top 5 score",
+		Details : "Submit a top 5 score\n",
 		Img : res.ScoreIcon_png
 	},{
 		Title : "Top 10",
-		Details : "Submit a top 10 score",
+		Details : "Submit a top 10 score\n",
 		Img : res.ScoreIcon_png
 	},{
 		Title : "Top 25",
-		Details : "Submit a top 25 score",
+		Details : "Submit a top 25 score\n",
 		Img : res.ScoreIcon_png
 	},{
 		Title : "Top 50",
-		Details : "Submit a top 50 score",
+		Details : "Submit a top 50 score\n",
 		Img : res.ScoreIcon_png
 	},{
 		Title : "Gold",
-		Details : "Place in the top 5%",
+		Details : "Place in the top 5%\n",
 		Img : res.GoldIcon_png
 	},{
 		Title : "Silver",
-		Details : "Place in the top 10%",
+		Details : "Place in the top 10%\n",
 		Img : res.SilverIcon_png
 	},{
 		Title : "Bronze",
-		Details : "Place in the top 25%",
+		Details : "Place in the top 25%\n",
 		Img : res.BronzeIcon_png
 	},{
 		Title : "Top dog",
@@ -45,11 +45,11 @@ var getAllAchievements = function(){
 		Img : res.DifIcon_png
 	},{
 		Title : "Bulldog",
-		Details : "I am top five percentage!",
+		Details : "I am top five percentage!\n",
 		Img : res.DifIcon_png
 	},{
 		Title : "Hot Husky",
-		Details : "We placed in the top 10%",
+		Details : "We placed in the top 10%\n",
 		Img : res.DifIcon_png
 	},{
 		Title : "Poodle",
@@ -144,33 +144,26 @@ var AchLayer = cc.Layer.extend({
 	init:function(Layer, i){
 		var tempData = getAllAchievements();
 		var newY = 0;
-		var spriteB = new cc.Sprite.create(res.AchievementBack_png);
-		spriteB.setAnchorPoint(cc.p(0, 1));
-		spriteB.setPosition(cc.p(0, newY));
-		spriteB.setScaleX(cc.winSize.width/spriteB.width);
-		spriteB.setScaleY(4);
-
-		var spriteI = new cc.Sprite.create(tempData[i].Img);
-		spriteI.setAnchorPoint(cc.p(0, .5));
-		spriteI.setPosition(cc.p(spriteI.width/3, spriteB.y - spriteB.height*2));
-		spriteI.setScaleX(2);
-		spriteI.setScaleY(2);
-
-		achRoom = spriteB.height * 4;
-		var label = new cc.LabelTTF(tempData[i].Details, "Courier");
+		sprite = new cc.Sprite.create(tempData[i].Img);
+		sprite.setAnchorPoint(cc.p(0, 1));
+		sprite.setPosition(cc.p(0, newY));
+		sprite.setScaleX(cc.winSize.width/sprite.width);
+		sprite.setScaleY(cc.winSize.width/sprite.width);
+		
+		achRoom = sprite.height;
+		label = new cc.LabelTTF(tempData[i].Details, "Courier");
 		label.setFontSize(30);
 		label.setColor(cc.color(0,0,0));
-		label.setAnchorPoint(cc.p(0, 0.5));
-		label.setPosition(cc.p(spriteI.width * 2 + spriteI.x + 10, newY - (spriteB.height*2.4)));
-
-		var labelT = new cc.LabelTTF(tempData[i].Title, "Courier");
-		labelT.setFontSize(50);
+		label.setAnchorPoint(cc.p(0.5, 0));
+		label.setPosition(cc.p(sprite.width / 2 + sprite.width / 10, sprite.y - fontSize * 3.7));
+		
+		labelT = new cc.LabelTTF(tempData[i].Title, "Courier");
+		labelT.setFontSize(44);
 		labelT.setColor(cc.color(0,0,0));
-		labelT.setAnchorPoint(cc.p(0, 0.5));
-		labelT.setPosition(cc.p(cc.winSize.width/2 + spriteI.x, newY - (spriteB.height * 1.2)));
-		Layer.addChild(spriteB);
+		labelT.setAnchorPoint(cc.p(0.5, 0.5));
+		labelT.setPosition(cc.p(sprite.width / 2 + sprite.width / 10, sprite.y - fontSize * 1.2));
+		Layer.addChild(sprite);
 		Layer.addChild(label);
-		Layer.addChild(spriteI);
 		Layer.addChild(labelT);
 }
 });

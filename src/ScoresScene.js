@@ -25,6 +25,7 @@ var ScoresLayer = cc.Layer.extend({
 	dataPackArray: null,
 	spriteBackground: null,
 	dataPackArray: null,
+	spriteHeader: null,
 	
 	ctor:function() {
 		this._super();
@@ -85,6 +86,12 @@ var initScores = function(Layer) {
 	spriteTime.setAnchorPoint(cc.p(0, 1));
 	spriteTime.setPosition(cc.p(spriteArray[3].width + spriteArray[4].width, secondRowX));
 	
+	spriteHeader = new cc.Sprite.create(res.ScoreHeader_png);
+	spriteHeader.setAnchorPoint(cc.p(0.5, 1));
+	spriteHeader.setPosition(cc.p(cc.winSize.width/2, secondRowX - spriteArray[5].height));
+	spriteHeader.setScaleX(cc.winSize.width/spriteHeader.width);
+	
+	Layer.addChild(spriteHeader, 100);
 	//Adds all button sprites to the draw layer
 	for(var i = 0; i < spriteArray.length; i++)
 		Layer.addChild(spriteArray[i], 100);
@@ -119,7 +126,7 @@ var initOnlineDataPre = function() {
 }
 
 var noConnection = function(Layer) {
-	label = new cc.LabelTTF("No Connection", "Courier");
+	label = new cc.LabelTTF("No Connection", "SF Slapstick Comic");
 	label.setFontSize(60);
 	label.setColor(cc.color(0,0,100));
 	label.setPosition(cc.p(cc.winSize.width / 2, cc.winSize.height / 2 - 100));
@@ -166,31 +173,41 @@ var initDataScores = function(Layer) {
 
 var formatStringScore = function(i) {
 	for (var j = dataPackArray[i].name.length; j < 8; j++)
-			dataPackArray[i].name += " ";
+			dataPackArray[i].name += "  ";
 		
 	if (dataPackArray[i].score< 10)
-		dataPackArray[i].score = dataPackArray[i].score + "   ";
+		dataPackArray[i].score = dataPackArray[i].score + "        ";
 	else
 	if (dataPackArray[i].score < 100)
-		dataPackArray[i].score = dataPackArray[i].score + "  ";
+		dataPackArray[i].score = dataPackArray[i].score + "      ";
 	else
 	if (dataPackArray[i].score < 1000)
-		dataPackArray[i].score = dataPackArray[i].score + " ";
-	
+		dataPackArray[i].score = dataPackArray[i].score + "    ";
+	else
+	if (dataPackArray[i].score < 10000)
+		dataPackArray[i].score = dataPackArray[i].score + "  ";
 	
 	if (dataPackArray[i].difficulty < 10)
-		dataPackArray[i].difficulty = dataPackArray[i].difficulty + " ";
+		dataPackArray[i].difficulty = dataPackArray[i].difficulty + "  ";
+	if (dataPackArray[i].difficulty < 100)
+		dataPackArray[i].difficulty = dataPackArray[i].difficulty + "";
+	
+	var minutes = Math.floor(dataPackArray[i].time/60);
+	var seconds = (dataPackArray[i].time - minutes*60);
+	var concat = "";	
 		
 	if (dataPackArray[i].time< 10)
-		dataPackArray[i].time = dataPackArray[i].time + "  ";
+		concat = minutes + ":" + seconds + "  ";
 	else
 	if (dataPackArray[i].time < 100)
-		dataPackArray[i].time = dataPackArray[i].time + " ";
+		concat = minutes + ":" + seconds + " ";
+	else
+		concat = minutes + ":" + seconds + "";
 		
 			if (i < 9)
-		dataArray[i] = (i+1) + " : " + dataPackArray[i].name + "\t" + dataPackArray[i].score + "\t" + dataPackArray[i].difficulty + "\t" + dataPackArray[i].time;
+		dataArray[i] = (i+1) + "  : " + dataPackArray[i].name + "       " + dataPackArray[i].score + "      " + dataPackArray[i].difficulty + "    " + concat;
 	else
-		dataArray[i] = (i+1) + ": " + dataPackArray[i].name + "\t" + dataPackArray[i].score + "\t" + dataPackArray[i].difficulty + "\t" + dataPackArray[i].time;
+		dataArray[i] = (i+1) + ": " + dataPackArray[i].name + "       " + dataPackArray[i].score + "      " + dataPackArray[i].difficulty + "    " + concat;
 }
 
 var reinitDataScores = function(Layer) {
@@ -203,24 +220,35 @@ var reinitDataScores = function(Layer) {
 	
 	dataArray = [];
 	for (var i = 0; i < dataPackArray.length; i++) {
-		if (i < 9)
-			dataArray[i] = (i+1) + " : " + dataPackArray[i].name + "\t" + dataPackArray[i].score + "\t" + dataPackArray[i].difficulty + "\t" + dataPackArray[i].time;
+		var minutes = Math.floor(dataPackArray[i].time/60);
+		var seconds = (dataPackArray[i].time - minutes*60);
+		var concat = "";	
+			
+		if (dataPackArray[i].time< 10)
+			concat = minutes + ":" + seconds + "  ";
 		else
-			dataArray[i] = (i+1) + ": " + dataPackArray[i].name + "\t" + dataPackArray[i].score + "\t" + dataPackArray[i].difficulty + "\t" + dataPackArray[i].time;
-	}
+		if (dataPackArray[i].time < 100)
+			concat = minutes + ":" + seconds + " ";
+		else
+			concat = minutes + ":" + seconds + "";
+			
+				if (i < 9)
+			dataArray[i] = (i+1) + "  : " + dataPackArray[i].name + "       " + dataPackArray[i].score + "      " + dataPackArray[i].difficulty + "    " + concat;
+		else
+			dataArray[i] = (i+1) + ": " + dataPackArray[i].name + "       " + dataPackArray[i].score + "      " + dataPackArray[i].difficulty + "    " + concat;
+		}
 	reinitScore(Layer);
 }
 
 var initScore = function(Layer) {
 	var size = cc.winSize;
-	var temp = size.height- spriteGlobal.height - spriteScore.height;
 	fontSize = 46;
 	fontRoom = Math.round(fontSize*(9/8));
-	defaultFromTop = temp - fontSize/2 ;
+	defaultFromTop = size.height- spriteGlobal.height - spriteScore.height - spriteHeader.height;
 	labelArray = [];
 	var amount = (((defaultFromTop) / fontSize - 1) < (dataArray.length))?((defaultFromTop) / fontSize - 1):dataArray.length;
 	for (var i = 0; i < amount; i++) {
-		labelArray[i] = new cc.LabelTTF(dataArray[i], res.AmigaForever_ttf);
+		labelArray[i] = new cc.LabelTTF(dataArray[i], "Cousine");
 		labelArray[i].setFontSize(fontSize);
 		labelArray[i].setColor(cc.color(0,0,100));
 		labelArray[i].setAnchorPoint(cc.p(0, 0.5));
@@ -491,7 +519,7 @@ var sortByDifficulty = function(bJSON, aJSON) {
 
 var sortByTime = function(bJSON, aJSON) {
     var result = 0;
-	result = aJSON.time - bJSON.time;
+	result = bJSON.time - aJSON.time;
 	
 	if (result == 0)
 		result = aJSON.score - bJSON.score;
