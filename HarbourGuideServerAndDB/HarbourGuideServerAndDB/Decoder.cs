@@ -8,9 +8,13 @@ using System.Threading.Tasks;
 
 namespace HarbourGuideServerAndDB
 {
+    /* 
+     * Decoder class is a used to decode AES encrypted from the client
+     * by the given key.
+     */
     class Decoder
     {
-
+        /* Decrypts the data given the text, key and iv */
         private static string DecryptStringFromBytes(byte[] cipherText, byte[] key, byte[] iv)
         {
             // Check arguments.  
@@ -74,6 +78,7 @@ namespace HarbourGuideServerAndDB
             return plaintext;
         }
 
+        /* Used to reincrypt data if needed. */
         private static byte[] EncryptStringToBytes(string plainText, byte[] key, byte[] iv)
         {
             // Check arguments.  
@@ -122,6 +127,7 @@ namespace HarbourGuideServerAndDB
             return encrypted;
         }
 
+        /* Gets the keys and passes it into the Decrypt method. */
         public static string DecryptStringAES(string cipherText)
         {
             var keybytes = Encoding.UTF8.GetBytes("8080808080808080");

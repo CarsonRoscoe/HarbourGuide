@@ -1,1 +1,1 @@
-getAchievements({"ScoreboardStats":[]});
+getAchievements({"Achievements":[{"Title" : Top 50! ,"Details" : Your score was ranked top 50 in the world ,"Image" : /scoreImg},{"Title" : Top 10 highest difficulty! ,"Details" : Your difficulty was ranked in the top 10 in the world ,"Image" : /difImg}]});

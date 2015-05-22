@@ -6,13 +6,25 @@ using System.Threading.Tasks;
 
 namespace HarbourGuideServerAndDB
 {
+    /* 
+     * Used to determine what online achievements the client has earned
+     * based on their score, difficulty and time submitted.
+     */
     public class DetermineAchievements
     {
+        /* LinkedList of the data stored in the database. */
         LinkedList<StoredDataStruct> DataList = new LinkedList<StoredDataStruct> { };
-        LinkedList<AchievementStruct> AchievementList = new LinkedList<AchievementStruct> { };
+
+        /* LinkedList of achievements indexes for the client*/
+        LinkedList<int> AchievementList = new LinkedList<int> { };
+
+        /* Struct for the users data that was passed in via constructor. */
         StoredDataStruct newData;
+
+        /* int to hold the amount of entries in a database. */
         int totalSize = Database.GetSize();
 
+        /* Constructor for the class which takes in a score, difficulty and time. */
         public DetermineAchievements(int newScore, int newDif, int newTime) {
             newData = new StoredDataStruct(newScore, newDif, newTime);
             Console.WriteLine("DetermineAchievements Created\n" +
@@ -23,26 +35,27 @@ namespace HarbourGuideServerAndDB
             checkTime();
         }
 
+        /* Returns the string, which will be a JSONP file to the user, which
+         * contains the getAchievement function of the client with an array of
+         achievement indexes passed in.*/
         public String getAchievements()
         {
-            String str = "getAchievements({\"Achievements\":[";
+            String str = "getAchievements([";
             str += ConvertAchievmentsToJSON(AchievementList);
-            str += "]});";
+            str += "]);";
+
+            Console.WriteLine(str);
             return str;
         }
 
-        public String ConvertAchievmentsToJSON(LinkedList<AchievementStruct> list)
+        /* Converts our achievement LinkedList into the needed string format. */
+        public String ConvertAchievmentsToJSON(LinkedList<int>list)
         {
             string str = "";
             for (var i = 0; i < AchievementList.Count; i++)
             {
-                AchievementStruct temp = AchievementList.ElementAt(i);
-                str += "{"
-                    + "\"Title\" : " + temp.title + " ,"
-                    + "\"Details\" : " + temp.details + " ,"
-                    + "\"Image\" : " + temp.image
-                    + "}";
-                str += ",";
+                int temp = AchievementList.ElementAt(i);
+                str += temp + ",";
             }
 
             if (str.Length != 0)
@@ -51,6 +64,8 @@ namespace HarbourGuideServerAndDB
             return str;
         }
 
+        /* Checks if your score deserves any achievements and adds to 
+         * achievements linked list if so. */
         private void checkScore() {
             DataList.OrderByDescending(t => t.score);
             var i = 0;
@@ -61,16 +76,53 @@ namespace HarbourGuideServerAndDB
                 if (DataList.ElementAt(i).score > newData.score)
                     higherScores++;
 
-            top = (higherScores < 50) ? ((higherScores < 25) ? ((higherScores < 10) ? top = 10 : top = 25) : top = 50) : top = 0;
+            top = (higherScores < 50) ? 
+                ((higherScores < 25) ? 
+                    ((higherScores < 10) ? 
+                        ((higherScores < 5) ?
+                            ((higherScores == 1) ?
+                                top = 1:
+                                top  = 5)
+                            : top = 10) 
+                        : top = 25) 
+                    : top = 50) 
+                : top = 0;
+
             percent = ((top + 1) / totalSize) * 100;
             Console.WriteLine("Score: " + newData.score + ", Top: " + top + ", higherScores: " + higherScores);
-             if ((top == 50 || top == 25 || top == 10) && top != 0) {
-                AchievementStruct temp = new AchievementStruct { };
-                temp.title = "Top " + top + "!";
-                temp.details = "Your score was ranked top " + top + " in the world";
-                temp.image = "/scoreImg";
-                AchievementList.AddLast(temp);
-            }
+
+             if (top != 0)
+             {
+                 switch (top)
+                 {
+                     case 1:
+                         AchievementList.AddLast(0);
+                         AchievementList.AddLast(1);
+                         AchievementList.AddLast(2);
+                         AchievementList.AddLast(3);
+                         AchievementList.AddLast(4);
+                         break;
+                     case 5:
+                         AchievementList.AddLast(1);
+                         AchievementList.AddLast(2);
+                         AchievementList.AddLast(3);
+                         AchievementList.AddLast(4);
+                         break;
+                     case 10:
+                         AchievementList.AddLast(2);
+                         AchievementList.AddLast(3);
+                         AchievementList.AddLast(4);
+                         break;
+                     case 25:
+                         AchievementList.AddLast(3);
+                         AchievementList.AddLast(4);
+                         break;
+                     case 50:
+                         AchievementList.AddLast(4);
+                         break;
+                 }
+             }
+
 
              if (percent < 25 && percent != 0)
              {
@@ -78,29 +130,25 @@ namespace HarbourGuideServerAndDB
                  {
                      if (percent < 5)
                      {
-                         percent = 5;
+                         AchievementList.AddLast(5);
+                         AchievementList.AddLast(6);
+                         AchievementList.AddLast(7);
                      }
                      else
                      {
-                         percent = 10;
+                         AchievementList.AddLast(6);
+                         AchievementList.AddLast(7);
                      }
                  }
                  else
                  {
-                     percent = 25;
+                     AchievementList.AddLast(7);
                  } 
-             }
-
-             if (percent != 0 && percent <= 25)
-             {
-                 AchievementStruct temp = new AchievementStruct { };
-                 temp.title = "Top " + percent + "%!";
-                 temp.details = "You scored was ranked in the top " + percent + "% in the world";
-                 temp.image = "/scoreImg";
-                 AchievementList.AddLast(temp);
              }
         }
 
+        /* Determines if the users difficulty submitted deserves achievements
+         * and adds them to the achievement list is so. */
         private void checkDif()
         {
             Console.WriteLine("Checking Difficulty");
@@ -113,17 +161,34 @@ namespace HarbourGuideServerAndDB
                 if (DataList.ElementAt(i).dif > newData.dif)
                     higherdifs++;
 
-            top = (higherdifs < 50) ? ((higherdifs < 25) ? ((higherdifs < 10) ? top = 10 : top = 25) : top = 50) : top = 0;
-            percent = ((top + 1) / totalSize) * 100;
+            top = (higherdifs < 50) ? 
+                ((higherdifs < 25) ?
+                    ((higherdifs < 10) ? 
+                        top = 10
+                        : top = 25) 
+                    : top = 50) 
+                : top = 0;
 
             if (top != 0)
             {
-                AchievementStruct temp = new AchievementStruct { };
-                temp.title = "Top " + top + " highest difficulty!";
-                temp.details = "Your difficulty was ranked in the top " + top + " in the world";
-                temp.image = "/difImg";
-                AchievementList.AddLast(temp);
+                switch (top)
+                {
+                    case 10:
+                        AchievementList.AddLast(8);
+                        AchievementList.AddLast(9);
+                        AchievementList.AddLast(10);
+                        break;
+                    case 25:
+                        AchievementList.AddLast(9);
+                        AchievementList.AddLast(10);
+                        break;
+                    case 50:
+                        AchievementList.AddLast(10);
+                        break;
+                }
             }
+
+            percent = ((top + 1) / totalSize) * 100;
 
             if (percent < 25 && percent != 0)
             {
@@ -132,28 +197,27 @@ namespace HarbourGuideServerAndDB
                     if (percent < 5)
                     {
                         percent = 5;
+                        AchievementList.AddLast(11);
+                        AchievementList.AddLast(12);
+                        AchievementList.AddLast(13);
                     }
                     else
                     {
                         percent = 10;
+                        AchievementList.AddLast(12);
+                        AchievementList.AddLast(13);
                     }
                 }
                 else
                 {
                     percent = 25;
+                    AchievementList.AddLast(13);
                 }
-            }
-
-            if (percent != 0 && percent <= 25)
-            {
-                AchievementStruct temp = new AchievementStruct { };
-                temp.title = "Top " + percent + "% difficulty!";
-                temp.details = "Your difficulty was ranked in the top " + percent + "% in the world";
-                temp.image = "/difImg";
-                AchievementList.AddLast(temp);
             }
         }
 
+        /* Checks if the users submitted time deserves achievements and if so
+         * adds them to the achievement linked list. */
         private void checkTime()
         {
             Console.WriteLine("Checking Time");
@@ -165,14 +229,12 @@ namespace HarbourGuideServerAndDB
                     lowerTimes++;
             Console.WriteLine(lowerTimes + ", " + Math.Round((double)(totalSize / 10)));
             if (lowerTimes < Math.Round((double) (totalSize/10)) && newData.dif  > 70) {
-                AchievementStruct temp = new AchievementStruct { };
-                temp.title = "Speed racer!";
-                temp.details = "You finished a game above difficulty 70 faster then 90% of the world can!";
-                temp.image = "/timeImg";
-                AchievementList.AddLast(temp);
+                AchievementList.AddLast(14);
             }
         }
 
+        /* Gets the data from the database and temporarily saves it in an
+         * linked list of structs. */
         private void getData()
         {
             Console.WriteLine("Getting Data From Database");
@@ -188,6 +250,7 @@ namespace HarbourGuideServerAndDB
             }
         }
 
+        /* Struct for the data stored in each entry */
         private StoredDataStruct makeStruct(String str)
         {
             StoredDataStruct tempStruct = new StoredDataStruct(getScore(str),getDif(str),getTime(str));
@@ -195,6 +258,7 @@ namespace HarbourGuideServerAndDB
             return tempStruct;
         }
 
+        /* Returns the score from a given JSON object */
         private int getScore(String str)
         {
             var toFind = "Score\"";
@@ -207,6 +271,7 @@ namespace HarbourGuideServerAndDB
             return scoreValue;          
         }
 
+        /* Returns the difficulty from a given JSON object */
         private int getDif(String str)
         {
             var toFind = "Difficulty\"";
@@ -218,6 +283,7 @@ namespace HarbourGuideServerAndDB
             return difValue;
         }
 
+        /* Gets the time from a given JSON object */
         private int getTime(String str)
         {
             var toFind = "Time\"";
@@ -230,13 +296,7 @@ namespace HarbourGuideServerAndDB
         }
     }
 
-    public struct AchievementStruct
-    {
-        public String title;
-        public String image;
-        public String details;
-    }
-
+    /* Struct for the stored data */
     public struct StoredDataStruct {
         private int _score;
         private int _dif;

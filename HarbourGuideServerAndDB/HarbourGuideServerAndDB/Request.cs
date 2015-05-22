@@ -7,31 +7,49 @@ using System.Threading.Tasks;
 using System.Web.Http.Cors;
 
 namespace HarbourGuideServerAndDB {
+
+    /*
+     * Request class which handles the users HTTP requests.
+     */
     public class Request {
+
+        /* Type of HTTP request */
         public String Type { get; set; }
+
+        /* URL in the request for header */
         public String URL { get; set; }
+
+        /* Host of the request for header */
         public String Host { get; set; }
 
+        /* If the request was valid or not */
         public static Boolean Valid;
 
+        /* Which trigger was called */
         public static String Call;
 
+        /* All achievements to be saved to JSONP object to send */
         public static String Achievements;
 
+        /* Constructor for object. Takes in a HTTP request type, URL and host */
         public Request(String type, String url, String host) {
             Type = type;
             URL = url;
             Host = host;
         }
 
+        /* Getter for if the request was valid. */
         public Boolean getValid() {
             return Valid;
         }
 
+        /* Getter for trigger called */
         public String getCall() {
             return Call;
         }
 
+        /* Gets a request object generated based on String of data
+         * being passed in. */
         public static Request GetRequest(String request) {
             if (String.IsNullOrEmpty(request))
                 return null;
@@ -51,6 +69,9 @@ namespace HarbourGuideServerAndDB {
                 url = Decoder.DecryptStringAES(url);
                 Console.WriteLine(url);
                 if (url.Contains("DATA;")) {
+                    if (url[url.Length-1] == ';')
+                        url = url.Remove(url.Length - 1);
+
                     dataTokens = url.Split(';');
                     Console.WriteLine("\nDataString: " + dataTokens[0] + "," + dataTokens[1] + "," + dataTokens[2] + "," + dataTokens[3] + "," + dataTokens[4] + ",");
                     Call = "Data";
@@ -80,17 +101,21 @@ namespace HarbourGuideServerAndDB {
             return new Request(type, url, host);
         }
 
+        /* Prepares the string that will be sent via GET to have AES encryption */
         private static string PrepDecoder(string str)
         {
+            Console.WriteLine(str.Length);
             var strtemp = "";
-            for (var i = 7; str[i] != '%' && str[i + 1] != '5' && str[i+2] != 'D'; i++)
+            for (var i = 1; str[i] != '?'; i++)
             {
                 strtemp += str[i];
             }
-            Console.WriteLine(strtemp);
+            Console.WriteLine("Prepped: " + strtemp);
             return strtemp;
         }
 
+        /* Function which takes in the data and checks if it is
+         * valid or not to be stored. */
         private static bool HandleData(String[] dataGiven) {
             Console.WriteLine("Handling Data");
             String[] dataTokens = dataGiven;
@@ -101,7 +126,7 @@ namespace HarbourGuideServerAndDB {
                     return false;
 
             foreach(char c in dataTokens[1])
-                if (!Char.IsLetter(c))
+                if (!Char.IsLetter(c) && !Char.IsDigit(c))
                     return false;
 
             foreach (char c in dataTokens[2])

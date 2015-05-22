@@ -12,23 +12,27 @@ using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.Runtime;
 using Amazon.DynamoDBv2.Model;
 
-// Add using statements to access AWS SDK for .NET services. 
-// Both the Service and its Model namespace need to be added 
-// in order to gain access to a service. For example, to access
-// the EC2 service, add:
-// using Amazon.EC2;
-// using Amazon.EC2.Model;
-
 namespace HarbourGuideServerAndDB
 {
+    /*
+     * Database class is used as a static object to reference all
+     * things to do with the database. It is essentially used as
+     * the communication layer between our NoSQL database and our
+     * server application.
+     */
     public class Database
     {
+        /* The client object to access the database. */
         private static AmazonDynamoDBClient client = new AmazonDynamoDBClient();
+
+        /* Name of the table we will be referencing. */
         private static String table = "Scoreboard";
 
+        /* Default constructor */
 		public Database() {
 		}
 
+        /* Returns the amount of total entries in the database. */
         public static int GetSize()
         {
             var tempInt = 1;
@@ -48,6 +52,8 @@ namespace HarbourGuideServerAndDB
             return tempInt;
         }
 
+        /* Used to save the data given from a string of ints by a given
+         * ID into the database.*/
         public static bool SetScore(String[] s, int id) {
                 String json = "{"
                     + "\"ScoreID\" : " + id +" ,"
@@ -76,6 +82,7 @@ namespace HarbourGuideServerAndDB
             return true;
         }
 
+        /* Returns a String containing the JSON object by ID */
         public static String GetScore(int id)
         {
             var request = new GetItemRequest
@@ -91,6 +98,7 @@ namespace HarbourGuideServerAndDB
             return PrintItem(response.Item);
         }
 
+        /* Prints to console the data within the object passed in. */
         private static String PrintItem(Dictionary<string, AttributeValue> attributeList)
             {
                 String s = null;

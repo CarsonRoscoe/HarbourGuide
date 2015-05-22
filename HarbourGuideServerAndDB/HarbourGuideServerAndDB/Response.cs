@@ -9,17 +9,34 @@ using System.Web.Http.Cors;
 
 namespace HarbourGuideServerAndDB
 {
+    /* 
+     * Response class is an object that handles responding data back to the
+     * client after the clients request has been processed.
+     */
     public class Response {
+
+        /* Data to be sent */
         private Byte[] data = null;
+
+        /* Status of response */
         private String status = null;
+
+        /* Type of data being sent */
         private String mime = null;
+
+        /* Amount of data to sent for the leaderboards */
         private static int topAmount = 50;
+
+        /* Constructor for response that takes in a status, mine and data */
         private Response(String status, String mime, Byte[] data) {
             this.data = data;
             this.status = status;
             this.mime = mime;
         }
 
+        /* Checks what type of request it was, and if it was valid checks
+         * what trigger was requested. If everything checks out, returns
+         * The appropriate Response to user. */
         public static Response From(Request request)
         {
             if (request == null)
@@ -37,10 +54,7 @@ namespace HarbourGuideServerAndDB
                 {
                     return DataStoredRequest();
                 }
-                else if (request.getCall() == "Index")
-                {
-                    return IndexRequest();
-                } else
+                else
                 {
                     return MakeNullRequest();
                 }
@@ -48,6 +62,7 @@ namespace HarbourGuideServerAndDB
             return MakeNullRequest();
         }
 
+        /* Request for the top scorers on the leaderboards */
         private static Response DataStoredRequest()
         {
             String str = "";
@@ -79,6 +94,7 @@ namespace HarbourGuideServerAndDB
             return new Response("Worked", "application/javascript", d);
         }
 
+        /*  Handles the getScore data to be in JSONP format for the string. */
         private static String HandleData(String data)
         {
             string[] dataArray = data.Split('/');
@@ -96,6 +112,7 @@ namespace HarbourGuideServerAndDB
             return str;
         }
 
+        /* Compares two JSON objects based on score */
         private static int compareJSON(String a, String b)
         {
             var toFind = "Score\"";
@@ -112,6 +129,7 @@ namespace HarbourGuideServerAndDB
             return (aValue > bValue)?-1:1;
         }
 
+        /* Returns a response for failed. */
         private static Response DataFailedRequest()
         {
             String file = Environment.CurrentDirectory + HTTPServer.MSG_DIR + "failed.JSON";
@@ -125,20 +143,7 @@ namespace HarbourGuideServerAndDB
             return new Response("Failed", "application/javascript", d);
         }
 
-        private static Response IndexRequest()
-        {
-            String file = "C:\\Game\\index.html";
-            FileInfo fi = new FileInfo(file);
-            FileStream fs = fi.OpenRead();
-            BinaryReader reader = new BinaryReader(fs);
-            Byte[] d = new Byte[fs.Length];
-            reader.Read(d, 0, d.Length);
-            fs.Close();
-
-            return new Response("Play", "text/html", d);
-        }
-
-
+        /* For when the request was to save data. Returns achievements earned */
         private static Response DataSaveRequest()
         {
             System.IO.StreamWriter before = new System.IO.StreamWriter(Environment.CurrentDirectory + HTTPServer.MSG_DIR + "achievements.JSON");
@@ -156,6 +161,7 @@ namespace HarbourGuideServerAndDB
             return new Response("Worked", "application/javascript", d);
         }
 
+        /* Request was bad and null */
         private static Response MakeNullRequest() {
             String file = Environment.CurrentDirectory + HTTPServer.MSG_DIR + "failed.JSON";
             FileInfo fi = new FileInfo(file);
@@ -168,6 +174,7 @@ namespace HarbourGuideServerAndDB
             return new Response("400 Bad Request", "application/javascript", d);
         }
 
+        /* Generates a stream from the string */
         public static Stream GenerateStreamFromString(string s)
         {
             MemoryStream stream = new MemoryStream();
@@ -178,6 +185,8 @@ namespace HarbourGuideServerAndDB
             return stream;
         }
 
+        /* Creates the header file for cross-origin for the client out of
+         * the stream sent into it. */
         public void Post(NetworkStream stream) {
             StreamWriter writer = new StreamWriter(stream);
             writer.WriteLine(String.Format("{0} {1}\r\nServer: {2}\r\nContent-Type: {3}\r\nAccept-Ranges: bytes\r\nContent-Length: {4}\r\n\n",
