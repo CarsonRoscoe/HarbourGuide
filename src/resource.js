@@ -61,7 +61,8 @@ var res = {
 	warning: folder + "warning.png",
 	Porkys_ttf : "res/Porkys_.ttf",
 	WoodBackHUD: folder + "HudBack.png",
-	SFSlapstick_ttf : "res/SFSlapstick.ttf",
+	TextHolderHUD: folder + "labelHolder.png",
+	SFSlapstick_ttf : "res/SF Slapstick Comic.ttf",
 	
     unit0: folder + "units/unit_0.png",
 	unit1: folder + "units/unit_1.png",

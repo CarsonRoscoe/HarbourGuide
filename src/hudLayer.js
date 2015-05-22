@@ -35,16 +35,17 @@ var HUDLayer = cc.Layer.extend({
 		
 		Layer.scoreHolder = new cc.Sprite(res.TextHolderHUD);
 		Layer.scoreHolder.setAnchorPoint(.5, .5);
-		Layer.scoreHolder.setPosition(cc.p(winsize.width / 2.5, winsize.height - ((winsize.height - (cellSize * cellsColumn)) / 4)));
-		cc.log(Layer.scoreHolder.x + " " + Layer.scoreHolder.y);
-		Layer.addChild(this.scoreHolder, 1000);
+		Layer.scoreHolder.setPosition(cc.p(winsize.width / 2.75, winsize.height - ((winsize.height - (cellSize * cellsColumn)) / 4)));
 		
-		Layer.scoreLabel = new cc.LabelTTF("Score: 0", "Amiga Forever", cellSize / 2);
-		Layer.scoreLabel.setColor(cc.color(0,0,0));
-		Layer.scoreLabel.setPosition(cc.p(winsize.width / 2, winsize.height / 10));
+		Layer.scoreLabel = new cc.LabelTTF("0", "SF Slapstick Comic", cellSize / 2);
+		Layer.scoreLabel.setColor(cc.color(255,255,255)); 
+		Layer.scoreLabel.enableStroke(cc.color(0,0,0), 3, false);
+		Layer.scoreLabel.setAnchorPoint(0, .5);
+		Layer.scoreLabel.setPosition(cc.p(Layer.scoreHolder.x - Layer.scoreHolder.width / 6, Layer.scoreHolder.y + 4));
 		
-		Layer.scoreBackground.addChild(this.scoreLabel);
 		Layer.addChild(this.scoreBackground);
+		Layer.addChild(Layer.scoreLabel, 2000);
+		Layer.addChild(Layer.scoreHolder, 1000);
 		
 		var settingsLabel = new cc.MenuItemSprite(new cc.Sprite(res.Button_png), new cc.Sprite(res.Button_png),	handlePause, this);
 		var menu = new cc.Menu(settingsLabel);
@@ -56,21 +57,29 @@ var HUDLayer = cc.Layer.extend({
 		Layer.boatsLeftBackground.setScaleX(winsize.width / Layer.scoreBackground.width);
 		Layer.boatsLeftBackground.setScaleY((winsize.height - (cellSize * cellsColumn)) / 2 / Layer.scoreBackground.height);
 		Layer.boatsLeftBackground.setPosition(cc.p(winsize.width / 2, 0));
+
+		Layer.boatsLeftHolder = new cc.Sprite(res.TextHolderHUD);
+		Layer.boatsLeftHolder.setAnchorPoint(.5, .5);
+		Layer.boatsLeftHolder.setPosition(cc.p(winsize.width / 2, (winsize.height - (cellSize * cellsColumn)) / 4));
 		
-		Layer.boatsLeftLabel = new cc.LabelTTF("Boats Left: ", "Amiga Forever", cellSize / 2);
-		Layer.boatsLeftLabel.setColor(cc.color(0,0,0));
-		Layer.boatsLeftLabel.setPosition(cc.p(winsize.width / 2, winsize.height / 10));		
-		Layer.boatsLeftBackground.addChild(Layer.boatsLeftLabel);
+		Layer.boatsLeftLabel = new cc.LabelTTF("", "SF Slapstick Comic", cellSize / 2);
+		Layer.boatsLeftLabel.setColor(cc.color(255,255,255));
+		Layer.boatsLeftLabel.enableStroke(cc.color(0,0,0), 3, false);
+		Layer.boatsLeftLabel.setAnchorPoint(0, .5);
+		Layer.boatsLeftLabel.setPosition(cc.p(Layer.boatsLeftHolder.x - Layer.boatsLeftHolder.width / 6, Layer.boatsLeftHolder.y + 4));
+		
 		Layer.addChild(Layer.boatsLeftBackground);
+		Layer.addChild(Layer.boatsLeftHolder, 1000);
+		Layer.addChild(Layer.boatsLeftLabel, 2000);
 	},
 	
 
 	updateBoatsLeft:function(boats) {
-		this.boatsLeftLabel.setString("Boats Left: " + boats);
+		this.boatsLeftLabel.setString(boats);
 	},
 	
 	updateScore:function() {
-		this.scoreLabel.setString("Score: " + Math.floor(gameVars.score));
+		this.scoreLabel.setString(Math.floor(gameVars.score));
 	},
 
 	addScore:function(unitTime) {
@@ -79,7 +88,7 @@ var HUDLayer = cc.Layer.extend({
 		if (score < 0)
 			score = 0;
 		gameVars.score += score
-		this.scoreLabel.setString("Score: " + Math.floor(gameVars.score));
+		this.scoreLabel.setString(Math.floor(gameVars.score));
 	}
 
 });

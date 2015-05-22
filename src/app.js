@@ -6,6 +6,7 @@ var GameScene = cc.Layer.extend({
 		var hudLayer = new HUDLayer();
 		var pauseLayer = new PauseLayer();
 		var gameBoard = new GameBoard(hudLayer, pauseLayer);
+		hudLayer.init(hudLayer);
 		this.removeAllChildren();
 		this.addChild(gameBoard);
 		this.addChild(hudLayer);
