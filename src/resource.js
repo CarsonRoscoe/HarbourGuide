@@ -1,9 +1,16 @@
+//folder path
 var folder = "";
-
+/**
+ * Sets up the folder to look for if its not native useage (not mobile).
+ */
 if (!cc.sys.isNative) {
 	folder = "res/mediumRes/";
 }
 
+/**
+ * Large object that holds the path of all resource paths for loading reference
+ * from all the other files for sprites and fonts.
+ */
 var res = {
     HelloWorld_png : folder + "HelloWorld.png",
     CloseNormal_png : folder + "CloseNormal.png",
@@ -89,6 +96,9 @@ var res = {
     med1x4Shipv1: folder + "ObstacleLarge.png",
 };
 
+/**
+ * Pulling the paths and populating the data to be recognized by cocos.
+ */
 var g_resources = [];
 for (var i in res) {
     g_resources.push(res[i]);
