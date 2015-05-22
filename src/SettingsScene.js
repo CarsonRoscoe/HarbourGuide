@@ -28,17 +28,17 @@ var SettingsLayer = cc.Layer.extend({
 
 
 		var musicVolumeLabel = new cc.LabelTTF("Background Music Volume", "Helvetica", 30);
-		musicVolumeLabel.setColor(cc.color(200,200,200));
+		musicVolumeLabel.setColor(cc.color(0,0,0));
 		musicVolumeLabel.setPosition(cc.p(winsize.width/2, winsize.height/1.45));
 		Layer.addChild(musicVolumeLabel);
 		
 		var effectVolumeLabel = new cc.LabelTTF("Effect Music Volume", "Helvetica", 30);
-		effectVolumeLabel.setColor(cc.color(200,200,200));
+		effectVolumeLabel.setColor(cc.color(0,0,0));
 		effectVolumeLabel.setPosition(cc.p(winsize.width/2, winsize.height/1.8));
 		Layer.addChild(effectVolumeLabel);
 		
 		bgVolumeLabel = new cc.LabelTTF(Layer.currentVolume, "Helvetica", 30);
-		bgVolumeLabel.setColor(cc.color(200,200,200));	
+		bgVolumeLabel.setColor(cc.color(0,0,0));	
 		
 		var musicUp = new cc.MenuItemSprite(
 				new cc.Sprite("res/mediumRes/buttons/volume_up_default.png"),
@@ -56,7 +56,7 @@ var SettingsLayer = cc.Layer.extend({
 
 		
 		effectVolumeNumber = new cc.LabelTTF(Layer.currentEffectVolume, "Helvetica", 30);
-		effectVolumeNumber.setColor(cc.color(200,200,200));
+		effectVolumeNumber.setColor(cc.color(0,0,0));
 		
 		
 		var effectUp = new cc.MenuItemSprite(
@@ -86,7 +86,9 @@ var SettingsLayer = cc.Layer.extend({
 		
 
 		colorBlind = new cc.MenuItemFont("Color Blind Mode", Layer.changeThing);
+		colorBlind.setColor(cc.color(0,0,0));
 		var backButton = new cc.MenuItemFont("Back", Layer.backScene);
+		backButton.setColor(cc.color(0,0,0));
 		var tempMenu = new cc.Menu(colorBlind, backButton);
 		tempMenu.alignItemsVertically();
 		tempMenu.setPosition(cc.p(winsize.width/2, winsize.height/3));
