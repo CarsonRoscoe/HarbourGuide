@@ -24,6 +24,10 @@ var GameBoard = cc.Layer.extend({
 
 	/**
 	 * Constructor that builds the game grid.
+	 * @param newHudLayer = The HUD to reference
+	 * @param newPauseLayer = The pause layer to reference
+	 * @param newGameVars = Game vars created in pre game passed in to use in the level
+	 * @param pLayer = The parent layer that created this level scene
 	 * @returns {Boolean} = was successful?
 	 */
 	ctor:function (newHudLayer, newPauseLayer, newGameVars, pLayer) {
@@ -226,13 +230,16 @@ var GameBoard = cc.Layer.extend({
 									repaint(2);
 								}
 							}
-							
+							/*
+							 * If a unit was selected, handle the unit movement, not an obstacle
+							 */
 						} else if (shipSelected != null && isUnitSelected == true && getUnitID(shipIndexSelected).selfID == shipSelected) {
 							var clickY = interaction.pointClicked.y;
 							var clickX = interaction.pointClicked.x;
 							var curY = interaction.pointCurrent.y;
 							var curX = interaction.pointCurrent.x;
 							var tempShip = getUnitID(shipIndexSelected); 
+							//spinning
 							if (grid[tempShip.point.x][tempShip.point.y].gateID != null 
 									&& gridGates[grid[tempShip.point.x][tempShip.point.y].gateID].direction == tempShip.direction) {
 								var spin = 360 - (tempShip.sprite.rotation % 360 - tempShip.direction * 90);
@@ -290,7 +297,7 @@ var GameBoard = cc.Layer.extend({
 								return;
 							}
 							
-							
+							//change direction
 							if (Math.abs(clickY - curY) > Math.abs(clickX - curX)) {
 								if (clickY - curY > 0) {
 									tempShip.direction = 2;
@@ -323,6 +330,10 @@ var GameBoard = cc.Layer.extend({
 	}
 });
 
+/**
+ * Checks to see if the new level created is valid and playable.
+ * @return Returns true if the level is valid.
+ */
 var checkNewLevel = function() {
 	var testGrid = createGrid();
 	var shipSpawn = [];
@@ -387,15 +398,9 @@ var checkNewLevel = function() {
 	return true;
 }
 
-var ShipObstacle = function() {
-	length: null;
-orientation: null;
-frontPoint: null;
-backPoint: null;
-origin: null;
-sprite: null;
-}
-
+/**
+ * If the level was invalid, rebuild the level.
+ */
 var reInitLevel = function() {
 	thisLayer.removeAllChildren();
 	parentLayer.buildInit();
@@ -472,7 +477,9 @@ var createGrid = function() {
 	return grid;
 };
 
-
+/**
+ * Draw the bakcground images and gates, and positions them.
+ */
 var drawBackground = function(ref) {
 	var back = new cc.Sprite.create(res.GameBackground_png);	
 	back.setAnchorPoint(0,0);
@@ -886,6 +893,14 @@ var spawnUnit = function(ref) {
 	}
 }
 
+/**
+ * Toggles a warning at a cell on the grid. 
+ * @param x = The x position in array of cells
+ * @param y = The y position in array of cells
+ * @param wrongGate = If the warning is for a wrong gate, it will be true
+ * 			used to enable a timeout so the warning fades away.
+ * @param ref = The layer reference.
+ */
 var toggleWarning = function(x, y, wrongGate, ref) {
 	if (grid[x][y].holdsWarning == null) {
 		grid[x][y].holdsWarning = new cc.Sprite.create(res.warning);	
@@ -945,7 +960,9 @@ var initUnitMovement = function(ref){
 	, gameVars.unitSpeed);
 };
 
-
+/**
+ * Checks to see if the game was finished. Returns true if it is.
+ */
 var checkGameFinished = function() {
 	if (unitBoats.length < 1 && gameVars.unitsLeft < 1) {
 		adjustDifficulty(false);
@@ -954,6 +971,10 @@ var checkGameFinished = function() {
 	return false;
 }
 
+/**
+ * Handles the pause functionalty of the game. If the gameVars.forceKill == true, it means that you are attmepting
+ * to leave the game early. 
+ */
 var handlePause = function() {
 	if (gameVars.forceKill) {
 		gameVars.isPaused = true;
@@ -979,6 +1000,11 @@ var handlePause = function() {
 	}
 }
 
+/**
+ * Adjsuts the difficulty accordingly. Based off of offset of the players last results, loaded from localStorage.
+ * Readjusts the offsets and saves the new aquired difficulty.
+ * @param failed = If the level should be told its failed (such as a quit), dont adjust.
+ */
 var adjustDifficulty = function(failed) {
 	var diff = gameVars.difficulty;
 	var up = gameVars.difficultyOffsetUp;
