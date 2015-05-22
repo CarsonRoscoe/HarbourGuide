@@ -49,8 +49,9 @@ var PauseLayer = cc.Layer.extend({
 		bgSprite.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height/2));
 		this.addChild(bgSprite, -100);
 
-		Layer.currentVolume = cc.audioEngine.getMusicVolume().toFixed(1) * 100;
-		Layer.currentEffectVolume = cc.audioEngine.getEffectsVolume().toFixed(1) * 100;
+		var data = new loadSettings();
+		Layer.currentVolume = data.volume;
+		Layer.currentEffectVolume = data.effects;
 
 
 		var musicVolumeLabel = new cc.LabelTTF("Background Music Volume", "Helvetica", 30);
@@ -144,54 +145,43 @@ var PauseLayer = cc.Layer.extend({
 
 
 	volumeDown: function() {
-		var current = cc.audioEngine.getMusicVolume() - 0.1;
-		cc.audioEngine.setMusicVolume(current);
-		var display = current;
-		if(display <= 0){
-			display = 0;
+		if (thisLayer.currentVolume >= 10) {
+			thisLayer.currentVolume -= 10;
+			cc.audioEngine.setMusicVolume(thisLayer.currentVolume / 100);
+			bgVolumeLabel.setString(thisLayer.currentVolume);
 		}
-		bgVolumeLabel.setString("Main Volume: " + display.toFixed(1) * 100);
-
 	},
 
 	//The volume up and down functions adjust the background music by increments of 10%. Starting volume is 100%
 	volumeUp: function() {
-		var current = cc.audioEngine.getMusicVolume() + 0.1;
-		cc.audioEngine.setMusicVolume(current);
-		var display = current;
-		if(display >= 1){
-			display = 1;
+		if (thisLayer.currentVolume <= 90) {
+			thisLayer.currentVolume += 10;
+			cc.audioEngine.setMusicVolume(thisLayer.currentVolume / 100);
+			bgVolumeLabel.setString(thisLayer.currentVolume);
 		}
-		bgVolumeLabel.setString("Main Volume: " + display.toFixed(1)* 100);
-
 	},
 
 	volumeEffectDown: function() {
-		var current = cc.audioEngine.getEffectsVolume() - 0.1;
-		cc.audioEngine.setEffectsVolume(current);
-		var display = current;
-		if(display <= 0){
-			display = 0;
+		if (thisLayer.currentEffectVolume >= 10) {
+			thisLayer.currentEffectVolume -= 10;
+			cc.audioEngine.setEffectsVolume(thisLayer.currentEffectVolume / 100);
+			effectVolumeNumber.setString(thisLayer.currentEffectVolume);
 		}
-		effectVolumeNumber.setString("Effect Volume: " + display.toFixed(1)* 100);
-
 	},
 
 	//The volume up and down functions adjust the   background music by increments of 10%. Starting volume is 100%
 	volumeEffectUp: function() {
-		var current = cc.audioEngine.getEffectsVolume() + 0.1;
-		cc.audioEngine.setEffectsVolume(current);
-		var display = current;
-		if(display >= 1){
-			display = 1;
+		if (thisLayer.currentEffectVolume <= 90) {
+			thisLayer.currentEffectVolume += 10;
+			cc.audioEngine.setEffectsVolume(thisLayer.currentEffectVolume / 100);
+			effectVolumeNumber.setString(thisLayer.currentEffectVolume);
 		}
-		effectVolumeNumber.setString("Effect Volume: " + display.toFixed(1)* 100);
-
 	},
 
 	//The following function is called when the button in the menu is pressed
 	//All the functions reset INITIALZIED4 to false, so it can be called by the scene again
 	backScene: function() {
+		new saveSettings(new SettingsObj(thisLayer.currentVolume, thisLayer.currentEffectVolume));
 		thisLayer.init(thisLayer);
 	},
 

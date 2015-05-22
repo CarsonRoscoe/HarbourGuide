@@ -5,17 +5,20 @@ var saveScore = function(data) {
 	if (localStorage.getItem("achData") == null) {
 		saveAchievements([]);
 	}
-	for(var i = 0; i < localStorage.length - 2 && i < 50; i++) {
+	if (localStorage.getItem("settings") == null) {
+		saveSettings(new SettingsObj(100, 100));
+	}
+	for(var i = 0; i < localStorage.length - 3 && i < 50; i++) {
 		if (data.score > loadScore(i).score) {
-			for (var j = localStorage.length - 2; j > i; j--) {
+			for (var j = localStorage.length - 3; j > i; j--) {
 				saveData(j, buildScoreString(loadScore(j - 1)));
 			}
 			saveData(i, buildScoreString(data));
 			return;
 		}
 	}
-	if (localStorage.length - 2 < 50)
-		saveData(localStorage.length - 2, buildScoreString(data));
+	if (localStorage.length - 3 < 50)
+		saveData(localStorage.length - 3, buildScoreString(data));
 }
 
 var savePlayerData = function(data) {
@@ -30,6 +33,11 @@ var saveAchievements = function(indexes) {
 			string += ";";
 	}
 	saveData("achData", string);
+}
+
+var saveSettings = function(setObj) {
+	var string = setObj.volume + ";" + setObj.effects;
+	localStorage.setItem("settings", string);
 }
 
 var loadAchievements = function() {
@@ -68,15 +76,31 @@ var playerDataObj = function(d, u, down) {
 	this.difficultyDown = down;
 }
 
+var SettingsObj = function(v, e) {
+	this.volume = v;
+	this.effects = e;
+}
+
+var loadSettings = function() {
+	if (localStorage.getItem("settings") == null) {
+		saveSettings(new SettingsObj(100, 100));
+	}
+	var r = localStorage.getItem("settings").split(";");
+	if (r[0] == null) {
+		saveSettings(new SettingsObj(100, 100));
+	}
+	return new SettingsObj(parseInt(r[0]), parseInt(r[1]));	
+}
+
 var loadPlayer = function(defDifficulty) {
 	if (localStorage.getItem("playerData") == null) {
-		savePlayerData(new playerDataObj(defDifficulty, 1, 1));
+		savePlayerData(new playerDataObj(defDifficulty, 1, 1, 1, 1));
 	}
 	var r = localStorage.getItem("playerData").split(";");
 	if (r[0] == null) {
-		savePlayerData(new playerDataObj(defDifficulty, 1, 1));
+		savePlayerData(new playerDataObj(defDifficulty, 1, 1, 1, 1));
 	}
-	return new playerDataObj(parseInt(r[0]), parseInt(r[1]), parseInt(r[2]));	
+	return new playerDataObj(parseInt(r[0]), parseInt(r[1]), parseInt(r[2]), parseInt(r[3]), parseInt(r[4]));	
 }
 
 function loadScore(index) {
@@ -86,6 +110,10 @@ function loadScore(index) {
 	if (localStorage.getItem("achData") == null) {
 		saveAchievements([]);
 	}
+	if (localStorage.getItem("settings") == null) {
+		saveSettings(new SettingsObj(100, 100));
+	}
+	cc.log(index);
 	var r = localStorage.getItem(index).split(";");
 	return new scoreData(r[0], parseInt(r[1]), parseInt(r[2]), parseInt(r[3]));
 }
