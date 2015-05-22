@@ -3,68 +3,63 @@ var INITALIZEDHUD = false;
 var HUDLayer = cc.Layer.extend({
 	scoreLabel: null,
 	boatsLeftLabel: null,
+	scoreHolder: null,
 	scoreBackground: null,
+	boatsLeftHolder: null,
 	boatsLeftBackground: null,
 	cellSize: null,
+	cellsRow: null,
+	cellsColumn: null,
 	
 	ctor:function() {
 		this._super();
-		this.init(this);
+	},
+	
+	initVars:function(s, r, c) {
+		cellSize = s;
+		cellsRow = r;
+		cellsColumn = c;
 	},
 
-	init:function(Layer){
+	init:function(Layer, gameLayer){
 		Layer._super();
 		Layer.removeAllChildren();
-
 		var winsize = cc.director.getWinSize();
+		Layer.scoreBackground = new cc.Sprite(res.WoodBackHUD);
+		Layer.boatsLeftBackground = new cc.Sprite(res.WoodBackHUD);
 		
-		if (winsize.height >= 1536) {
-			Layer.scoreBackground = new cc.Sprite("res/highRes/woodenLabel.png");
-			Layer.boatsLeftBackground = new cc.Sprite("res/highRes/woodenLabel.png");
-			cellSize = 220;
-		}
-		else if (winsize.height >= 720) {
-			Layer.scoreBackground = new cc.Sprite("res/mediumRes/woodenLabel.png");
-			Layer.boatsLeftBackground = new cc.Sprite("res/mediumRes/woodenLabel.png");
-			cellSize = 102;
-		}
-		else {
-			Layer.scoreBackground = new cc.Sprite("res/lowRes/woodenLabel.png");
-			Layer.boatsLeftBackground = new cc.Sprite("res/lowRes/woodenLabel.png");
-			cellSize = 46;
-		}
+		Layer.scoreBackground.setAnchorPoint(.5, 1);
+		Layer.scoreBackground.setScaleX(winsize.width / Layer.scoreBackground.width);
+		Layer.scoreBackground.setScaleY((winsize.height - (cellSize * cellsColumn)) / 2 / Layer.scoreBackground.height);
+		Layer.scoreBackground.setPosition(cc.p(winsize.width / 2, winsize.height));
 		
-		Layer.scoreBackground.setPosition(cc.p(
-				winsize.width / 2, 
-				(winsize.height - (cellSize * 9)) / 2));
+		Layer.scoreHolder = new cc.Sprite(res.TextHolderHUD);
+		Layer.scoreHolder.setAnchorPoint(.5, .5);
+		Layer.scoreHolder.setPosition(cc.p(winsize.width / 2.5, winsize.height - ((winsize.height - (cellSize * cellsColumn)) / 4)));
+		cc.log(Layer.scoreHolder.x + " " + Layer.scoreHolder.y);
+		Layer.addChild(this.scoreHolder, 1000);
 		
 		Layer.scoreLabel = new cc.LabelTTF("Score: 0", "Amiga Forever", cellSize / 2);
 		Layer.scoreLabel.setColor(cc.color(0,0,0));
-		Layer.scoreLabel.setPosition(cc.p(
-				winsize.width / 2,
-				winsize.height / 10));
+		Layer.scoreLabel.setPosition(cc.p(winsize.width / 2, winsize.height / 10));
 		
 		Layer.scoreBackground.addChild(this.scoreLabel);
 		Layer.addChild(this.scoreBackground);
 		
-		var settingsLabel = new cc.MenuItemSprite(
-				new cc.Sprite(res.Button_png),
-				new cc.Sprite(res.Button_png),
-				handlePause, this);
+		var settingsLabel = new cc.MenuItemSprite(new cc.Sprite(res.Button_png), new cc.Sprite(res.Button_png),	handlePause, this);
 		var menu = new cc.Menu(settingsLabel);
-		menu.setPosition(cc.p(winsize.width - 40, winsize.height - 140));
+		menu.setAnchorPoint(1, .5);
+		menu.setPosition(cc.p(winsize.width - (winsize.width / 8), winsize.height - ((winsize.height - (cellSize * cellsColumn)) / 4)));
 		Layer.addChild(menu);
-		
-		Layer.boatsLeftBackground.setPosition(cc.p(
-				winsize.width / 2,
-				(winsize.height - (cellSize * 9)) / 2));
+
+		Layer.boatsLeftBackground.setAnchorPoint(.5, 0);
+		Layer.boatsLeftBackground.setScaleX(winsize.width / Layer.scoreBackground.width);
+		Layer.boatsLeftBackground.setScaleY((winsize.height - (cellSize * cellsColumn)) / 2 / Layer.scoreBackground.height);
+		Layer.boatsLeftBackground.setPosition(cc.p(winsize.width / 2, 0));
 		
 		Layer.boatsLeftLabel = new cc.LabelTTF("Boats Left: ", "Amiga Forever", cellSize / 2);
 		Layer.boatsLeftLabel.setColor(cc.color(0,0,0));
-		Layer.boatsLeftLabel.setPosition(cc.p(
-				winsize.width / 2, 
-				winsize.height / 10));
-		
+		Layer.boatsLeftLabel.setPosition(cc.p(winsize.width / 2, winsize.height / 10));		
 		Layer.boatsLeftBackground.addChild(Layer.boatsLeftLabel);
 		Layer.addChild(Layer.boatsLeftBackground);
 	},

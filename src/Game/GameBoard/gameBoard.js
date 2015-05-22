@@ -60,8 +60,9 @@ var GameBoard = cc.Layer.extend({
 		gameVars.blockedSpawns = 0;
 		gameVars.forceKill = false;
 		hud = newHudLayer;
+		hud.initVars(cellSize, cellsRow, cellsColumn);
 		pauseInit = newPauseLayer;
-		hud.updateBoatsLeft(gameVars.unitsLeft);
+		//hud.updateBoatsLeft(gameVars.unitsLeft);
 		
 		drawBackground(this);
 		
