@@ -13,11 +13,11 @@ var MenuLayer = cc.Layer.extend({
 	init:function(Layer){
 		this._super();
 		var winsize = cc.director.getWinSize();
-		//MenuItems to navigate to PreGame, Scores, and Settings scene
+		//Background sprite
 		var bgSprite = new cc.Sprite.create(res.MenuBg_png);
 		bgSprite.setAnchorPoint(cc.p(0.5, 0.5));
 		bgSprite.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height/2));
-		
+		//The logo sprite
 		var logoSprite = new cc.Sprite.create(res.MenuLogo_png);
 		logoSprite.setAnchorPoint(cc.p(0.5, 0.5));
 		logoSprite.setPosition(cc.p(cc.winSize.width/2, cc.winSize.height * 3/4));
@@ -27,40 +27,23 @@ var MenuLayer = cc.Layer.extend({
 		var width = cc.winSize.width;
 		var height = cc.winSize.height;
 		
-		/*var node = cc.DrawNode.create();
-		Layer.addChild(node, 1000);
-		
-		var timer = 0;
-		var drawTimer = setInterval(function (){
-			if (timer < 120 ) {
-				node.clear();
-				node.drawRect(
-					cc.p(width, height), 
-					cc.p(0, 0), 
-					cc.color(255, 255, 255, .5), 
-					1, 
-					cc.color(255, 255, 255, (120 - timer)/120)
-				);
-				cc.log();
-				timer += 1;
-			} else {
-				clearInterval(drawTimer);
-				Layer.removeChild(node, true);
-			}
-		}, 17);*/
-		
+		//Menu items
+		//Play button. Takes you to pre-game scene
 		var menuItem1 = new cc.MenuItemSprite(
 				new cc.Sprite(res.PlayButton_png),
 				new cc.Sprite(res.PlayButtonP_png),
 				Layer.mainPlay, Layer);
+		//Score button. takes you to the score scene
 		var menuItem2 = new cc.MenuItemSprite(
 				new cc.Sprite(res.ScoreButton_png),
 				new cc.Sprite(res.ScoreButtonP_png),
 				Layer.mainScores, Layer);
+		//Achivement button. takes you to the achivement scene
 		var menuItem3 = new cc.MenuItemSprite(
 				new cc.Sprite(res.AchievementButton_png),
 				new cc.Sprite(res.AchievementButtonP_png),
 				Layer.mainAchievement, Layer);
+		//Settings button. takes you to the settings scene
 		var menuItem4 = new cc.MenuItemSprite(
 				new cc.Sprite(res.SettingButton_png),
 				new cc.Sprite(res.SettingButtonP_png),
@@ -72,27 +55,35 @@ var MenuLayer = cc.Layer.extend({
 		menu.setAnchorPoint(0.5, 0.5);
 		menu.setPosition(cc.winSize.width/2, cc.winSize.height/3);
 		
+		//The logo sprites starting position
 		var logoStartX = logoSprite.x;
 		var logoStartY = logoSprite.y;
 		
+		//Rotates the logo sprite slightly and moves up and down slowly.
 		logoSprite.runAction(cc.RotateTo.create(2,-15));
 		logoSprite.runAction(cc.MoveTo.create(2, logoStartX, logoStartY + 15));
 		
+		//Timer to keep the animation going for the logo sprite
 		var t = setTimeout(function() {
 			var logoActionRotate = cc.RepeatForever.create(cc.Sequence.create(cc.RotateTo.create(4, 15), cc.RotateTo.create(4, -15)));
 			logoSprite.runAction(logoActionRotate);
 		}, 2000);
 		
+		//Up and down motion for the logo sprite
 		var logoActionMove = cc.RepeatForever.create(cc.Sequence.create(cc.MoveTo.create(4, logoStartX, logoStartY + 30).easing(cc.easeSineInOut(0)),cc.MoveTo.create(4, logoStartX, logoStartY -30).easing(cc.easeSineInOut(0))));
 		
+		//Slowly scales the logo sprite larger and smaller
 		var logoActionGrow = cc.Sequence.create(cc.ScaleTo.create(0, 0, 0), cc.ScaleTo.create(1, 1.25, 1.25), cc.ScaleTo.create(.25, 1, 1));
 		
+		//Menu animations
 		var menuActionMove = cc.MoveBy.create(1, 0, -cc.winSize.height/30);
 		var menuActionFade = cc.Sequence.create(cc.FadeOut.create(0), cc.FadeIn.create(1));
 		
+		//Runs menu animations once for on loading.
 		menu.runAction(menuActionFade);
 		menu.runAction(menuActionMove);
 		
+		//Runs the animations for the logo sprite
 		logoSprite.runAction(logoActionGrow);
 		logoSprite.runAction(logoActionMove);
 		cc.log(logoSprite.x + ", " + logoSprite.y);
@@ -100,7 +91,7 @@ var MenuLayer = cc.Layer.extend({
 		//Aligns the items vertically
 		menu.alignItemsVertically();
 		
-		//Adds menu to layer
+		//Adds menu, logo, and background sprites to layer
 		Layer.addChild(bgSprite);
 		Layer.addChild(logoSprite);
 		Layer.addChild(menu);
@@ -117,6 +108,7 @@ var MenuLayer = cc.Layer.extend({
 		cc.director.pushScene(scene);
 	},
 
+	//Goes to the scores scene
 	mainScores: function() {
 		INITIALIZED2 = false;
 		var scene2 = new ScoresScenes();
@@ -124,6 +116,7 @@ var MenuLayer = cc.Layer.extend({
 		cc.director.pushScene(scene2); //push
 	},
 
+	//goes to the settings scene
 	mainSettings: function() {
 		INITIALIZED2 = false;
 		var scene = new SettingsScene();
@@ -131,6 +124,7 @@ var MenuLayer = cc.Layer.extend({
 		cc.director.pushScene(scene); //push
 	},
 	
+	//Goes to the achivements scene
 	mainAchievement: function() {
 		INITIALIZED2 = false;
 		var scene = new AchievementScenes();
@@ -138,6 +132,8 @@ var MenuLayer = cc.Layer.extend({
 		cc.director.pushScene(scene); //push
 	}
 });
+
+//The background layer
 
 var BackgroundLayer = cc.Layer.extend({
 	backgroundImg: null,
@@ -149,7 +145,7 @@ var BackgroundLayer = cc.Layer.extend({
 
 	init:function(Layer){
 		var winsize = cc.director.getWinSize();
-		
+		//The background image
 		Layer.backgroundImg = new cc.Sprite(res.MenuBg_png);
 		Layer.backgroundImg.setPosition(cc.p(winsize.width / 2, winsize.height /2));
 		Layer.addChild(Layer.backgroundImg);
@@ -165,11 +161,12 @@ var MenuScene = cc.Scene.extend({
 		if(INITIALIZED2 == false) {
 			
 			INITIALIZED2 = true;
+			//Adds the background layer and the menu layer.
 			var bgLayer = new BackgroundLayer();
 			var layer = new MenuLayer();
 			this.removeAllChildren();
 			this.addChild(layer);
-			cc.audioEngine.playMusic(res.background_mp3, true); //starts audio NOTE: browsers don't support loop, seperate loop needs to be made
+			cc.audioEngine.playMusic(res.background_mp3, true); //starts audio as soon as the game is loaded
 		}
 	}
 });
