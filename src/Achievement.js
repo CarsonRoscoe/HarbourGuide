@@ -1,3 +1,6 @@
+/**
+* Data for every achievement object
+*/
 var getAllAchievements = function(){
 	var temp = [{
 		//0
@@ -98,6 +101,9 @@ var getAllAchievements = function(){
 	return temp;
 }
 
+/**
+* Gets all achievements earned
+*/
 var getMyAchievements = function(List) {
 	var achArray = getAllAchievements();
 	var endArray = [];
@@ -111,6 +117,9 @@ var getMyAchievements = function(List) {
 	return endArray;
 }
 
+/**
+* Earns new achievement
+*/
 var getAchievements = function(indexes) {
 	var temp = setTimeout(function() {
 		if (indexes == null || indexes == undefined || indexes == [])
@@ -142,6 +151,9 @@ var getAchievements = function(indexes) {
 	}, 17);
 }
 
+/**
+* Displays new earned achievements
+*/
 var constructAchievement = function(Layer, ind) {
 	if (ind.length == 0)
 		return;
@@ -174,6 +186,9 @@ var constructAchievement = function(Layer, ind) {
 	freeLayer(Layer, Layer);	
 }
 
+/**
+* Achievmeent layer
+*/
 var AchLayer = cc.Layer.extend({
 	ctor:function() {
 		this._super();

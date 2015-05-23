@@ -114,6 +114,9 @@ var initScores = function(Layer) {
 		}, waitTime);
 }
 
+/**
+* Gets the datapack object in array
+*/
 var getDataPackGlobal = function() {
 	if (dataPackOnline != null)
 		return getDataPackArray();
@@ -125,6 +128,9 @@ var initOnlineDataPre = function() {
 	sendCommand("GETSCORE;", 0);
 }
 
+/**
+* Called when you cant connect
+*/
 var noConnection = function(Layer) {
 	label = new cc.LabelTTF("No Connection", "UbuntuMono-R");
 	label.setFontSize(60);
@@ -134,6 +140,9 @@ var noConnection = function(Layer) {
 
 }
 
+/**
+* Stores all local data in an array
+*/
 var getDataPackLocal = function() {
 	var dpArray = [];
 	
@@ -144,7 +153,9 @@ var getDataPackLocal = function() {
 	return dpArray;
 }
 
-
+/**
+* Inits all data into labels for sorting
+*/
 var initDataScores = function(Layer) {
 	if (locGlob == 0) {
 		dataPackArray = getDataPackLocal();
@@ -175,6 +186,9 @@ var initDataScores = function(Layer) {
 	initScore(Layer);
 }
 
+/**
+* Formats strings
+*/
 var formatStringScore = function(i) {
 	for (var j = dataPackArray[i].name.length; j < 10; j++)
 			dataPackArray[i].name += " ";
@@ -210,6 +224,9 @@ var formatStringScore = function(i) {
 		dataArray[i] = (i+1) + ": " + dataPackArray[i].name + "" + dataPackArray[i].score + "   " + dataPackArray[i].difficulty + "  " + concat;
 }
 
+/**
+* Re-initiates the data properly when sorting
+*/
 var reinitDataScores = function(Layer) {
 	if (sortBy == 0)
 		dataPackArray.sort(sortByScore);
@@ -236,6 +253,9 @@ var reinitDataScores = function(Layer) {
 	reinitScore(Layer);
 }
 
+/**
+* Initiates the score
+*/
 var initScore = function(Layer) {
 	var size = cc.winSize;
 	fontSize = 46;
@@ -257,6 +277,9 @@ var initScore = function(Layer) {
 		}, 34);
 }
 
+/**
+* Reinitiates the score
+*/
 var reinitScore = function(Layer) {
 	var amount = (((defaultFromTop) / fontSize - 1) < (dataArray.length))?((defaultFromTop) / fontSize - 1):dataArray.length;
 	for (var i = 0; i < amount; i++) {
@@ -265,6 +288,9 @@ var reinitScore = function(Layer) {
 	}
 }
 
+/**
+* Checks that an button value contains a point clicked
+*/
 var myClickContainsPoint = function(clickPoint, index) {
 	var clickX = clickPoint.x;
 	var clickY = clickPoint.y;
@@ -282,6 +308,9 @@ var myClickContainsPoint = function(clickPoint, index) {
 	return false;
 }
 
+/**
+* Handles touch events
+*/
 var initTouchEvents = function(Layer) {
         cc.eventManager.addListener(cc.EventListener.create({
 			touchDown: null,
@@ -380,6 +409,9 @@ var selectButtonScore = function(i, Layer) {
 	doClickedScore(i, Layer);
 }
 
+/**
+* Calls function depending on which button was clicked.
+*/
 var doClickedScore = function(i, Layer) {
 	switch(i) {
 		case 0:
@@ -403,6 +435,9 @@ var doClickedScore = function(i, Layer) {
 	}
 }
 
+/**
+* Grabs local data
+*/
 var scorePressLocal = function(Layer) {
 	locGlob = 0;
 	for (var i = 0; i < dataArray.length; i++) {
@@ -413,6 +448,9 @@ var scorePressLocal = function(Layer) {
 	initDataScores(Layer);
 }
 
+/**
+* Grabs global data.
+*/
 var scorePressGlobal = function(Layer) {
 	locGlob = 1;
 	
@@ -424,27 +462,42 @@ var scorePressGlobal = function(Layer) {
 	initDataScores(Layer);
 }
 
+/**
+* Sorts by score
+*/
 var scorePressScore = function(Layer) {
 	sortBy = 0;
 	reinitDataScores(Layer);
 }
 
+/**
+* Sorts by difficulty
+*/
 var scorePressDifficulty = function(Layer) {
 	sortBy = 1;
 	reinitDataScores(Layer);
 }
 
+/**
+* Sorts by time
+*/
 var scorePressTime = function(Layer) {
 	sortBy = 2;
 	reinitDataScores(Layer);
 }
 
+/**
+* Snaps to top
+*/
 var moveToPos = function()  {
 	var amount = (((defaultFromTop) / fontSize - 1) < (dataArray.length))?((defaultFromTop) / fontSize - 1):dataArray.length;
 	for (var i = 0; i < amount; i++)
 		labelArray[i].y = defaultFromTop - (i * fontRoom);
 }
 
+/**
+* Updates score position when scrolling
+*/
 var updateScore = function() {
 	if (isDown) {
 		var len = labelArray.length;
@@ -489,6 +542,9 @@ var scoreSceneBack = function(Layer) {
 	cc.director.popScene();
 }
 
+/**
+* USorts by score
+*/
 var sortByScore = function(bJSON, aJSON) {
 	var result = 0;
 	result = aJSON.score - bJSON.score;
@@ -499,6 +555,9 @@ var sortByScore = function(bJSON, aJSON) {
     return result;
 }
 
+/**
+* Sorts by difficulty
+*/
 var sortByDifficulty = function(bJSON, aJSON) {
     var result = 0;
 	result = aJSON.difficulty - bJSON.difficulty;
@@ -512,6 +571,9 @@ var sortByDifficulty = function(bJSON, aJSON) {
     return result;
 }
 
+/**
+* Sorts by time
+*/
 var sortByTime = function(bJSON, aJSON) {
     var result = 0;
 	result = bJSON.time - aJSON.time;
