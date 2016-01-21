@@ -13,7 +13,7 @@ Features of the game include:
 * Elo system
 * Online highscore board
 * Achievement System
-* 
+
 # Tools Used
 
 The game is written with JavaScript as the primary language. The server application is written in C#.
