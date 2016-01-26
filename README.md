@@ -42,3 +42,11 @@ Setup apache (or some type of XAMP stack) to host the game locally.
 Move the game files over to the apache folder.
 
 Run index.html
+
+# Collaboration
+
+This project was written in collaboration with:
+Jaegar Sarauer (https://github.com/JaegarSarauer)
+Arthur Pankiewicz (https://github.com/arthurpankiewicz)
+Eric Lui (https://github.com/TheFerty7)
+Eric Lee (https://github.com/EricLeeSetA)
