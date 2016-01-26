@@ -46,7 +46,11 @@ Run index.html
 # Collaboration
 
 This project was written in collaboration with:
+
 Jaegar Sarauer (https://github.com/JaegarSarauer)
+
 Arthur Pankiewicz (https://github.com/arthurpankiewicz)
+
 Eric Lui (https://github.com/TheFerty7)
+
 Eric Lee (https://github.com/EricLeeSetA)
